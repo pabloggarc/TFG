@@ -1,0 +1,35 @@
+\thispagestyle{empty}
+\BgThispage
+
+\begin{tikzpicture}[remember picture, overlay]
+  \node[yshift=-5cm] at (current page.north west)
+  {
+    \begin{tikzpicture}[remember picture, overlay]
+      \draw[fill = headingPortadaTFG, headingPortadaTFG, fill opacity = 1] (0,0) rectangle (\paperwidth,5cm);
+      \node[yshift = 3cm, xshift = 0.5\paperwidth, font = \Huge, text centered, midway] {\color{textoHeadingPortadaTFM}\textbf{\universidad}};
+      \node[yshift = 2cm, xshift= 0.5\paperwidth, font = \Huge, text centered, midway] {\color{textoHeadingPortadaTFM}\textbf{\escuela}};
+    \end{tikzpicture}
+  };
+\end{tikzpicture}
+
+\large
+\vspace{5cm}
+
+\begin{center}
+  \LARGE\textbf{\grado}\\
+  \vspace{25mm}
+  \LARGE\textbf{Trabajo Fin de Grado}\\
+  \LARGE{\titulo}\\
+  \vspace{5cm}
+  \textbf{Autor:} \autor\\
+  \vspace{0.5cm}
+  \textbf{Tutor:} \tutor
+\end{center}
+
+\begin{bottomparagraph}
+  \begin{center}
+    \huge{\the\year{}}
+  \end{center}
+\end{bottomparagraph}
+
+\normalsize

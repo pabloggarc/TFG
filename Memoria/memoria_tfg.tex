@@ -1,0 +1,34 @@
+\documentclass{report}
+
+\usepackage{tfg}
+
+\begin{document}
+	
+	% PORTADA E INFORMACIÓN INICIAL
+	\input{portada}
+	\paginavacia
+	\input{info_inicial}
+	\paginavacia
+	
+	\thispagestyle{empty}
+	\begin{flushright}
+		\vspace*{\fill}
+		\emph{``Computer Science is no more about computers than astronomy is about telescopes.''}\\ Edsger W. Dijkstra
+	\end{flushright}
+	\vspace*{\fill}
+	
+	\paginavacia
+	\input{resumen}
+	\paginavacia
+	
+	% ÍNDICES
+	
+	\tableofcontents
+	\listoffigures
+	
+	% TFG
+	
+	% CONTRAPORTADA
+	\input{contracubierta}
+	
+\end{document}

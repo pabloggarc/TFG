@@ -1,0 +1,93 @@
+\ProvidesPackage{tfg}
+
+% Paquetes utilizados
+\usepackage[spanish]{babel}
+\usepackage[margin = 2.54cm]{geometry}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[pages = some]{background}
+\usepackage{amssymb, amsthm, array, enumitem, fancyhdr, float, graphicx, hyperref, mathtools, tikz}
+\usepackage[spanish, noabbrev]{cleveref}
+
+
+
+% Variables 
+\newcommand{\autor}{Pablo García García}
+\newcommand{\tutor}{Adrián Domínguez Díaz}
+\newcommand{\titulo}{Estudio de técnicas de visión e inteligencia artificial aplicadas a un caso práctico}
+\newcommand{\universidad}{Universidad de Alcalá}
+\newcommand{\escuela}{Escuela Politécnica Superior}
+\newcommand{\grado}{Grado en Ingeniería Informática}
+\newcommand{\presidente}{}
+\newcommand{\primervocal}{}
+\newcommand{\segundovocal}{}
+
+
+
+% Ubicación de las imágenes
+\graphicspath{{./img}}
+
+
+
+% Configuración de la portada
+\backgroundsetup{
+	scale = 1, 
+	angle = 0,
+	opacity = .1, 
+	contents = {
+		\includegraphics[width = .7\paperwidth]{logoEPS-UAH.jpg}}, 
+		vshift = -50pt,  
+		hshift = 0pt
+	}
+
+
+
+% Estilo de los encabezados
+\pagestyle{fancy}
+\lhead{\footnotesize \leftmark}
+\rhead{\footnotesize \rightmark}
+
+
+
+% Entornos personalizados
+\newtheorem{definition}{Definición}[section]
+\newtheorem{theorem}{Teorema}[section]
+\newtheorem{corollary}{Corolario}[theorem]
+\newtheorem{lemma}{Lema}[section]
+\newtheorem{remark}{Nota}[section]
+\newtheorem{observation}{Observación}[section]
+\newtheorem{example}{Ejemplo}[section]
+\newtheorem{exercise}{Ejercicio}[section]
+\newenvironment{bottomparagraph}{\par\vspace*{\fill}}{\clearpage}
+\newcommand{\paginavacia}{\newpage\thispagestyle{empty}\null\newpage}
+\newcommand*{\cleartoleftpage}{%
+	\clearpage
+	\if@twoside
+	\ifodd\c@page
+	\hbox{}\newpage
+	\if@twocolumn
+	\hbox{}\newpage
+	\fi
+	\fi
+	\fi
+}
+
+
+
+% Colores
+\definecolor{headingPortadaTFG}{RGB}{152,118,52}
+\definecolor{headingPortadaTFM}{RGB}{0,90,170}
+\definecolor{textoHeadingPortadaTFM}{RGB}{208,205,102}
+\definecolor{textoHeadingPortadaTFG}{RGB}{208,205,102}
+
+
+
+% Metadatos del PDF
+\hypersetup{
+	pdftitle = {\titulo}, 
+	pdfauthor = {\autor}, 
+	pdfsubject = {Trabajo de Fin de Grado}, 
+	pdfcenterwindow, 
+	pdfnewwindow = true, 
+	pdfkeywords = {}, 
+	bookmarksopen = true 
+}
