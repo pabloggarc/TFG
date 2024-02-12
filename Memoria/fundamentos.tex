@@ -1,5 +1,13 @@
 \chapter{Fundamentos de la Inteligencia Artificial y sus herramientas}\chaptermark{Fundamentos de la IA y herramientas}
 
+	\section{Tipos de aprendizaje y problemas}
+	
+		Una vez entendida cuál es la idea de un modelo, es momento de discutir cómo se hace posible que este desempeñe correctamente su tarea. Esto se logra mediante un algoritmo de aprendizaje o entrenamiento que ajusta de manera óptima los parámetros del modelo. Normalmente se dispone de dos tipos de aprendizaje, \textbf{aprendizaje supervisado} y \textbf{aprendizaje no supervisado}\cite{Szeliski}. \\
+		
+		En los algoritmos de aprendizaje supervisados, se dispone de un conjunto de datos o \textit{dataset}, que contiene los valores de salida deseados para diferentes valores de entrada, normalmente recogiendo situaciones del pasado para poder extrapolar este conocimiento a situaciones del futuro. Los principales problemas que utilizan algoritmos de aprendizaje supervisado son los problemas de clasificación y de regresión. En los \textbf{problemas de clasificación}, se dispone de una serie de clases $C_1, C_2, \hdots, C_n$, y para una serie de valores de entrada $x_1, x_2, \hdots, x_m$, debe decidirse a qué clase pertenece dicha entrada. Un ejemplo sería decidir si un paciente va a sufrir un cierto tipo de cáncer dada su edad, peso, y otras constantes vitales. Algunos de los modelos más populares para llevar a cabo este tipo de tareas son árboles de decisión, máquinas de soporte vectorial, Naïve Bayes, $k-$vecinos, y redes neuronales; siendo estas últimas objeto de estudio en este trabajo. Otro tipo de problema popular a la hora de disponer de datos etiquetados, son los \textbf{problemas de regresión}, que se diferencia principalmente de la clasificación en que en este caso, los valores no son clases (valores discretos) sino valores continuos. Para resolver este tipo de problemas se suelen utilizar regresiones lineales y no lineales (exponencial, polinómica, etc). Un ejemplo de un problema de regresión sería predecir las horas que dormirá una persona dada su edad, horas trabajadas en el día, horas de recreo en el día, etc. \\
+		
+		Por otro lado, los algoritmos de aprendizaje no supervisado no reciben los valores de salida esperados para una cierta observación (justo al contrario que en el caso supervisado), pues será trabajo del algoritmo encontrar relaciones y patrones entre los datos proporcionados. En este tipo de aprendizaje también se trata el problema de clasificación, sin embargo, es más común llamarlo \textbf{clústering} o \textbf{segmentación}, pues a priori no se conoce el número de clases y cuáles son, es el algoritmo el que deberá encontrar relaciones entre los datos para determinar esto. Algoritmos populares para realizar esta tarea son $k-$medias (y su variante $k-$medianas), clusterización jerárquica aglomerativa, modelos de mixtura gaussianos, y DBSCAN. Un ejemplo sencillo de este problema es detectar las diferentes regiones y objetos representados en una imagen, pues inicialmente no se conoce el número de regiones u objetos, y deben detectarse todas, asignando cada píxel de la imagen a cada una de ellas. 
+
 	\section{Convolución y correlación cruzada}
 	
 		Una de las operaciones matemáticas más conocidas y que es más usada al trabajar con señales e imágenes es la llamada convolución, denotada por $\ast$, y dadas las funciones $f(t)$ y $g(t)$, su convolución se define de la siguiente manera. 
@@ -14,7 +22,7 @@
 		(f \ast g)(u, v) = \int_{-\infty}^\infty\int_{-\infty}^\infty f(\xi, \eta)g(u - \xi, v - \eta) d\xi d\eta
 		$$
 		
-		Partiendo de las primera definición mostrada, se pueden demostrar algunas propiedades útiles que cumple la convolución: 
+		Partiendo de las primera definición mostrada, se pueden demostrar algunas propiedades útiles que cumple la convolución\cite{lopez2009metodo}: 
 		
 		\begin{itemize}
 			\item Conmutativa: $f \ast g = g \ast f$
@@ -24,7 +32,7 @@
 			\item Teorema de convolución: $\mathscr{L}\{f \ast g\} = \mathscr{L}\{f\} \cdot \mathscr{L}\{g\}$
 		\end{itemize}
 		
-		Si bien en las definiciones previas se ha tomado la integral y tanto $\mathbb{R}$ como $\mathbb{R}^2$ como dominios continuos sobre los que calcular la convolución, no se debe olvidar que las imágenes no dejan de ser matrices o funciones de dos variables con un dominio discreto, por lo que se debe presentar una definición adecuada a este caso. 
+		Si bien en las definiciones previas se ha tomado la integral y tanto $\mathbb{R}$ como $\mathbb{R}^2$ como dominios continuos sobre los que calcular la convolución, no se debe olvidar que las imágenes no dejan de ser matrices o funciones de dos variables con un dominio discreto, por lo que se debe presentar una definición adecuada a este caso\cite{Goodfellow-et-al-2016}. 
 		
 		$$
 		(f \ast g)(u, v) = \sum_{i=-k}^{k}\sum_{j=-k}^{k} g(i, j)f(u - i, v - j)
@@ -66,7 +74,7 @@
 		\end{tikzpicture}
 		$$
 		
-		Aplicando diferentes kernels de convolución a una imagen se pueden extraer diferentes tipos de características de una imagen, como por ejemplo bordes. El filtro Sobel es capaz de hacer esto con los kernels que se muestran a continuación, pues se comportan como aproximaciones de las derivadas parciales de la imagen en un punto teniendo en cuenta los píxeles cercanos. 
+		Aplicando diferentes kernels de convolución a una imagen se pueden extraer diferentes tipos de características de una imagen, como por ejemplo bordes. El filtro Sobel es capaz de hacer esto con los kernels que se muestran a continuación, pues se comportan como aproximaciones de las derivadas parciales de la imagen en un punto teniendo en cuenta los píxeles cercanos\cite{Gao2010}. 
 		
 		\begin{align*}
 			G_u &= \frac{\partial f(u, v)}{\partial u} \approx \begin{pmatrix}
@@ -103,10 +111,10 @@
 				\end{pmatrix}
 		\end{align*}
 		
-		La respuesta a estas preguntas se podría resumir en que se ha realizado una ``pequeña trampa'' a la hora de calcular la convolución manualmente en el ejemplo, ya que no se ha aplicado correctamente la definición dada. ¿Qué sentido tiene hacer esto? En visión artificial y tratamiento de imágenes, muchos autores y librerías llaman convolución a la operación que se ha mostrado en el primer ejemplo, cuando en realidad no lo es y trae lugar a confusión. Dicha operación se llama correlación cruzada, denotada por $(\star)$, y que es muy similar a la convolución, pues su principal diferencia es que en la convolución ``real'', el kernel se rota 180 grados antes de calcular la convolución ``falsa'' o correlación cruzada, es decir, $X \ast Y = X \star (R_{180} \cdot Y)$. La correlación cruzada de dos imágenes (matrices) se define de la siguiente manera. 
+		La respuesta a estas preguntas se podría resumir en que se ha realizado una ``pequeña trampa'' a la hora de calcular la convolución manualmente en el ejemplo, ya que no se ha aplicado correctamente la definición dada. ¿Qué sentido tiene hacer esto? En visión artificial y tratamiento de imágenes, muchos autores y librerías llaman convolución a la operación que se ha mostrado en el primer ejemplo, cuando en realidad no lo es y trae lugar a confusión. Dicha operación se llama correlación cruzada, denotada por $(\star)$, y que es muy similar a la convolución, pues su principal diferencia es que en la convolución ``real'', el kernel se rota 180 grados antes de calcular la convolución ``falsa'' o correlación cruzada, es decir, $X \ast Y = X \star (R_{180} \cdot Y)$, donde $R_{180}$ es la matriz de rotación de 180 grados. La correlación cruzada de dos imágenes (matrices) se define de la siguiente manera\cite{Goodfellow-et-al-2016}. 
 		
 		$$
 		(f \star g)(u, v) = \sum_{i=-k}^{k}\sum_{j=-k}^{k} g(i, j)f(u + i, v + j)
 		$$
 		
-		Esta operación sí es con la que realmente se aplican los filtros a las imágenes y con la que se trabaja en general en el campo de la visión artificial. Es importante ver que ahora, al contrario que con la convolución, $f \star g \neq g \star f$. Algunas librerías de visión artificial tratan a la correlación cruzada como convolución debido al frecuente uso que tiene una sobre la otra y la forma similar que tienen de calcularse. Un ejemplo es OpenCV en la documentación de su función \texttt{filter2D}, donde se comenta que aplica una convolución cuando realmente aplica la correlación cruzada. Finalmente, como se verá en próximos capítulos, las famosas redes neuronales convolucionales, no aplican convoluciones sino correlaciones cruzadas. 
+		Esta operación sí es con la que realmente se aplican los filtros a las imágenes y con la que se trabaja en general en el campo de la visión artificial. Es importante ver que ahora, al contrario que con la convolución, $f \star g \neq g \star f$. Algunas librerías de visión artificial tratan a la correlación cruzada como convolución debido al frecuente uso que tiene una sobre la otra y la forma similar que tienen de calcularse. Un ejemplo es OpenCV en la documentación de su función \texttt{filter2D}, donde se comenta que aplica una convolución cuando realmente aplica la correlación cruzada\cite{OpenCVFiltering}. Finalmente, como se verá en próximos capítulos, las famosas redes neuronales convolucionales, no aplican convoluciones sino correlaciones cruzadas. 
