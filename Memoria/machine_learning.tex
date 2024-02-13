@@ -1,0 +1,81 @@
+\chapter{Aprendizaje automático}
+
+	\section{Perceptrón}
+	
+		Ya en el año 1958, el psicólogo Frank Rosenblatt propuso un modelo llamado perceptrón el cual estaba basado en el comportamiento y funcionamiento de las neuronas de un humano, y que podía aprender ponderando cada coeficiente de entrada a la neurona\cite{historiaIA}. Hoy en día, tal y como se mostrará en esta sección, el perceptrón es la unidad fundamental de muchos modelos de \textit{machine learing} y \textit{deep learning}. \\
+		
+		En este modelo se dispone de una serie de valores de entrada $x_1, x_2, \hdots, x_n$ y se quiere obtener una serie de valores de salida $y_1, y_2, \hdots, y_m$. Esto se consigue mediante la ayuda de sus parámetros, que son una serie de pesos $w_1, w_2, \hdots, w_n$ y un sesgo o \textit{bias} $b$; y sus hiperparámetros, entre los que se encuentra una función $f$ de activación. 
+		
+		\begin{figure}[!h]
+			\centering
+			\begin{tikzpicture}
+				\foreach \i in {1, 2}
+					\pgfmathsetmacro{\resta}{int(\i - 1)}
+					\node[circle, draw, fill=gray!20] (x-\i) at (0, -1 * \resta - \resta) {$x_{\i}$};
+				\node (dots) at (0, -4) {$\vdots$};
+				\node[circle, draw, fill=gray!20] (x-3) at (0, -6) {$x_{n}$};
+				\node[circle, draw, fill=gray!20] (n) at (5,-3) {$n_1$};
+				\node[circle, draw, fill=gray!20] (a) at (7,-3) {$a_1$};
+				\node[circle, draw, fill=gray!20] (b) [below = of n] {$b_1$};
+				\node[circle, draw, fill=gray!20] (y) [right = of a] {$y_1$};
+				
+				\foreach \i in {1, 2}
+					\draw[-] (x-\i) -- (n) node [midway, above, sloped] {$w_{\i}$};
+				\draw[-] (x-3) -- (n) node [midway, below, sloped] {$w_n$};
+				\draw[-] (n) -- (a);
+				\draw[-] (a) -- (y);
+				\draw[-] (b) -- (n) node [midway, right] {$1$};
+			\end{tikzpicture}
+			\caption{Arquitectura de un perceptrón}
+			\label{fig:perceptron}
+		\end{figure}
+		
+		En la \Cref{fig:perceptron} se muestra la arquitectura del caso más simple de un perceptrón. Se tienen $n$ entradas y una única salida. La primera parte del diagrama representa que tal y como decía Rosenblatt, cada valor de entrada debe multiplicarse por un cierto peso, de tal forma que si se representa esto en función de sus valores en un instante $k$, lo que se computa en el nodo $n_1$ es la siguiente operación. 
+		
+		$$
+		n_1(k) = b_1(k) + \sum_{i=1}^n x_i(k)w_i(k)
+		$$
+		
+		Una vez se ha realizado este cálculo, el valor pasa por una función de activación en el nodo $a_1$, pues esta arquitectura es común utilizarla para clasificar una entrada y es muy útil obtener una salida binaria donde se active únicamente la salida que represente la clase a la que pertenece la entrada dada. Aunque existen diferentes funciones de activación para las neuronas, al trabajar con un perceptrón, la función de activación por excelencia es la función escalón de Heaviside, donde $u: \mathbb{R} \longrightarrow \{0, 1\}$ y su expresión analítica es
+		
+		$$
+		u(x) = \left\{\begin{array}{ccc}
+			0 & \text{si} & x < 0\\
+			1 & \text{si} & x \geq 0
+		\end{array}
+		\right..
+		$$
+		
+		Combinando ambas expresiones, se puede resumir en que la salida del perceptrón es equivalente a la siguiente ecuación: 
+		
+		$$
+		y_1(k) = \left\{\begin{array}{ccc}
+			0 & \text{si} & b_1(k) + \displaystyle\sum_{i=1}^n x_i(k)w_i(k) < 0\\
+			1 & \text{si} & b_1(k) + \displaystyle\sum_{i=1}^n x_i(k)w_i(k) \geq 0
+		\end{array}
+		\right.
+		$$
+		
+		Para dar un ejemplo claro de cómo funciona el perceptrón, se pueden tomar una serie de observaciones que tengan dos valores de entrada y uno de salida. Además, se supondrá que existen dos clases. Esto a fin de cuentas es asignar un valor de 0 o 1 a cada punto de $\mathbb{R}^2$ tal y como se describe en la \Cref{fig:labeled_data}. 
+		
+		\begin{figure}[!h]
+			\centering
+			\begin{tikzpicture}
+				\begin{axis}[ymin = -3, ymax = 3, xmax = 3, xmin = -3, xticklabel = \empty, yticklabel = \empty, minor tick num = 1, axis lines = middle, xlabel = $x$, ylabel = $y$]
+					\addplot[only marks, mark = *] coordinates {(1, 2)};
+					\addplot[only marks, mark = triangle*] coordinates {(-1, 2) (0, -1)};
+				\end{axis}
+			\end{tikzpicture}
+			\caption{Puntos etiquetados en $\mathbb{R}^2$}
+			\label{fig:labeled_data}
+		\end{figure}
+		
+		Una solución rápida sería trazar una recta $r: ax + by + c = 0$ que separe $\mathbb{R}^2$ en dos regiones, de forma que todo punto que pertenezca a una región pertenece entonces a una misma clase, tal y como se observa en la \Cref{fig:separated_label_data}. 
+		
+		\begin{figure}[!h]
+			\centering
+			
+			\caption{Puntos separados en $\mathbb{R}^2$}
+			\label{fig:separated_label_data}
+		\end{figure}
+		

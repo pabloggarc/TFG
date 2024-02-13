@@ -1,5 +1,11 @@
 \chapter{Fundamentos de la Inteligencia Artificial y sus herramientas}\chaptermark{Fundamentos de la IA y herramientas}
 
+	En este capítulo se abordará una breve introducción al campo de la Inteligencia Artificial, comenzando desde su historia a lo largo del tiempo para contextualizar, pasando por entender los fundamentos de lo que busca lograr, y comentando alguna herramienta matemática que será de utilidad y que en ciertos casos causa confusiones. 
+
+	\section{Breve historia de la Inteligencia Artificial}
+	
+	\section{¿Qué es un modelo?}
+
 	\section{Tipos de aprendizaje y problemas}
 	
 		Una vez entendida cuál es la idea de un modelo, es momento de discutir cómo se hace posible que este desempeñe correctamente su tarea. Esto se logra mediante un algoritmo de aprendizaje o entrenamiento que ajusta de manera óptima los parámetros del modelo. Normalmente se dispone de dos tipos de aprendizaje, \textbf{aprendizaje supervisado} y \textbf{aprendizaje no supervisado}\cite{Szeliski}. \\
@@ -13,13 +19,13 @@
 		Una de las operaciones matemáticas más conocidas y que es más usada al trabajar con señales e imágenes es la llamada convolución, denotada por $\ast$, y dadas las funciones $f(t)$ y $g(t)$, su convolución se define de la siguiente manera. 
 		
 		$$
-		(f \ast g)(t) = \int_{-\infty}^\infty f(\tau)g(t - \tau) d\tau
+		(f \ast g)(t) = \int_{-\infty}^\infty f(\tau)g(t - \tau)\,d\tau
 		$$
 		
 		En este caso se está asumiendo que el dominio de $f(\tau)g(t - \tau)$ es $\mathbb{R}$, lo que permite integrar sobre todo $\mathbb{R}$, de lo contrario, se modifica la definición para integrar solo sobre un intervalo $[a, b]$. En general, esta operación crea una nueva función a partir de otras dos, que indica cómo interactúan entre sí, y que permite aplicar filtros a señales e imágenes. Como se acaba de comentar para el caso de las imágenes, se puede tratar con señales que no dependan únicamente de una variable, pues estas se representan como una función de dos variables $f(u, v)$. En este caso, la convolución queda definida de la siguiente manera. 
 		
 		$$
-		(f \ast g)(u, v) = \int_{-\infty}^\infty\int_{-\infty}^\infty f(\xi, \eta)g(u - \xi, v - \eta) d\xi d\eta
+		(f \ast g)(u, v) = \int_{-\infty}^\infty\int_{-\infty}^\infty f(\xi, \eta)g(u - \xi, v - \eta)\,d\xi\,d\eta
 		$$
 		
 		Partiendo de las primera definición mostrada, se pueden demostrar algunas propiedades útiles que cumple la convolución\cite{lopez2009metodo}: 
@@ -29,7 +35,7 @@
 			\item Asociativa: $f \ast (g \ast h) = (f \ast g) \ast h$
 			\item Distributiva: $f \ast (g + h) = (f \ast g) + (f \ast h)$
 			\item Derivada: $\frac{d}{dt}(f \ast g) = \frac{df}{dt}\ast g = \frac{dg}{dt}\ast f$
-			\item Teorema de convolución: $\mathscr{L}\{f \ast g\} = \mathscr{L}\{f\} \cdot \mathscr{L}\{g\}$
+			\item Relación con las transformadas de Laplace y Fourier: $\mathscr{L}\{f \ast g\} = \mathscr{L}\{f\} \cdot \mathscr{L}\{g\}$, o lo que suele ser más útil, $f \ast g = \mathscr{L}^{-1}\{\mathscr{L}\{f\}\cdot\mathscr{L}\{g\}\}$, de forma que se puede calcular la convolución en tiempo $\mathcal{O}(n\log(n))$ con el algoritmo FFT\cite{fft}. 
 		\end{itemize}
 		
 		Si bien en las definiciones previas se ha tomado la integral y tanto $\mathbb{R}$ como $\mathbb{R}^2$ como dominios continuos sobre los que calcular la convolución, no se debe olvidar que las imágenes no dejan de ser matrices o funciones de dos variables con un dominio discreto, por lo que se debe presentar una definición adecuada a este caso\cite{Goodfellow-et-al-2016}. 
