@@ -61,7 +61,7 @@
 		\begin{figure}[!h]
 			\centering
 			\begin{tikzpicture}
-				\begin{axis}[ymin = -3, ymax = 3, xmax = 3, xmin = -3, xticklabel = \empty, yticklabel = \empty, minor tick num = 1, axis lines = middle, xlabel = $x$, ylabel = $y$]
+				\begin{axis}[ymin = -2.5, ymax = 2.5, xmax = 2.5, xmin = -2.5, xticklabel = \empty, yticklabel = \empty, minor tick num = 1, axis lines = middle, xlabel = $x$, ylabel = $y$]
 					\addplot[only marks, mark = *] coordinates {(1, 2)};
 					\addplot[only marks, mark = triangle*] coordinates {(-1, 2) (0, -1)};
 				\end{axis}
@@ -70,12 +70,101 @@
 			\label{fig:labeled_data}
 		\end{figure}
 		
-		Una solución rápida sería trazar una recta $r: ax + by + c = 0$ que separe $\mathbb{R}^2$ en dos regiones, de forma que todo punto que pertenezca a una región pertenece entonces a una misma clase, tal y como se observa en la \Cref{fig:separated_label_data}. 
+		Una solución rápida sería trazar una recta $r: ax + by + c = 0$ que separe $\mathbb{R}^2$ en dos regiones, de forma que todo punto que pertenezca a una región pertenece entonces a una misma clase, tal y como se observa en la \Cref{fig:separated_label_data}. Esta recta suele llamarse \textit{decision boundary} o frontera de decisión. El problema entonces es hallar la recta $r$, pero se cumple que para este ejemplo es de la forma $w_1 x + w_2 y + b = 0$, siendo el problema encontrar los parámetros adecuados del modelo. La idea puede extrapolarse a diferentes dimensiones del problema, no solo 2 y 1 como se trata en este ejemplo. Las preguntas a resolver ahora son, ¿existen siempre dichos parámetros? ¿Cómo pueden hallarse? El propio Minsky se hizo estas preguntas en \cite{perceptrons} y se dio cuenta de que dichos parámetros sí pueden hallarse en un número finito de pasos, siempre y cuando los puntos sean linealmente separables. Un ejemplo que no es linealmente separable es el de la función XOR tal y como se muestra en la \Cref{table:xor,fig:xor}, pues no existe una recta $r$ que separe $\mathbb{R}^2$ en dos regiones de tal forma que cada región contenga puntos de una única clase, serían necesarias dos rectas para separar adecuadamente los puntos. 
 		
-		\begin{figure}[!h]
+		\begin{figure}
 			\centering
-			
+			\begin{tikzpicture}
+				\begin{axis}[ymin = -2.5, ymax = 2.5, xmax = 2.5, xmin = -2.5, xticklabel = \empty, yticklabel = \empty, minor tick num = 1, axis lines = middle, xlabel = $x$, ylabel = $y$, axis on top]
+					\addplot[only marks, mark = *] coordinates {(1, 2)};
+					\addplot[only marks, mark = triangle*] coordinates {(-1, 2) (0, -1)};
+					\addplot[domain = -3:3, samples = 2, dashed] {-15*x};
+					\draw[fill = gray!30, draw = none] (axis cs:-2.5, -2.5) -- (axis cs:-2.5, 2.5) -- (axis cs: -1/6, 2.5) -- (axis cs:1/6, -2.5);
+				\end{axis}
+			\end{tikzpicture}
 			\caption{Puntos separados en $\mathbb{R}^2$}
 			\label{fig:separated_label_data}
 		\end{figure}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c|}\hline
+				$x$ & $y$ & $x \oplus y$\\\hline
+				0 & 0 & 0\\\hline
+				0 & 1 & 1\\\hline
+				1 & 0 & 1\\\hline
+				1 & 1 & 0\\\hline
+			\end{tabular}
+			\caption{Función XOR}
+			\label{table:xor}
+		\end{table}
+		
+		\begin{figure}
+			\centering
+			\begin{tikzpicture}
+				\begin{axis}[ymin = -.5, ymax = 2.5, xmax = 2.5, xmin = -.5, xticklabel = \empty, yticklabel = \empty, minor tick num = 1, axis lines = middle, xlabel = $x$, ylabel = $y$]
+					\addplot[only marks, mark = *] coordinates {(0, 0) (1, 1)};
+					\addplot[only marks, mark = triangle*] coordinates {(0, 1) (1, 0)};
+				\end{axis}
+			\end{tikzpicture}
+			\caption{Valores de $x \oplus y$ en  $\mathbb{R}^2$}
+			\label{fig:xor}
+		\end{figure}
+		
+		En cuanto a la pregunta de cómo hallar los parámetros, se consideran las siguientes ecuaciones, donde $\textbf{w}$ es el vector de pesos, $t$ el valor esperado, y $a$ la salida del perceptrón y se aplica el \Cref{algo:perceptron} para obtener los parámetros óptimos. En dicho algoritmo se supondrá que existe una matriz $X$ de $n$ filas que contiene los diferentes $\textbf{x}$. 
+		
+		$$
+		\begin{gathered}
+			\textbf{w}(k+1) = \textbf{w}(k) + e(k)\textbf{x}(k)\\
+			b(k+1) = b(k) + e(k)\\
+			e(k) = t(k) - a(k)\\
+			a(k) = u(\textbf{w}^t(k)\textbf{x}(k))
+		\end{gathered}
+		$$
+		
+		\begin{algorithm}
+			\SetProgSty{texttt}\DontPrintSemicolon
+			
+			\caption{Regla de aprendizaje del perceptrón}
+			\label{algo:perceptron}
+			
+			\Datos{$X, \textbf{t}$}
+			\Resultado{$\textbf{w}, b$}
+			$b \gets 0$\\
+			$\textbf{w} \gets$ \texttt{random}\\
+			$k \gets 0$\\
+			\Repetir{$\lnot$\texttt{acabar}}{
+				\texttt{acabar} $\gets$ \texttt{true}\\
+				\Para{$i \gets k$ \KwTo $k + n - 1$}{
+					$e(i) \gets t(i) - a(i)$\\
+					$\textbf{w}(i+1) \gets \textbf{w}(i) + e(i)\textbf{x}(i \pmod n)$\\
+					$b(i+1) \gets b(i) + e(i)$\\
+					\texttt{acabar} $\gets$ \texttt{acabar} $\land \, e(i) == 0$ 
+				}
+				$k \gets k + n - 1$
+			}
+		\end{algorithm}
+		
+		A cada una de las iteraciones que realiza el bucle exterior se les denomina épocas o \textit{epoch}, que consiste en realizar el proceso de entrenamiento sobre todo el conjunto de datos. En este caso se está suponiendo que no va a recibir casos que no sean linealmente separables, pero de lo contrario se puede añadir un contador \texttt{max\_epochs} y fijar un número máximo para no caer en un bucle infinito. No sería tarea fácil determinar dicho valor, pues aunque el algoritmo converge en los casos previamente explicados, no en todos lo hace de manera rápida. A continuación se muestra cómo obtener la solución de la \Cref{fig:separated_label_data}. 
+		
+		$$
+		X = \begin{pmatrix}
+			1 & -1 & 0\\
+			2 & 2 & -1
+		\end{pmatrix} \,\,\, \textbf{t} = \begin{pmatrix}
+		1 & 0 & 0
+		\end{pmatrix} \,\,\, \textbf{w} = \begin{pmatrix}
+		1\\-0.8 \end{pmatrix}
+		$$
+		
+		\begin{enumerate}[label = \textbf{\arabic*. }]
+			\item \begin{itemize}
+				\item $a(1) = u\left(\begin{pmatrix}1 &-0.8 \end{pmatrix}\begin{pmatrix}
+					1\\2 \end{pmatrix}\right) = 0$
+				\item $e(1) = t(1) - a(1) = 1 - 0$
+				\item $\textbf{w}(2) = \textbf{w}(1) + e(1)\textbf{x}(1) = \begin{pmatrix}
+					1\\-0.8 \end{pmatrix} + \begin{pmatrix} 1\\2 \end{pmatrix} = \begin{pmatrix}
+					2\\1.2 \end{pmatrix}$
+			\end{itemize}
+		\end{enumerate}
 		

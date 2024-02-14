@@ -1,12 +1,13 @@
 \ProvidesPackage{tfg}
 
 % Paquetes utilizados
-\usepackage[spanish]{babel}
+\usepackage[spanish, es-tabla]{babel}
 \usepackage[margin = 2.54cm]{geometry}
 \usepackage[dvipsnames]{xcolor}
 \usepackage[pages = some]{background}
+\usepackage[algosection, ruled, lined, spanish, spanishkw]{algorithm2e}
 \usepackage{amssymb, amsthm, array, enumitem, fancyhdr, float, graphicx, hyperref, listings, mathtools, mathrsfs, pgfplots, tikz}
-\usepackage[spanish, noabbrev]{cleveref}
+\usepackage[capitalize, spanish, noabbrev]{cleveref}
 \usepackage[backend = biber, style = IEEE, sortcites]{biblatex}
 \usetikzlibrary{arrows, babel, positioning, tikzmark}
 
@@ -79,6 +80,11 @@
 }
 
 
+% Referencias
+\crefname{table}{tabla}{tablas}
+\Crefname{table}{Tabla}{Tablas}
+
+
 
 % Colores
 \definecolor{headingPortadaTFG}{RGB}{152,118,52}
@@ -86,8 +92,9 @@
 \definecolor{textoHeadingPortadaTFM}{RGB}{208,205,102}
 \definecolor{textoHeadingPortadaTFG}{RGB}{208,205,102}
 
-% Estilo de código
 
+
+% Estilo de código
 \lstdefinestyle{estilo_pablo}{
 	basicstyle = \ttfamily\footnotesize, 
 	tabsize = 2, 
@@ -104,6 +111,10 @@
 	captionpos = b
 }
 
+
+% Algoritmos
+\SetKw{KwTo}{hasta}
+\SetKwRepeat{Repetir}{repetir}{mientras}
 
 
 % Metadatos del PDF
