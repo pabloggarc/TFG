@@ -4,7 +4,7 @@
 	
 		Ya en el año 1958, el psicólogo Frank Rosenblatt propuso un modelo llamado perceptrón el cual estaba basado en el comportamiento y funcionamiento de las neuronas de un humano, y que podía aprender ponderando cada coeficiente de entrada a la neurona\cite{historiaIA}. Hoy en día, tal y como se mostrará en esta sección, el perceptrón es la unidad fundamental de muchos modelos de \textit{machine learing} y \textit{deep learning}. \\
 		
-		En este modelo se dispone de una serie de valores de entrada $x_1, x_2, \hdots, x_n$ y se quiere obtener una serie de valores de salida $y_1, y_2, \hdots, y_m$. Esto se consigue mediante la ayuda de sus parámetros, que son una serie de pesos $w_1, w_2, \hdots, w_n$ y un sesgo o \textit{bias} $b$; y sus hiperparámetros, entre los que se encuentra una función $f$ de activación. 
+		Como se verá durante esta sección, este modelo ayuda a solucionar problemas de clasificación supervisada. Se dispone de una serie de valores de entrada $x_1, x_2, \hdots, x_n$ y se tiene una serie de valores de salida $y_1, y_2, \hdots, y_m$ que representan a qué clase pertenece la entrada ($2^m$ clases posibles). Esto se consigue mediante la ayuda de sus parámetros, que son una serie de pesos $w_1, w_2, \hdots, w_n$ y un sesgo o \textit{bias} $b$; y sus hiperparámetros, entre los que se encuentra una función $f$ de activación. 
 		
 		\begin{figure}[!h]
 			\centering
@@ -36,10 +36,10 @@
 		n_1(k) = b_1(k) + \sum_{i=1}^n x_i(k)w_i(k)
 		$$
 		
-		Una vez se ha realizado este cálculo, el valor pasa por una función de activación en el nodo $a_1$, pues esta arquitectura es común utilizarla para clasificar una entrada y es muy útil obtener una salida binaria donde se active únicamente la salida que represente la clase a la que pertenece la entrada dada. Aunque existen diferentes funciones de activación para las neuronas, al trabajar con un perceptrón, la función de activación por excelencia es la función escalón de Heaviside, donde $u: \mathbb{R} \longrightarrow \{0, 1\}$ y su expresión analítica es
+		Una vez se ha realizado este cálculo, el valor pasa por una función de activación en el nodo $a_1$, pues esta arquitectura es común utilizarla para clasificar una entrada y es muy útil obtener una salida binaria donde se active únicamente la salida que represente la clase a la que pertenece la entrada dada. Aunque existen diferentes funciones de activación para las neuronas, al trabajar con un perceptrón, la función de activación por excelencia es la función escalón de Heaviside, donde $\mathcal{U}: \mathbb{R} \longrightarrow \{0, 1\}$ y su expresión analítica es
 		
 		$$
-		u(x) = \left\{\begin{array}{ccc}
+		\mathcal{U}(x) = \left\{\begin{array}{ccc}
 			0 & \text{si} & x < 0\\
 			1 & \text{si} & x \geq 0
 		\end{array}
@@ -70,7 +70,9 @@
 			\label{fig:labeled_data}
 		\end{figure}
 		
-		Una solución rápida sería trazar una recta $r: ax + by + c = 0$ que separe $\mathbb{R}^2$ en dos regiones, de forma que todo punto que pertenezca a una región pertenece entonces a una misma clase, tal y como se observa en la \Cref{fig:separated_label_data}. Esta recta suele llamarse \textit{decision boundary} o frontera de decisión. El problema entonces es hallar la recta $r$, pero se cumple que para este ejemplo es de la forma $w_1 x + w_2 y + b = 0$, siendo el problema encontrar los parámetros adecuados del modelo. La idea puede extrapolarse a diferentes dimensiones del problema, no solo 2 y 1 como se trata en este ejemplo. Las preguntas a resolver ahora son, ¿existen siempre dichos parámetros? ¿Cómo pueden hallarse? El propio Minsky se hizo estas preguntas en \cite{perceptrons} y se dio cuenta de que dichos parámetros sí pueden hallarse en un número finito de pasos, siempre y cuando los puntos sean linealmente separables. Un ejemplo que no es linealmente separable es el de la función XOR tal y como se muestra en la \Cref{table:xor,fig:xor}, pues no existe una recta $r$ que separe $\mathbb{R}^2$ en dos regiones de tal forma que cada región contenga puntos de una única clase, serían necesarias dos rectas para separar adecuadamente los puntos. 
+		Una solución rápida sería trazar una recta $r: ax + by + c = 0$ que separe $\mathbb{R}^2$ en dos regiones, de forma que todo punto que pertenezca a una región pertenece entonces a una misma clase, tal y como se observa en la \Cref{fig:separated_label_data}. Esta recta suele llamarse \textit{decision boundary} o frontera de decisión. El problema entonces es hallar la recta $r$, pero se cumple que para este ejemplo es de la forma $w_1 x + w_2 y + b = 0$, siendo el problema encontrar los parámetros adecuados del modelo. La idea puede extrapolarse a diferente tamaño de entrada tomando un hiperplano de la forma $\textbf{w}^t \textbf{x} + b = 0$. \\
+		
+		Las preguntas a resolver ahora son, ¿existen siempre dichos parámetros? ¿Cómo pueden hallarse? El propio Minsky se hizo estas preguntas en \cite{perceptrons} y se dio cuenta de que dichos parámetros sí pueden hallarse en un número finito de pasos, siempre y cuando los puntos sean linealmente separables. Un ejemplo que no es linealmente separable es el de la función XOR tal y como se muestra en la \Cref{table:xor,fig:xor}, pues no existe una recta $r$ que separe $\mathbb{R}^2$ en dos regiones de tal forma que cada región contenga puntos de una única clase, serían necesarias dos rectas para separar adecuadamente los puntos. 
 		
 		\begin{figure}
 			\centering
@@ -111,14 +113,14 @@
 			\label{fig:xor}
 		\end{figure}
 		
-		En cuanto a la pregunta de cómo hallar los parámetros, se consideran las siguientes ecuaciones, donde $\textbf{w}$ es el vector de pesos, $t$ el valor esperado, y $a$ la salida del perceptrón y se aplica el \Cref{algo:perceptron} para obtener los parámetros óptimos. En dicho algoritmo se supondrá que existe una matriz $X$ de $n$ filas que contiene los diferentes $\textbf{x}$. 
+		En cuanto a la pregunta de cómo hallar los parámetros, se consideran las siguientes ecuaciones\cite{nndesign}, donde $\textbf{w}$ es el vector de pesos, $t$ el valor esperado, y $a$ la salida del perceptrón y se aplica el \Cref{algo:perceptron} para obtener los parámetros óptimos. En dicho algoritmo se supondrá que existe una matriz $X$ de $n$ filas que contiene los diferentes $\textbf{x}$. 
 		
 		$$
 		\begin{gathered}
 			\textbf{w}(k+1) = \textbf{w}(k) + e(k)\textbf{x}(k)\\
 			b(k+1) = b(k) + e(k)\\
 			e(k) = t(k) - a(k)\\
-			a(k) = u(\textbf{w}^t(k)\textbf{x}(k))
+			a(k) = \mathcal{U}(\textbf{w}^t(k)\textbf{x}(k))
 		\end{gathered}
 		$$
 		
@@ -145,7 +147,7 @@
 			}
 		\end{algorithm}
 		
-		A cada una de las iteraciones que realiza el bucle exterior se les denomina épocas o \textit{epoch}, que consiste en realizar el proceso de entrenamiento sobre todo el conjunto de datos. En este caso se está suponiendo que no va a recibir casos que no sean linealmente separables, pero de lo contrario se puede añadir un contador \texttt{max\_epochs} y fijar un número máximo para no caer en un bucle infinito. No sería tarea fácil determinar dicho valor, pues aunque el algoritmo converge en los casos previamente explicados, no en todos lo hace de manera rápida. A continuación se muestra cómo obtener la solución de la \Cref{fig:separated_label_data}. 
+		A cada una de las iteraciones que realiza el bucle exterior se les denomina épocas o \textit{epoch}, que consiste en realizar el proceso de entrenamiento sobre todo el conjunto de datos. En este caso se está suponiendo que no va a recibir casos que no sean linealmente separables, pero de lo contrario se puede añadir un contador \texttt{max\_epochs} y fijar un número máximo para no caer en un bucle infinito. No sería tarea fácil determinar dicho valor, pues aunque el algoritmo converge en los casos previamente explicados, no en todos lo hace de manera rápida. A continuación se muestra cómo obtener una solución para el caso de la \Cref{fig:labeled_data} aplicando el \Cref{algo:perceptron}. 
 		
 		$$
 		X = \begin{pmatrix}
@@ -153,18 +155,62 @@
 			2 & 2 & -1
 		\end{pmatrix} \,\,\, \textbf{t} = \begin{pmatrix}
 		1 & 0 & 0
-		\end{pmatrix} \,\,\, \textbf{w} = \begin{pmatrix}
-		1\\-0.8 \end{pmatrix}
+		\end{pmatrix} \,\,\, \textbf{w}(0) = \begin{pmatrix}
+		1\\1 \end{pmatrix} \,\,\, b(0) = 0
 		$$
 		
 		\begin{enumerate}[label = \textbf{\arabic*. }]
+			\setcounter{enumi}{-1}
 			\item \begin{itemize}
-				\item $a(1) = u\left(\begin{pmatrix}1 &-0.8 \end{pmatrix}\begin{pmatrix}
-					1\\2 \end{pmatrix}\right) = 0$
-				\item $e(1) = t(1) - a(1) = 1 - 0$
-				\item $\textbf{w}(2) = \textbf{w}(1) + e(1)\textbf{x}(1) = \begin{pmatrix}
-					1\\-0.8 \end{pmatrix} + \begin{pmatrix} 1\\2 \end{pmatrix} = \begin{pmatrix}
-					2\\1.2 \end{pmatrix}$
+				\item $a(0) = \mathcal{U}(\textbf{w}^t(0)\textbf{x}(0)) = \mathcal{U}\left(\begin{pmatrix}1 & 1\end{pmatrix}\begin{pmatrix}
+					1\\2 \end{pmatrix} + 0\right) = 1$
+				\item $e(0) = t(0) - a(0) = 1 - 1 = 0$
+				\item $\textbf{w}(1) = \textbf{w}(0)$
+				\item $b(1) = b(0)$
+			\end{itemize}
+			
+			\item \begin{itemize}
+				\item $a(1) = \mathcal{U}(\textbf{w}^t(1)\textbf{x}(1)) = \mathcal{U}\left(\begin{pmatrix}1 & 1\end{pmatrix}\begin{pmatrix}
+					-1\\2 \end{pmatrix} + 0\right) = 1$
+				\item $e(1) = t(1) - a(1) = 0 - 1 = -1$
+				\item $\textbf{w}(2) = \textbf{w}(1) + e(1)\textbf{x}(1) = \begin{pmatrix}1\\ 1\end{pmatrix} - \begin{pmatrix}-1\\2\end{pmatrix} = \begin{pmatrix}2\\ -1\end{pmatrix}$
+				\item $b(2) = b(1) + e(1) = -1$
+			\end{itemize}
+			
+			\item \begin{itemize}
+				\item $a(2) = \mathcal{U}(\textbf{w}^t(2)\textbf{x}(2)) = \mathcal{U}\left(\begin{pmatrix}2 & -1\end{pmatrix}\begin{pmatrix}
+					0\\-1 \end{pmatrix} -1\right) = 1$
+				\item $e(2) = t(2) - a(2) = 0 - 1 = -1$
+				\item $\textbf{w}(3) = \textbf{w}(2) + e(2)\textbf{x}(2) = \begin{pmatrix}2\\ -1\end{pmatrix} - \begin{pmatrix}0\\-1\end{pmatrix} = \begin{pmatrix}2\\ 0\end{pmatrix}$
+				\item $b(3) = b(2) + e(2) = -2$
+				\item $\texttt{acabar} = \texttt{true} \land \texttt{false} \land \texttt{false} = \texttt{false}$
+			\end{itemize}
+			
+			\item \begin{itemize}
+				\item $a(3) = \mathcal{U}(\textbf{w}^t(3)\textbf{x}(3\pmod{3})) = \mathcal{U}\left(\begin{pmatrix}2 & 0\end{pmatrix}\begin{pmatrix}
+					1\\2 \end{pmatrix} -2\right) = 1$
+				\item $e(3) = t(3) - a(3) = 1 - 1 = 0$
+				\item $\textbf{w}(4) = \textbf{w}(3)$
+				\item $b(4) = b(3)$
+			\end{itemize}
+			
+			\item \begin{itemize}
+				\item $a(4) = \mathcal{U}(\textbf{w}^t(4)\textbf{x}(4\pmod{3})) = \mathcal{U}\left(\begin{pmatrix}2 & 0\end{pmatrix}\begin{pmatrix}
+					-1\\2 \end{pmatrix} -2\right) = 0$
+				\item $e(4) = t(4) - a(4) = 0 - 0 = 0$
+				\item $\textbf{w}(5) = \textbf{w}(4)$
+				\item $b(5) = b(4)$
+			\end{itemize}
+			
+			\item \begin{itemize}
+				\item $a(5) = \mathcal{U}(\textbf{w}^t(5)\textbf{x}(5\pmod{3})) = \mathcal{U}\left(\begin{pmatrix}2 & 0\end{pmatrix}\begin{pmatrix}
+					0\\-1 \end{pmatrix} -2\right) = 0$
+				\item $e(5) = t(5) - a(5) = 0 - 0 = 0$
+				\item $\textbf{w}(6) = \textbf{w}(5)$
+				\item $b(6) = b(5)$
+				\item $\texttt{acabar} = \texttt{true} \land \texttt{true} \land \texttt{true} = \texttt{true}$
 			\end{itemize}
 		\end{enumerate}
+		
+		La ejecución del algoritmo finaliza tras dos épocas, donde en la primera de ellas va ajustando los pesos y el sesgo de manera adecuada, y en la segunda verifica que todas las observaciones han sido clasificadas de manera correcta. La frontera de decisión obtenida es la recta $r: 2x - 2 = 0$, que es una recta vertical. Una observación a realizar es que $\textbf{x}(1) \in r$, por tanto ¿a qué clase pertenece? Esto depende de la función de transferencia empleada, al utilizar $\mathcal{U}$ la clasificación es correcta, pero al cambiarla por otra, podría no serlo y necesitaría de más épocas para realizar correctamente la clasificación. 
 		
