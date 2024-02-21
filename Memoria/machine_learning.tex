@@ -1,4 +1,4 @@
-\chapter{Aprendizaje automático}
+\chapter{Aprendizaje automático y profundo}
 
 	\section{Perceptrón}
 	
@@ -297,7 +297,7 @@
 		
 	\section{Funciones de activación}
 	
-		Durante el estudio del perceptrón, se muestra cómo se emplea la función de Heaviside como función de activación en la neurona. Esto se debe a que se busca una función que independientemente de los valores de entrada que reciba, produzca una salida binaria. En ciertos casos, no se deseará una salida binaria pues el problema no tendría porqué ser de clasificación. Además, como se mostrará en modelos de machine y deep learing en secciones sucesivas, será importante que dicha función sea derivable en todo su dominio, cosa que no cumple $\mathcal{U}(x)$, pues no es continua en $x=0$. Por estos motivos, se presentan las funciones de activación más conocidas e importantes. 
+		Durante el estudio del perceptrón, se muestra cómo se emplea la función de Heaviside como función de activación en la neurona. Esto se debe a que se busca una función que independientemente de los valores de entrada que reciba, produzca una salida binaria. En ciertos casos, no se deseará una salida binaria pues el problema no tendría porqué ser de clasificación. Además, como se mostrará en modelos de machine y deep learing en secciones sucesivas, será importante que dicha función sea derivable en todo su dominio, cosa que no cumple $\mathcal{U}(x)$, pues no es continua en $x=0$. Por estos motivos, se presentan las funciones de activación más conocidas e importantes\cite{funcionesActivacion}. 
 		
 		\begin{itemize}
 			\item \textbf{Función lineal}
@@ -324,7 +324,7 @@
 			\frac{df}{dx} = f(x). 
 			$$
 			
-			\item \textbf{Función sigmoide o logística}
+			\item \textbf{Función logística}
 			
 			\begin{figure}[!h]
 				\centering
@@ -346,14 +346,16 @@
 						\node at (axis cs: 5,0.8) {$f(x) = \frac{1}{1 + e^{-x}}$};
 					\end{axis}
 				\end{tikzpicture}
-				\caption{Función sigmoide o logística}
+				\caption{Función logística}
 				\label{fig:funcion_sigmoide}
 			\end{figure}
 			
 			Esta vez también se presenta una función que no devuelve valores binarios, es conocida como función sigmoide por la forma de S que tiene, y es una función $f: \mathbb{R} \longrightarrow (0, 1)$. Una propiedad que es muy útil es que 
 			$$
-			\frac{df}{dx} = f(x)(1 - f(x))
+			\frac{df}{dx} = f(x)(1 - f(x)). 
 			$$
+			
+			Es un intento de mejora de la función de activación empleada en el perceptrón, pues una ligera variación en la entrada puede crear un gran cambio en la salida. Esta función evita que eso suceda, pues una pequeña variación en la entrada produce una variación pequeña en la salida. 
 			
 			\item \textbf{Tangente hiperbólica}
 			\begin{figure}[!h]
@@ -415,11 +417,142 @@
 				\label{fig:funcion_relu}
 			\end{figure}
 			
-			La función ReLU (Rectified Linear Unit) es una de las más populares al trabajar con redes neuronales, pues a pesar de que no es derivable en $x = 0$ (normalmente se soluciona tomando $f'(0) = 1$), soluciona un serio problema que causan las funciones logística y tangente hiperbólica durante el entrenamiento de una red neuronal. Este problema es conocido como \textit{vanishing gradient} y de forma resumida consiste en que cuando la derivada de una función es muy próxima a cero, relentiza enormemente el proceso de aprendizaje. Como se observa a continuación, la función ReLU soluciona este problema. Además, la derivada es mucho más sencilla de calcular. 
+			La función ReLU (Rectified Linear Unit) es una de las más populares al trabajar con redes neuronales, pues a pesar de que no es derivable en $x = 0$ (normalmente se soluciona tomando $f'(0) = 1$), soluciona un serio problema que causan las funciones logística y tangente hiperbólica durante el entrenamiento de una red neuronal. Este problema es conocido como \textit{vanishing gradient} y de forma resumida consiste en que cuando la derivada de una función es muy próxima a cero, relentiza enormemente el proceso de aprendizaje, pues si un determinado peso se actualiza de acuerdo a $$w_{ij}^{(m)}(k+1) = w_{ij}^{(m)}(k) - \alpha\frac{\partial e(k)}{\partial w_{ij}^{(m)}},$$ el segundo término será muy pequeño y se necesitarán muchas iteraciones para cambiar el valor del peso. Como se observa a continuación, la función ReLU soluciona este problema. Además, la derivada es mucho más sencilla de calcular. 
 			
 			\begin{align*}
 				\lim_{x\to\infty}\frac{d}{dx}\frac{1}{1+e^{-x}} = 0 && \lim_{x\to\infty}\frac{d}{dx}\tanh(x) = 0 && \lim_{x\to\infty}\frac{d}{dx}\text{ReLU}(x) = 1
 			\end{align*}
 			
 		\end{itemize}
+		
+	\section{Redes neuronales artificiales}
+	
+		El descubrimiento del perceptrón junto con el teorema que garantizaba que cualquier conjunto de puntos linealmente separable podría ser aprendido mediante este, supuso un gran avance en la IA al igual que una gran desilusión por parte de muchos al no poder aprender una función tan simple como la XOR. Esto causó el llamado el primer invierno de la IA, que finalizó con la llegada de las redes neuronales multicapa y el algoritmo de la retroprogragación. \\
+		
+		En 1989, George Cybenko enunció y consiguió demostrar el \textbf{Teorema de Aproximación Universal}\cite{teoremaAproximacion}. Este afirma que dada una red neuronal con una capa de entrada, una capa oculta con suficientes neuronas, y una capa de salida; es un aproximador universal de funciones. Es decir, si existe una relación entre dos variables $\textbf{x}$ e $\textbf{y}$, entonces una red neuronal con la arquitectura mencionada y el entrenamiento adecuado, encontrará dicha relación y podrá comportarse como una función $f$ tal que $\textbf{y} = f(\textbf{x})$. Este se considera un gran resultado, pues consigue acabar con las limitaciones del perceptrón que habían generado un decaimiento por el interés en la IA. 
+		
+		\begin{figure}[!h]
+			\centering
+			\begin{tikzpicture}
+				\node[circle, draw, fill=gray!20] (x-1) {$x_{1}$};
+				\foreach \i in {2,3}{
+					\pgfmathtruncatemacro{\resta}{\i - 1}
+					\node[circle, draw, fill=gray!20, below = of x-\resta] (x-\i) {$x_{\i}$};
+				}
+				\node (dots) [below = of x-3] {$\vdots$};
+				\foreach \i in {1,2,3}{
+					\node[circle, draw, fill=gray!20, right = 2cm of x-\i] (a-\i) {$a^{(1)}_{\i}$};
+				}
+				\node (dots2) [below = of a-3] {$\vdots$};
+				\node (a-4) [circle, draw, fill=gray!20, below = of dots2] {$a^{(1)}_m$};
+				\foreach \i in {1,2,3}{
+					\node[circle, draw, fill=gray!20, right = 2cm of a-\i] (A-\i) {$a^{(s)}_{\i}$};
+				}
+				\node (dots3) [below = of A-3] {$\vdots$};
+				\node (x-4) [circle, draw, fill=gray!20, left = 2cm of a-4] {$x_n$};
+				\node (A-4) [circle, draw, fill=gray!20, below = of dots3] {$a^{(s)}_p$};
+				\foreach \i in {1,2,3,4}{
+					\node [left = .6cm of A-\i] {$\cdots$};
+					\foreach \j in {1,2,3,4}{
+						\draw[-] (x-\i) -- (a-\j);
+					}
+				}
+				\foreach \i in {1,2,3}{
+					\node (y-\i) [circle, draw, fill=gray!20, right =  of A-\i] {$y_{\i}$};
+					\draw[-] (A-\i) -- (y-\i);
+				}
+				\node (y-4) [circle, draw, fill=gray!20, right =  of A-4] {$y_{p}$};
+				\draw[-] (A-4) -- (y-4);
+				\node (dots4) [right = 1.6cm of dots3] {$\vdots$};
+			\end{tikzpicture}
+			\caption{Arquitectura de una red neuronal multicapa}
+			\label{fig:rna}
+		\end{figure}
+		
+		En la \Cref{fig:rna} se muestra un diagrama que resume la arquitectura de una red neuronal multicapa. Todas las salidas de una capa están conectadas con todas las entradas de la siguiente con un peso y un \textit{bias}. En el diagrama de la \Cref{fig:rna_completa} se puede observar esto en mayor detalle. 
+		
+		\begin{figure}[!h]
+			\centering
+			\resizebox{\textwidth}{!}{
+				\begin{tikzpicture}
+					\node[circle, draw, fill=gray!20] at (4, 0) (n-1) {$n^{(1)}_{1}$};
+					\node[circle, draw, fill=gray!20, below= .5cm of n-1] (b-1) {$b^{(1)}_{1}$};
+					\foreach \i in {2,3}{
+						\pgfmathtruncatemacro{\resta}{\i - 1}
+						\node[circle, draw, fill=gray!20, below= 2 cm of b-\resta] (n-\i) {$n^{(1)}_{\i}$};
+						\node[circle, draw, fill=gray!20, below= .5cm of n-\i] (b-\i) {$b^{(1)}_{\i}$};
+					}
+					\node[circle, draw, fill=gray!20, below left = 2 cm and 7 cm of n-1] (x-1) {$x_{1}$};
+					\foreach \i in {2,3}{
+						\pgfmathtruncatemacro{\resta}{\i - 1}
+						\node[circle, draw, fill=gray!20, below= 2cm of x-\resta] (x-\i) {$x_{\i}$};
+					}
+					\node (dots) [below = .5cm of x-3] {$\vdots$};
+					\node[circle, draw, fill=gray!20, below = .5cm of dots] (x-n) {$x_{n}$};
+					\node (dots2) [below = .5cm of b-3] {$\vdots$};
+					\node[circle, draw, fill=gray!20, below= .5cm of dots2] (n-n) {$n^{(1)}_{m}$};
+					\node[circle, draw, fill=gray!20, below= .5cm of n-n] (b-n) {$b^{(1)}_{m}$};
+					\foreach \i in {1,2,3}{
+						\draw[-] (n-\i) -- (b-\i) node [midway, right] {$1$};
+					}
+					\draw[-] (b-n) -- (n-n) node [midway, right] {$1$};
+					\foreach \i in {1,2,3}{
+						\foreach \j in {1,2,3}{
+							\pgfmathtruncatemacro{\condicion}{ifthenelse(Mod(\i, 2)==0,1,0)}
+							\ifnum\condicion=1
+							\draw[-] (x-\i) -- (n-\j) node [near start, above, sloped] {$w^{(1)}_{\j\i}$};
+							\else
+							\draw[-] (x-\i) -- (n-\j) node [near end, above, sloped] {$w^{(1)}_{\j\i}$};
+							\fi
+						}
+					}
+					\foreach \i in {1,2,3}{
+						\draw[-] (x-n) -- (n-\i) node [near start, above, sloped] {$w^{(1)}_{\i n}$};
+						\draw[-] (x-\i) -- (n-n) node [near end, below, sloped] {$w^{(1)}_{m\i}$};
+					}
+					\draw[-] (x-n) -- (n-n) node [midway, below, sloped] {$w^{(1)}_{mn}$};
+					\foreach \i in {1,2,3}{
+						\node[circle, draw, fill=gray!20, right = 1cm of n-\i] (a-\i) {$a^{(1)}_{\i}$};
+					}
+					\node[circle, draw, fill=gray!20, right = 1cm of n-n] (a-n) {$a^{(1)}_{m}$};
+					\foreach \i in {1,2,3}{
+						\draw[-] (n-\i) -- (a-\i);
+					}
+					\draw[-] (n-n) -- (a-n);
+					\foreach \i in {1,2,3}{
+						\node [right = .7cm of a-\i] {$\cdots$};
+						\node[circle, draw, fill=gray!20, right = 2cm of a-\i] (N-\i) {$n^{(s)}_{\i}$};
+					}
+					\node[circle, draw, fill=gray!20, right = 2cm of a-n] (N-4) {$n^{(s)}_{p}$};
+					\node [right = .7cm of a-n] {$\cdots$};
+					\foreach \i in {1,2,3}{
+						\node[circle, draw, fill=gray!20, right = 1cm of N-\i] (A-\i) {$a^{(s)}_{\i}$};
+					}
+					\node[circle, draw, fill=gray!20, right = 1cm of N-4] (A-4) {$a^{(s)}_{p}$};
+					\foreach \i in {1,2,3,4}{
+						\draw[-] (N-\i) -- (A-\i);
+					}
+					\foreach \i in {1,2,3}{
+						\node[circle, draw, fill=gray!20, below= .5cm of N-\i] (B-\i) {$b^{(s)}_{\i}$};
+						\draw[-] (N-\i) -- (B-\i) node [midway, right] {$1$};
+					}
+					\node [below = .5cm of B-3] {$\vdots$};
+					\node[circle, draw, fill=gray!20, below= .5cm of N-4] (B-4) {$b^{(s)}_{p}$};
+					\draw[-] (N-4) -- (B-4) node [midway, right] {$1$};
+					\foreach \i in {1,2,3}{
+						\node[circle, draw, fill=gray!20, right = 22 cm of x-\i] (y-\i) {$y_{\i}$};
+					}
+					\node[circle, draw, fill=gray!20, right = 22 cm of x-n] (y-4) {$y_{p}$};
+					\foreach \i in {1,2,3,4}{
+						\draw[-] (A-\i) -- (y-\i);
+					}
+				\end{tikzpicture}
+			}
+			\caption{Red neuronal multicapa}
+			\label{fig:rna_completa}
+		\end{figure}
+		
+		Al igual que un perceptrón quedaba representado mediante un vector $\textbf{w}$ de pesos y un valor de sesgo $b$, para representar una red neuronal multicapa se hace mediante las matrices $W, B, $ y $F$ que contienen los pesos, los sesgos, y las funciones de activación. La notación para los sesgos es $b_i^{(m)}$, que representa el sesgo de la entrada $i-$ésima de la capa $m$. De igual manera $f_i^{(m)}$ representa la función de activación la neuona $i-$ésima de la capa $m$. Para los pesos, $w_{ij}^{(m)}$ denota el peso que une la salida $j$ de la capa $m-1$ con la entrada $i$ de la capa $m$. En ningún momento un exponente entre paréntesis representa una potencia, en dicho caso aparecerá sin paréntesis para distinguirlo. 
+		
+		
 		
