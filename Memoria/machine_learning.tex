@@ -469,7 +469,7 @@
 			\label{fig:rna}
 		\end{figure}
 		
-		En la \Cref{fig:rna} se muestra un diagrama que resume la arquitectura de una red neuronal multicapa. Todas las salidas de una capa están conectadas con todas las entradas de la siguiente con un peso y un \textit{bias}. En el diagrama de la \Cref{fig:rna_completa} se puede observar esto en mayor detalle. 
+		En la \Cref{fig:rna} se muestra un diagrama que resume la arquitectura de una red neuronal multicapa. Todas las salidas de una capa están conectadas con todas las entradas de la siguiente con un peso y un \textit{bias}. En el diagrama de la \Cref{fig:rna_completa} se puede observar esto en mayor detalle. Estas pueden ser utilizadas en problemas de clasificación o regresión supervisada, pero en una primera aproximación se supondrá que se está resolviendo un problema de regresión. 
 		
 		\begin{figure}[!h]
 			\centering
@@ -552,7 +552,43 @@
 			\label{fig:rna_completa}
 		\end{figure}
 		
-		Al igual que un perceptrón quedaba representado mediante un vector $\textbf{w}$ de pesos y un valor de sesgo $b$, para representar una red neuronal multicapa se hace mediante las matrices $W, B, $ y $F$ que contienen los pesos, los sesgos, y las funciones de activación. La notación para los sesgos es $b_i^{(m)}$, que representa el sesgo de la entrada $i-$ésima de la capa $m$. De igual manera $f_i^{(m)}$ representa la función de activación la neuona $i-$ésima de la capa $m$. Para los pesos, $w_{ij}^{(m)}$ denota el peso que une la salida $j$ de la capa $m-1$ con la entrada $i$ de la capa $m$. En ningún momento un exponente entre paréntesis representa una potencia, en dicho caso aparecerá sin paréntesis para distinguirlo. 
+		Al igual que un perceptrón quedaba representado mediante un vector $\textbf{w}$ de pesos y un valor de sesgo $b$, para representar una red neuronal multicapa se hace mediante las matrices $W^{(m)}$ y los vectores $\textbf{b}^{(m)}$ y $\textbf{f}^{(m)}$, que contienen los pesos, los sesgos, y las funciones de activación. La notación para los sesgos es $b_i^{(m)}$, que representa el sesgo de la entrada $i-$ésima de la capa $m$. De igual manera $f_i^{(m)}$ representa la función de activación la neuona $i-$ésima de la capa $m$. Para los pesos, $w_{ij}^{(m)}$ denota el peso que une la salida $j$ con la entrada $i$ de la capa $m$. Para las capas, $1 \leq m < M$. En ningún momento un exponente entre paréntesis representa una potencia, en dicho caso aparecerá sin paréntesis para distinguirlo. Siguiendo los mismos pasos que con el perceptrón, la primera pregunta será cómo calcular la salida de una red neuronal. La salida de una capa se calcula con la \Cref{eq:prop}, teniendo en cuenta que $\textbf{x}^{(m)} = \textbf{y}^{(m-1)}$, por lo que para calcular la salida de la red no hay más que aplicar dicha ecuación hasta llegar a la última capa. 
+		
+		\begin{equation}
+			\label{eq:prop}
+			\begin{gathered}
+				\textbf{a}^{(m)}(k) = F^{(m)}\left(W^{(m)}(k)\textbf{x}^{(m)}(k) + \textbf{b}^{(m)}(k)\right)\\
+				\begin{pmatrix}
+					a_1^{(m)}(k)\\a_2^{(m)}(k)\\\vdots\\a_j^{(m)}(k)
+				\end{pmatrix} = F^{(m)}\left(
+				\begin{pmatrix}
+					w_{11}^{(m)}(k) & w_{12}^{(m)}(k) & \cdots & w_{1i}^{(m)}(k)\\
+					w_{21}^{(m)}(k) & w_{22}^{(m)}(k) & \cdots & w_{2i}^{(m)}(k)\\
+					\vdots & \vdots & \ddots & \vdots\\
+					w_{j1}^{(m)}(k) & w_{j2}^{(m)}(k) & \cdots & w_{ji}^{(m)}(k)\\
+				\end{pmatrix}
+				\begin{pmatrix}
+					x_1^{(m)}(k)\\x_2^{(m)}(k)\\\vdots\\x_i^{(m)}(k)
+				\end{pmatrix} + 
+				\begin{pmatrix}
+					b_1^{(m)}(k)\\b_2^{(m)}(k)\\\vdots\\b_j^{(m)}(k)
+				\end{pmatrix}\right)
+			\end{gathered}
+		\end{equation}
+		
+		A continuación, se puede plantear cuál es la ecuación del error para una red neuronal. Esta es simplemente cuestión de elección al igual que las funciones de activación. Al trabajar con redes neuronales para problemas de regresión, la función de error por excelencia es el error cuadrático, definido como
+		$$
+		L(k) = (\textbf{t}(k) - \textbf{a}^{(M)}(k))^2, 
+		$$
+		aunque existen otras muchas, cada una adecuada a cada tipo de problema y modelo, como por ejemplo el error cuadrático medio, error absoluto, error absoluto medio, error logarítmico, error exponencial, entropía cruzada, etc\cite{funcionesError}.\\
+		
+		La pregunta ahora sería que, al igual que existía una ecuación para actualizar los parámetros del perceptrón ¿existe para una red neuronal? Para deducirla fácilmente, basta en pensar que $L$ es una función que depende de los parámetros de la red y que se quiere que su valor sea lo más pequeño posible para diferentes vectores de entrada, es decir, encontrar los valores de los parámetros que minimizan $L$. Esto es un problema clásico de cálculo que en el caso de una variable se resuelve igualando a cero la derivada de la función, y en el caso de varias, mediante la matriz hessiana. Sin embargo, dichos métodos para una función de tantas variables y con expresiones complejas, no son muy eficientes. \\
+		
+		Esto se soluciona con ayuda de un algoritmo conocido como descenso por gradiente. Este algoritmo calcula de manera iterativa una aproximación de los mínimos de una función con ayuda del vector gradiente de una función. El vector gradiente de una función $f$ se define como 
+		$$
+		\nabla f(x_1, x_2, \hdots, x_n) = \left(\frac{\partial f}{\partial x_1}, \frac{\partial f}{\partial x_2}, \hdots, \frac{\partial f}{\partial x_n}\right), 
+		$$
+		e indica la dirección en la que la función crece más rápido, siendo la idea principal del algoritmo ir moviéndose en dirección contraria a este. 
 		
 		
 		
