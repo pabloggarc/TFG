@@ -582,13 +582,53 @@
 		$$
 		aunque existen otras muchas, cada una adecuada a cada tipo de problema y modelo, como por ejemplo el error cuadrático medio, error absoluto, error absoluto medio, error logarítmico, error exponencial, entropía cruzada, etc\cite{funcionesError}.\\
 		
-		La pregunta ahora sería que, al igual que existía una ecuación para actualizar los parámetros del perceptrón ¿existe para una red neuronal? Para deducirla fácilmente, basta en pensar que $L$ es una función que depende de los parámetros de la red y que se quiere que su valor sea lo más pequeño posible para diferentes vectores de entrada, es decir, encontrar los valores de los parámetros que minimizan $L$. Esto es un problema clásico de cálculo que en el caso de una variable se resuelve igualando a cero la derivada de la función, y en el caso de varias, mediante la matriz hessiana. Sin embargo, dichos métodos para una función de tantas variables y con expresiones complejas, no son muy eficientes. \\
+		La pregunta ahora sería que, al igual que existía una ecuación para actualizar los parámetros del perceptrón ¿existe para una red neuronal? Para deducirla fácilmente, basta en pensar que $L$ es una función que depende de los parámetros de la red y que se quiere que su valor sea lo más pequeño posible para diferentes vectores de entrada, es decir, encontrar los valores de los parámetros que minimizan $L$. Esto es un problema clásico de cálculo que en el caso de una variable se resuelve igualando a cero la derivada de la función, y en el caso de varias, mediante la matriz Hessiana. Sin embargo, dichos métodos para una función de tantas variables y con expresiones complejas, no son muy eficientes. \\
 		
-		Esto se soluciona con ayuda de un algoritmo conocido como descenso por gradiente. Este algoritmo calcula de manera iterativa una aproximación de los mínimos de una función con ayuda del vector gradiente de una función. El vector gradiente de una función $f$ se define como 
+		Esto se soluciona con ayuda de un algoritmo conocido como descenso por gradiente\cite{descenso}. Este algoritmo calcula de manera iterativa una aproximación de los mínimos de una función con ayuda del vector gradiente de una función. El vector gradiente de una función $f$ se define como 
 		$$
 		\nabla f(x_1, x_2, \hdots, x_n) = \left(\frac{\partial f}{\partial x_1}, \frac{\partial f}{\partial x_2}, \hdots, \frac{\partial f}{\partial x_n}\right), 
 		$$
 		e indica la dirección en la que la función crece más rápido, siendo la idea principal del algoritmo ir moviéndose en dirección contraria a este. 
 		
+		\begin{algorithm}
+			\SetProgSty{texttt}\DontPrintSemicolon
+			
+			\caption{Descenso por gradiente}
+			\label{algo:descenso}
+			
+			\Datos{$f, \alpha, k$}
+			\Resultado{$\textbf{x}(k)$}
+			$\textbf{x}(0) \gets$\texttt{ random}\\
+			\Para{$i \gets 1$ \KwTo $k$}{
+				$\textbf{x}(i + 1) = \textbf{x}(i) - \alpha\nabla f(\textbf{x}(i))$
+			}
+		\end{algorithm}
+		
+		Como se observa en el \Cref{algo:descenso}, se comienza en un punto aleatorio, lo que puede variar la calidad de la solución dependiendo de la ejecución, y además se introduce un término $\alpha$ llamado \textbf{tasa de aprendizaje}. Pueden existir casos en los que la magnitud del gradiente sea muy grande, lo que resulta en desplazamientos bruscos y una convergencia más lenta, tal y como se refleja en la \Cref{fig:descenso}. Si se hubiese fijado un valor máximo de $k = 25$, en los casos de las \Cref{fig:descenso_grande,fig:descenso_peq}, no se hubiese llegado a una buena aproximación del mínimo por haber elegido un $\alpha$ inadecuado. 
+		
+		\begin{figure}[!h]
+			\centering
+			\begin{subfigure}{.3\textwidth}
+				\centering
+				\includegraphics[width = \linewidth]{descenso}
+				\caption{$\alpha$ adecuada}
+			\end{subfigure}
+			\begin{subfigure}{.3\textwidth}
+				\centering
+				\includegraphics[width = \linewidth]{descenso2}
+				\caption{$\alpha$ demasiado grande}
+				\label{fig:descenso_grande}
+			\end{subfigure}
+			\begin{subfigure}{.3\textwidth}
+				\centering
+				\includegraphics[width = \linewidth]{descenso3}
+				\caption{$\alpha$ demasiado pequeña}
+				\label{fig:descenso_peq}
+			\end{subfigure}
+			\caption{Descenso por gradiente}
+			\label{fig:descenso}
+		\end{figure}
+		
+		Con esta idea de la función de error y el descenso por gradiente, aparece el famoso algoritmo de la retropropagación o \textit{backpropagation}. Consiste en, dada una observación de un dataset, calcular la salida de la red con ayuda de la \Cref{eq:prop}, 
 		
 		
