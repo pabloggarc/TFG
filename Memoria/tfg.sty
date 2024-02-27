@@ -66,8 +66,12 @@
 \newtheorem{example}{Ejemplo}[section]
 \newtheorem{exercise}{Ejercicio}[section]
 \newenvironment{bottomparagraph}{\par\vspace*{\fill}}{\clearpage}
+
+
+
+% Comandos personalizados
 \newcommand{\paginavacia}{\newpage\thispagestyle{empty}\null\newpage}
-\newcommand*{\cleartoleftpage}{%
+\newcommand*{\cleartoleftpage}{
 	\clearpage
 	\if@twoside
 	\ifodd\c@page
@@ -78,11 +82,20 @@
 	\fi
 	\fi
 }
+\newcommand{\make@circled}[2]{
+	\ooalign{$\m@th#1\smallbigcirc{#1}$\cr\hidewidth$\m@th#1#2$\hidewidth\cr}
+}
+\newcommand{\smallbigcirc}[1]{
+	\vcenter{\hbox{\scalebox{0.77778}{$\m@th#1\bigcirc$}}}
+}
+\newcommand{\ostar}{\mathbin{\mathpalette\make@circled\star}}
 
 
 % Referencias
 \crefname{table}{tabla}{tablas}
 \Crefname{table}{Tabla}{Tablas}
+\Crefname{section}{Sección}{Secciones}
+\crefname{section}{sección}{secciones}
 
 
 

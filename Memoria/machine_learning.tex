@@ -678,8 +678,72 @@
 			
 		\section{Redes neuronales convolucionales}
 		
-			Una vez explicado cómo funciona una red neuronal y cómo puede usarse para problemas de regresión y clasificación, es interesante poder aplicar estas tareas sobre imágenes en vez de sobre conjuntos de datos numéricos. Una imagen de $n \times m$ píxeles en escala de grises puede entenderse como una matriz de $n \times m$ elementos, sin embargo, suelen utilizarse imágenes a color y esto se puede conseguir utilizando tres canales, rojo, azul, y verde. De esta forma, una imagen se representa como tres matrices. Formalmente, una imagen se representa como un tensor, que puede entenderse como un vector de matrices, o una estructura que indexa elementos mediante una tupla $(i, j, k)$\cite{introCNN}.\\
+			Una vez explicado cómo funciona una red neuronal y cómo puede usarse para problemas de regresión y clasificación, es interesante poder aplicar estas tareas sobre imágenes en vez de sobre conjuntos de datos numéricos. Una imagen de $n \times m$ píxeles en escala de grises puede entenderse como una matriz de $n \times m$ elementos, sin embargo, suelen utilizarse imágenes a color y esto se puede conseguir utilizando tres canales, rojo, azul, y verde. De esta forma, una imagen se representa como tres matrices. Formalmente, una imagen se representa como un tensor, que puede entenderse como un vector de matrices, o una estructura que indexa elementos mediante una tupla $(i, j, k)$.\\
 			
-			De manera ingenua, una primera aproximación para clasificar imágenes en función de objetos que aparezcan en estas, podría ser linealizar este tensor y pasarlo como vector de entrada a un red neuronal multicapa, obteniendo un vector de salida que indique a qué clase pertenece la imagen. Esto, además de que no da resultados positivos, pues se da la misma importancia a todos los píxeles y se obvian detalles y características de la imagen, computacionalmente es muy complicado de abarcar. Suponiendo que se tiene una imagen RGB cuadrada de $n \times n$ píxeles, y que la primera capa oculta tuviera $m$ neuronas, el número de parámetros de esta capa sería $m(3n^2 + 1)$. Suponiendo imágenes de baja calidad, por ejemplo $64 \times 64$ píxeles, y que el número de neuronas de la primera capa fuese 5, el número de parámetros es de 61445. Ajustar adecuadamente esa cantidad de parámetros muy costoso, y además daría resultados muy pobres en el caso de encontrar los parámetros adecuados. 
+			De manera ingenua, una primera aproximación para clasificar imágenes en función de objetos que aparezcan en estas, podría ser linealizar este tensor y pasarlo como vector de entrada a un red neuronal multicapa, obteniendo un vector de salida que indique a qué clase pertenece la imagen. Esto, además de que no da resultados positivos, pues se da la misma importancia a todos los píxeles y se obvian detalles y características de la imagen, computacionalmente es muy complicado de abarcar. Suponiendo que se tiene una imagen RGB cuadrada de $n \times n$ píxeles, y que la primera capa oculta tuviera $m$ neuronas, el número de parámetros de esta capa sería $m(3n^2 + 1)$. Suponiendo imágenes de baja calidad, por ejemplo $64 \times 64$ píxeles, y que el número de neuronas de la primera capa fuese 5, el número de parámetros es de 61445. Ajustar adecuadamente esa cantidad de parámetros muy costoso, y además daría resultados muy pobres en el caso de encontrar los parámetros adecuados. \\
+			
+			La forma de trabajar con imágenes y redes neuronales consiste en ``resumir'' las diferentes regiones de la imagen pasando como entrada de la red neuronal aquellas características destacables, es decir, un vector o mapa de características propias de la imagen. Un ejemplo de estos se muestra en la \Cref{fig:features}. Esto se puede lograr mediante las operaciones de convolución y correlación cruzada explicadas en la \Cref{sec:conv_cc}. 
+			
+			\begin{figure}[!h]
+				\centering
+				\includegraphics[scale = .2]{features}
+				\caption{Imágenes y sus mapas de características\cite{features}}
+				\label{fig:features}
+			\end{figure}
+			
+			En general, para poder clasificar imágenes, se utilizan redes convolucionales por el motivo explicado, y para realizar dicha tarea se van concatenando diferentes tipos de capas, encontrándose entre estas las que se muestran a continuación\cite{introCNN}. Combinándolas se crea una red convolucional como por ejemplo, la que se muestra en la , que se trata de la red VGG-16. 
+			
+			\begin{itemize}
+				\item \textbf{Capa de entrada}\\
+				Esta capa recibe la entrada de la red, normalmente la imagen representada como un tensor, es decir, una matriz por cada canal de la imagen. 
+				
+				\item \textbf{Capa de convolución}\\
+				En este tipo de capas es donde reside principalmente el conocimiento de una red convolucional, pues dispone de unos parámetros llamados \textit{kernels} y \textit{bias}, o sesgos. Lo que hace esta capa es calcular la correlación cruzada entre la entrada y el kernel y sumar un sesgo, a pesar de que comúnmente se dice que calcula la convolución, como se discutió en la \Cref{sec:conv_cc}. El número de salidas de esta capa depende del número de kernels y sesgos que se definan, se puede establecer un símil con el número de neuronas de una capa de una red neuronal. La entrada de la capa, que es un tensor, puede entenderse como una serie de matrices $X_i^{(m)}$, los kernels que serían otros tensores, como otra serie de matrices $K_{ij}^{(m)}$, y los sesgos como las matrices $B_i^{(m)}$, teniendo la siguiente ecuación para la salida de una capa de convolución. 
+				
+				$$
+				Y_i^{(m)} = B_i^{(m)} + \sum_{j = 1}^n X_j^{(m)} \star K_{ij}^{(m)}
+				$$
+				
+				\item \textbf{Capa de activación}\\
+				Al igual que en las redes neuronales clásicas se aplicaba una función de activación a la salida de cada neurona, en las redes convolucionales es habitual hacer esto mismo con las salidas de una capa de convolución y la función ReLU. Se aplica esta a cada elemento del tensor de salida, pudiendo verse como sustituir por ceros aquellos valores negativos producidos por la correlación cruzada. 
+				
+				\item \textbf{Capa de \textit{pooling} o agrupación}\\
+				Como previamente se ha mencionado, la ventaja de trabajar con redes convolucionales en vez de con las clásicas, es que estas son capaces de extraer las características importantes de una imagen, ``resumiendo'' esta antes de comenzar el trabajo de clasificación. Parte de este ``resumen'' se realiza mediante las capas de \textit{pooling} o agrupación. Se suelen utilizar las funciones maxpooling o avgpooling con kernels de tamaño $2\times2$ sobre la entrada, reduciendo el tamaño de esta en un 25\%. 
+				
+				$$
+				\begin{gathered}
+					\text{maxpooling}\{x_1, x_2, \hdots, x_n\} = \max\{x_1, x_2, \hdots, x_n\}\\
+					\text{maxpooling}\left(\begin{array}{cc|cc}
+						1 & 2 & 3 & 4\\
+						5 & \boxed{6} & 7 & \boxed{8}\\\hline
+						9 & 10 & 11 & 12\\
+						13 & \boxed{14} & 15 & \boxed{16}\\
+					\end{array}\right) = \begin{pmatrix}
+						6 & 8\\
+						14 & 16
+					\end{pmatrix}\\\\
+					\text{avgpooling}\{x_1, x_2, \hdots, x_n\} = \frac{x_1 + x_2 + \hdots + x_n}{n}\\
+					\text{avgpooling}\left(\begin{array}{cc|cc}
+						1 & 2 & 3 & 4\\
+						5 & 6 & 7 & 8\\\hline
+						9 & 10 & 11 & 12\\
+						13 & 14 & 15 & 16\\
+					\end{array}\right) = \begin{pmatrix}
+						3.5 & 5.5\\
+						11.5 & 13.5
+					\end{pmatrix}
+				\end{gathered}
+				$$
+				
+				\item \textbf{Capa densa o totalmente conectada}\\
+				Esta capa se trata de una de las capas de una red neuronal clásica. Recibe los vectores de características una vez han sido simplificados lo suficiente como para que una red clásica pueda trabajar con ellos y encontrar las relaciones entra las características de las imágenes de una misma clase. 
+			\end{itemize}
+			
+			\begin{figure}[!h]
+				\centering
+				\includegraphics[width = \linewidth]{vgg16}
+				\caption{Red convolucional VGG-16}
+				\label{fig:vgg16}
+			\end{figure}
  		
 		
