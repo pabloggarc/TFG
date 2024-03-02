@@ -701,7 +701,7 @@
 				En este tipo de capas es donde reside principalmente el conocimiento de una red convolucional, pues dispone de unos parámetros llamados \textit{kernels} y \textit{bias}, o sesgos. Lo que hace esta capa es calcular la correlación cruzada entre la entrada y el kernel y sumar un sesgo, a pesar de que comúnmente se dice que calcula la convolución, como se discutió en la \Cref{sec:conv_cc}. El número de salidas de esta capa depende del número de kernels y sesgos que se definan, se puede establecer un símil con el número de neuronas de una capa de una red neuronal. La entrada de la capa, que es un tensor, puede entenderse como una serie de matrices $X_i^{(m)}$, los kernels que serían otros tensores, como otra serie de matrices $K_{ij}^{(m)}$, y los sesgos como las matrices $B_i^{(m)}$, teniendo la siguiente ecuación para la salida de una capa de convolución. 
 				
 				$$
-				Y_i^{(m)} = B_i^{(m)} + \sum_{j = 1}^n X_j^{(m)} \star K_{ij}^{(m)}
+				N_i^{(m)} = B_i^{(m)} + \sum_{j = 1}^n X_j^{(m)} \star K_{ij}^{(m)}
 				$$
 				
 				\item \textbf{Capa de activación}\\
@@ -745,5 +745,16 @@
 				\caption{Red convolucional VGG-16}
 				\label{fig:vgg16}
 			\end{figure}
+			
+			Habiendo mostrado ya la arquitectura de una red convolucional con sus correspondientes parámetros (kernels y sesgos) e hiperparámetros (\textit{padding} y \textit{stride}), la pregunta clásica es, ¿cómo obtener los parámetros adecuados? La respuesta de cómo obtenerlos es simple, siendo algo más complicada de responder esta vez la de cuáles son. Al no dejar de ser una red neuronal, para obtener los parámetros de la red se utiliza \textit{Backpropagation} (\Cref{algo:backprop}) también, añadiendo las siguiente ecuaciones\cite{backpropCNN} al cálculo del gradiente para las capas de convolución. En este caso también aparece la recursividad mediante las sensibilidades de convolución $\Lambda_i^{(m)}$ hasta llegar a las sensibilidades clásicas $\delta_i^{(m)}$. 
+			
+			$$
+			\begin{gathered}
+				\Lambda_i^{(m)} = \frac{\partial L}{\partial N_i^{(m)}}\\
+				\frac{\partial L}{\partial B_{i}^{(m)}} = \Lambda_i^{(m)}\\
+				\frac{\partial L}{\partial K_{ij}^{(m)}} = X_j^{(m)}\star\Lambda_i^{(m)}\\
+				\frac{\partial L}{\partial X_j^{(m)}} = \sum_{i = 1}^n\Lambda_i^{(m)}\circledast K_{ij}^{(m)}
+			\end{gathered}
+			$$
  		
-		
+			En este caso, como se comentaba anteriormente, a pesar de contar con el algoritmo para hallar los parámetros, no es suficiente para entrenar la red y obtener un resultado adecuado. Las redes convolucionales son un modelo de deep learing que necesita cantidades de datos y un poder computacional muy elevado. Para obtener un resultado decente se necesitan muchísimos datos de ejemplo y equipos con muchos recursos, como diferentes GPUs y grandes cantidades de memoria. 
