@@ -5,8 +5,9 @@
 \usepackage[margin = 2.54cm]{geometry}
 \usepackage[dvipsnames]{xcolor}
 \usepackage[pages = some]{background}
+\usepackage[inkscapeformat=png]{svg}
 \usepackage[algochapter, ruled, lined, spanish, spanishkw]{algorithm2e}
-\usepackage{amssymb, amsthm, array, enumitem, fancyhdr, float, graphicx, hyperref, listings, mathtools, mathrsfs, pgfplots, subcaption, tikz}
+\usepackage{amssymb, amsthm, array, enumitem, fancyhdr, float, graphicx, hyperref, listings, mathtools, mathrsfs, pgfplots, qtree, subcaption, tikz}
 \usepackage[capitalize, spanish, noabbrev]{cleveref}
 \usepackage[backend = biber, style = IEEE, sortcites]{biblatex}
 \usetikzlibrary{arrows, babel, positioning, tikzmark}
@@ -50,9 +51,11 @@
 
 
 % Estilo de los encabezados
-\pagestyle{fancy}
-\lhead{\footnotesize \leftmark}
-\rhead{\footnotesize \rightmark}
+\fancypagestyle{mypagestyle}{
+	\fancyhf{}
+	\fancyhead[LE]{\footnotesize\leftmark\hfill\thepage}
+	\fancyhead[RO]{\thepage\hfill\footnotesize\rightmark}
+}
 
 
 

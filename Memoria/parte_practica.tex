@@ -1,0 +1,184 @@
+\chapter{Optimización del proceso de valoración de puntos de interés}
+
+	\section{Clasificación de imágenes mediante redes convolucionales}
+	
+		Una primera aproximación a agilizar el proceso de valoración comentado, sería detectar el objeto que se muestra en la imagen de la propuesta, para que en caso de que sea algo aceptable proseguir con el proceso de valoración, o en caso contrario, rechazar directamente la propuesta. Para comenzar este caso práctico, lo primero a realizar es el proceso conocido como ETL, que consiste en la extracción, transformación, y carga de los datos; para posteriormente poder trabajar con ellos y proporcionárselos al modelo. Comenzando por la extracción de datos, se presenta el primero de los problemas. La idea es utilizar imágenes que realmente hayan pasado por este proceso de valoración para poder hacer el proyecto lo más realista posible, sin embargo, ni Wayfarer ni ninguno de los juegos poseen alguna API (al menos de manera pública) que permita recolectar de manera programática las imágenes utilizadas o información relativa a ellas. 
+		
+		\subsection{Proceso ETL}
+		
+			La solución adoptada para este proceso, ha sido recolectar manualmente imágenes que han superado el proceso de valoración, pudiendo consultar algunas de ellas desde el mapa de uno de los juegos (\url{https://intel.ingress.com/}). En este caso, se estarían clasificando entre las $n$ clases de objetos aceptables las imágenes recibidas, cosa que en un primer momento parece carecer de sentido pues se conoce el resultado de la valoración. Sin embargo, al no tener acceso a propuestas rechazadas, no se pueden recolectar estos datos para entrenar los modelos, pero si de la empresa responsable se tratase, se dispondría de una enorme cantidad de imágenes válidas y no válidas etiquetadas, y que se podrían cargar de manera automática. En resumen, cambiando simplemente los datos que se cargarían y su fuente, se podrían tomar las siguientes decisiones sin necesidad de modificar el resto del proyecto.  
+			
+			\begin{itemize}
+				\item Si $I \in C_i, 0 \leq i < m$, rechazar la propuesta
+				\item Si $I \in C_j, m \leq j < n$, continuar evaluando la propuesta
+			\end{itemize}
+			
+			Continuando con la extracción de los datos, y preparándolos para la carga, se ha creado una carpeta \texttt{tfg\_dataset} que representa el conjunto de las imágenes que se utilizan durante el proyecto. Dentro de esta, se ubicarán dos subcarpetas, \texttt{train} y \texttt{test}, que hacen referencia a las imágenes que se utilizarán para entrenar los modelos, y las que se utilizarán para evaluar su rendimiento. Dentro de cada una de esas carpetas deberán crearse subcarpetas donde se encuentren las imágenes separadas por sus clases, siendo esta la manera de etiquetar el conjunto de datos y prepararlo para la carga. Se puede visualizar un breve esquema de esta estructura en la \Cref{fig:arbol_dataset}. \\
+			
+			\begin{figure}[!h]
+				\centering
+				\Tree[.\texttt{tfg\_dataset} [.\texttt{train} \texttt{clase\_1} \texttt{clase\_2} \texttt{clase\_3} $\cdots$ ] [.\texttt{test} \texttt{clase\_1} \texttt{clase\_2} \texttt{clase\_3} $\cdots$ ] ]
+				\caption{Árbol de carpetas del dataset}
+				\label{fig:arbol_dataset}
+			\end{figure}
+			
+			Para cargar el dataset en TensorFlow directamente desde la estructura de carpetas creadas, se hará uso de la función \texttt{image\_dataset\_from\_directory} del paquete \texttt{utils}. Esta contiene una serie de parámetros interesantes a comentar. 
+			
+			\begin{itemize}
+				\item \texttt{directory}: es el directorio raíz del dataset, en este caso \texttt{tfg\_dataset}. 
+				\item \texttt{image\_size}: es una tupla de dos elementos con las dimensiones en píxeles que deberán tener las imágenes del dataset. 
+				\item \texttt{labels}: mediante el valor \texttt{inferred} las etiquetas toman el mismo valor que el nombre de las carpetas. 
+				\item \texttt{label\_mode}: hace referencia a la forma de codificar las etiquetas. Se empleará el valor \texttt{categorical} para codificar las etiquetas utilizando one-hot-encoding, es decir, si se tienen por ejemplo cuatro clases y un elemento pertenece a la cuarta, dicha etiqueta queda codificada como 0001. 
+				\item \texttt{batch\_size}: hace referencia al tamaño de batch o lote que será utilizado durante el entrenamiento. Si en la función de entrenamiento se elige un tamaño diferente, se utilizará el menor de los valores. 
+				\item \texttt{validation\_split}: hace referencia al porcentaje de los datos de entrenamiento que se reservan para validar el modelo durante el entrenamiento, es decir, permiten calcular el error del modelo al hacer una predicción de datos que nunca ha visto mientras entrena. Se reservarán un 20\% de los datos para validar. 
+				\item \texttt{seed}: hace referencia a la semilla que se utiliza para ordenar las imágenes de manera aleatoria. 
+				\item \texttt{subset}: seleccionando el valor \texttt{both} permite devolver el conjunto de entrenamiento y validación con la llamada a la función, es decir, \texttt{x\_train, x\_val = image\_dataset\_from\_directory(...)}. 
+			\end{itemize}
+			
+			Como se puede observar, esta función que está haciendo principalmente el trabajo de la carga de datos, también hace parte del proceso de transformación, ya que permite modificar las dimensiones de la imagen, en este caso se utilizará un valor de $224 \times 224$ píxeles. Además, cada píxel (en cada canal de color) toma un valor entre 0 y 255. Es muy importante normalizar estos valores en el proceso de transformación para facilitar el trabajo a los diferentes modelos. Para ello, con ayuda de una capa de reescalado de Keras, se divide el valor de cada píxel entre 255 para obtener valores entre 0 y 1. Con motivo de verificar que todos estos pasos se han realizado correctamente, se codificado una función llamada \texttt{sample\_ds\_dfd} que permite visualizar nueve ejemplos aleatorios de un dataset creado con la función de TensorFlow mencionada, obteniendo como resultado la \Cref{fig:sample_dataset}. \\
+			
+			\begin{figure}
+				\centering
+				\includegraphics[scale = .8]{sample_dataset}
+				\caption{Visualización de ejemplo de un dataset creado}
+				\label{fig:sample_dataset}
+			\end{figure}
+			
+		\subsection{Creación y entrenamiento de una red convolucional en TensorFlow}\label{subsec:crear_cnn}
+		
+			En esta primera aproximación se va a crear y entrenar una red convolucional desde cero con el dataset mencionado. Mediante la clase \texttt{Sequential} de Keras, se puede proporcionar una lista de las capas que conforman el modelo. La primera de ellas será una capa de convolución, con la particularidad de que se debe indicar el tamaño de entrada, siendo este un tensor de las dimensiones indicadas en la creación del dataset. Se alterna cada capa de convolución de stride $3 \times 3$ y 32 o 64 filtros, con una capa de maxpooling con stride $2 \times 2$. Estos valores han sido elegidos de manera arbitraria. Esta arquitectura se puede visualizar en la \Cref{fig:arq_cnn}. \\
+			
+			\begin{figure}
+				\centering
+				\caption{Arquitectura de la red convolucional}
+				\label{fig:arq_cnn}
+			\end{figure}
+			
+			Mediante estas capas, se supone que la red debe extraer características de las imágenes, como por ejemplo
+			
+			\begin{itemize}
+				\item Aparece un objeto rectangular
+				\item Tiene dos patas 
+				\item No tiene formas curvas
+			\end{itemize}
+			y de ahí con ayuda de una red clásica, ser capaz de deducir que en la imagen aparece un cartel. En realidad, las capas de convolución no obtienen características tan claras, pero sí resultan con una matriz de detalles en la imagen que pueden conducir a la misma conclusión. Para ello se utiliza la capa \texttt{Flatten} que transforma dicha matriz en un vector que sirve de entrada a la siguiente y última capa de la red, una capa oculta con tantas neuronas como clases diferentes. Como función de activación se utiliza softmax para obtener una distribución de probabilidad en la que se observe cuál es claramente la clase a la que pertenece el objeto, y con qué confianza lo es. Finalmente, mediante la función \texttt{summary} se puede observar un resumen del modelo. 
+			
+			\begin{verbatim}
+				_________________________________________________________________
+				Layer (type)                Output Shape              Param #   
+				=================================================================
+				conv2d (Conv2D)             (None, 222, 222, 32)      896       
+				
+				max_pooling2d (MaxPooling2  (None, 111, 111, 32)      0         
+				D)                                                              
+				
+				conv2d_1 (Conv2D)           (None, 109, 109, 64)      18496     
+				
+				max_pooling2d_1 (MaxPoolin  (None, 54, 54, 64)        0         
+				g2D)                                                            
+				
+				conv2d_2 (Conv2D)           (None, 52, 52, 64)        36928     
+				
+				flatten (Flatten)           (None, 173056)            0         
+				
+				dense_2 (Dense)             (None, 4)                 692228    
+				
+				=================================================================
+				Total params: 748548 (2.86 MB)
+				Trainable params: 748548 (2.86 MB)
+				Non-trainable params: 0 (0.00 Byte)
+				_________________________________________________________________
+			\end{verbatim}
+			
+			Con la función \texttt{compile} se termina de crear el objeto que representa al modelo, pudiendo especificar un optimizador, la función de pérdida, y las métricas que se muestran durante el entrenamiento. Para este proyecto se utilizarán Adam, entropía cruzada, y precisión respectivamente. El modelo ya está en condiciones de ser entrenado, y esto se logra mediante la función \texttt{fit}, a la que se le proporcionan los datos de entrenamiento (\texttt{x\_train}), los datos de validación (\texttt{x\_val}), el número de épocas (en este caso se han elegido 25), y la ruta de los callbacks. Esta sirve para ir almacenando metadatos del entrenamiento, que mediante una utilidad con la que cuenta TensorFlow llamada TensorBoard, permite monitorizar de manera muy visual la calidad del entrenamiento, tal y como se muestra en la \Cref{fig:tb_cnn}. \\
+			
+			\begin{figure}[!h]
+				\centering
+				\begin{subfigure}{.4\textwidth}
+					\centering
+					\includesvg[width = .85\textwidth]{evaluation_loss_vs_iterations_cnn}
+					\caption{Iteraciones frente a pérdida}
+					\label{fig:tb_cnn_a}
+				\end{subfigure}
+				\begin{subfigure}{.4\textwidth}
+					\centering
+					\includesvg[width = .85\textwidth]{evaluation_accuracy_vs_iterations_cnn}
+					\caption{Iteraciones frente a precisión}
+					\label{fig:tb_cnn_b}
+				\end{subfigure}
+				\begin{subfigure}{.4\textwidth}
+					\centering
+					\includesvg[width = .85\textwidth]{epoch_loss_cnn}
+					\caption{Pérdida sobre el conjunto de entrenamiento y validación}
+					\label{fig:tb_cnn_c}
+				\end{subfigure}
+				\begin{subfigure}{.4\textwidth}
+					\centering
+					\includesvg[width = .85\textwidth]{epoch_accuracy_cnn}
+					\caption{Precisión sobre el conjunto de entrenamiento y validación}
+					\label{fig:tb_cnn_d}
+				\end{subfigure}
+				\caption{Pérdida y precisión durante el entrenamiento de la CNN}
+				\label{fig:tb_cnn}
+			\end{figure}
+			
+			La situación que describen las gráficas, es negativa y sería la típica no deseada, pues se observa como con el paso de las iteraciones el error crece mientras que la precisión se estanca. En concreto, en la \Cref{fig:tb_cnn_c} se observa cómo el error sobre el conjunto de validación crece, mientras que sobre el conjunto de entrenamiento tiende a cero. Esta es una situación denominada como sobreaprendizaje u \textit{overfitting}. La red no tiene capacidad de aprender ni generalizar, y lo que está haciendo es memorizar los datos de ejemplo que se le presentan, cometiendo entonces errores cuando recibe datos que no ha visto nunca. 
+			
+		\subsection{Transfer learning en TensorFlow}
+		
+			Como se ha podido observar durante la sección anterior, el resultado del entrenamiento no ha sido adecuado, pues la red tendía a memorizar los datos que se le presentaban sin mostrar una buena capacidad de generalización. Esto puede deberse a múltiples factores, como por ejemplo, que al tener un conjunto de datos de entrenamiento tan reducido no sea capaz de extraer correctamente las características que determinan a los objetos de cada clase. Es decir, en vez de hacerle llegar a las capas densas hechos como ``tiene un objeto rectangular'', ``tiene dos patas'', etc; podría estar haciéndole llegar, ``hay dos árboles en el fondo''. Observando la estructura del modelo, se está tratando de optimizar cerca un millón de parámetros con poco más de 500 observaciones, algo que es muy desproporcionado; la red no es capaz de encontrar relaciones con tan pocos datos. \\
+			
+			En proyectos similares del mundo real, y en los que además se dispone de pocos datos (como es el caso), es muy poco frecuente crear y entrenar un modelo desde cero tal y como se ha realizado en la \Cref{subsec:crear_cnn}. En vez de realizar esto, es muy común utilizar una técnica conocida como transfer learning. Tal y como se menciona en \cite{transfer}, es una técnica muy aplicada en casos en los que se dispone de pocos datos y los modelos de deep learning no son capaces de encontrar relaciones, y también en casos en los que se dispone de equipos con pocos recursos. Consiste en aplicar el conocimiento obtenido de otro dataset, no necesariamente relacionado, para facilitar el proceso de obtener el conocimiento deseado del dataset actual. \\
+			
+			En el problema que se está tratando, se va a aplicar esta técnica de la siguiente manera. Como previamente se ha mencionado, las redes convolucionales, pueden verse como un conjunto de capas capaces de extraer características de las imágenes, junto con una red neuronal clásica que es capaz de clasificar en función de dichas características. Teniendo en cuenta que el principal problema del modelo anterior podría ser que no fuera capaz de obtener las características adecuadas que definen a cada clase, la idea es utilizar una serie de capas que sí sean capaces de obtener de manera correcta las características de una imagen, para después poder entrenar la red neuronal clásica con las características adecuadas. \\
+			
+			Con ayuda de la librería TensorHub que trabaja junto con TensorFlow, se pueden importar modelos ya entrenados de \url{https://www.kaggle.com/}. En este caso para aplicar la técnica de transfer learning, se ha decidido utilizar la red MobileNet de Google. El modelo se puede importar como si de una capa se tratase al crear un modelo secuencial de Keras. Para lograr la técnica, será clave declarar que los parámetros de dicha capa no se deberán entrenar (pues al importar el modelo ya vienen con unos valores adecuados). A continuación se coloca una capa densa, encargada de clasificar las características que la red de Google extraiga, y que deberá ser entrenada. Esta vez, el número de parámetros a optimizar sí es más adecuado al número de observaciones disponibles. 
+			
+			\begin{verbatim}
+				_________________________________________________________________
+				Layer (type)                Output Shape              Param #   
+				=================================================================
+				keras_layer (KerasLayer)    (None, 1280)              2257984   
+				
+				dense (Dense)               (None, 4)                 5124      
+				
+				=================================================================
+				Total params: 2263108 (8.63 MB)
+				Trainable params: 5124 (20.02 KB)
+				Non-trainable params: 2257984 (8.61 MB)
+				_________________________________________________________________
+			\end{verbatim}
+			
+			La manera de lanzar el entrenamiento es la misma que en el anterior, sin embargo, esta vez los resultados obtenidos son totalmente distintos, tal y como muestran las gráficas de TensorBoard en la \Cref{fig:tb_tl}. \\
+			
+			\begin{figure}[!h]
+				\centering
+				\begin{subfigure}{.4\textwidth}
+					\centering
+					\includesvg[width = .85\textwidth]{evaluation_loss_vs_iterations_mb}
+					\caption{Iteraciones frente a pérdida}
+					\label{fig:tb_tl_a}
+				\end{subfigure}
+				\begin{subfigure}{.4\textwidth}
+					\centering
+					\includesvg[width = .85\textwidth]{evaluation_accuracy_vs_iterations_mb}
+					\caption{Iteraciones frente a precisión}
+					\label{fig:tb_tl_b}
+				\end{subfigure}
+				\begin{subfigure}{.4\textwidth}
+					\centering
+					\includesvg[width = .85\textwidth]{epoch_loss_mb}
+					\caption{Pérdida sobre el conjunto de entrenamiento y validación}
+					\label{fig:tb_tl_c}
+				\end{subfigure}
+				\begin{subfigure}{.4\textwidth}
+					\centering
+					\includesvg[width = .85\textwidth]{epoch_accuracy_mb}
+					\caption{Precisión sobre el conjunto de entrenamiento y validación}
+					\label{fig:tb_tl_d}
+				\end{subfigure}
+				\caption{Pérdida y precisión durante el entrenamiento aplicando transfer learning}
+				\label{fig:tb_tl}
+			\end{figure}
+			
+			Estas gráficas representan una situación cercana a la ideal. En las \Cref{fig:tb_tl_a,fig:tb_tl_b} se observa cómo con el paso de las iteraciones, el error disminuye y la precisión aumenta. Además, en las \Cref{fig:tb_tl_c,fig:tb_tl_d} se muestra claramente que tanto el error como la precisión se comportan de manera similar sobre los conjuntos de entrenamiento y validación respectivamente, tomando además valores adecuados. 
