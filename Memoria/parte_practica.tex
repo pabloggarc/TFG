@@ -48,8 +48,9 @@
 		
 			En esta primera aproximación se va a crear y entrenar una red convolucional desde cero con el dataset mencionado. Mediante la clase \texttt{Sequential} de Keras, se puede proporcionar una lista de las capas que conforman el modelo. La primera de ellas será una capa de convolución, con la particularidad de que se debe indicar el tamaño de entrada, siendo este un tensor de las dimensiones indicadas en la creación del dataset. Se alterna cada capa de convolución de stride $3 \times 3$ y 32 o 64 filtros, con una capa de maxpooling con stride $2 \times 2$. Estos valores han sido elegidos de manera arbitraria. Esta arquitectura se puede visualizar en la \Cref{fig:arq_cnn}. \\
 			
-			\begin{figure}
+			\begin{figure}[!h]
 				\centering
+				\includegraphics[scale = .6]{arq_cnn}
 				\caption{Arquitectura de la red convolucional}
 				\label{fig:arq_cnn}
 			\end{figure}
@@ -99,7 +100,7 @@
 					\includesvg[width = .85\textwidth]{evaluation_loss_vs_iterations_cnn}
 					\caption{Iteraciones frente a pérdida}
 					\label{fig:tb_cnn_a}
-				\end{subfigure}
+				\end{subfigure}\hfill
 				\begin{subfigure}{.4\textwidth}
 					\centering
 					\includesvg[width = .85\textwidth]{evaluation_accuracy_vs_iterations_cnn}
@@ -111,7 +112,7 @@
 					\includesvg[width = .85\textwidth]{epoch_loss_cnn}
 					\caption{Pérdida sobre el conjunto de entrenamiento y validación}
 					\label{fig:tb_cnn_c}
-				\end{subfigure}
+				\end{subfigure}\hfill
 				\begin{subfigure}{.4\textwidth}
 					\centering
 					\includesvg[width = .85\textwidth]{epoch_accuracy_cnn}
@@ -158,7 +159,7 @@
 					\includesvg[width = .85\textwidth]{evaluation_loss_vs_iterations_mb}
 					\caption{Iteraciones frente a pérdida}
 					\label{fig:tb_tl_a}
-				\end{subfigure}
+				\end{subfigure}\hfill
 				\begin{subfigure}{.4\textwidth}
 					\centering
 					\includesvg[width = .85\textwidth]{evaluation_accuracy_vs_iterations_mb}
@@ -170,7 +171,7 @@
 					\includesvg[width = .85\textwidth]{epoch_loss_mb}
 					\caption{Pérdida sobre el conjunto de entrenamiento y validación}
 					\label{fig:tb_tl_c}
-				\end{subfigure}
+				\end{subfigure}\hfill
 				\begin{subfigure}{.4\textwidth}
 					\centering
 					\includesvg[width = .85\textwidth]{epoch_accuracy_mb}
@@ -182,3 +183,96 @@
 			\end{figure}
 			
 			Estas gráficas representan una situación cercana a la ideal. En las \Cref{fig:tb_tl_a,fig:tb_tl_b} se observa cómo con el paso de las iteraciones, el error disminuye y la precisión aumenta. Además, en las \Cref{fig:tb_tl_c,fig:tb_tl_d} se muestra claramente que tanto el error como la precisión se comportan de manera similar sobre los conjuntos de entrenamiento y validación respectivamente, tomando además valores adecuados. 
+			
+		\subsection{Aumento de datos}
+		
+			Como se ha visto a lo largo de las secciones anteriores, uno de los problemas que se está teniendo en este caso práctico, es la falta de datos. Una técnica utilizada frecuentemente en estos casos es conocida como aumento de datos. Consiste en modificar las imágenes del dataset de entrenamiento para que el modelo disponga de más ejemplos diferentes. Podría entenderse como una parte del proceso de transformación ETL. \\
+			
+			Una vez más, es posible aplicar esta técnica mediante funciones de TensorFlow. Para ello se crea un objeto de la clase \texttt{ImageDataGenerator}. Mediante su constructor se pueden declarar los valores que toman los atributos que modificarán las imágenes, siendo algunos de los más destacables: 
+			
+			\begin{itemize}
+				\item \texttt{rotation\_range}: gira la imagen. 
+				\item \texttt{width\_shift\_range} y \texttt{height\_shift\_range}: desplazamiento horizontal y vertical de la imagen. 
+				\item \texttt{shear\_range}: estira la imagen. 
+				\item \texttt{zoom\_range}: hace zoom a la imagen. 
+				\item \texttt{reescale}: indica el factor por el que se reescala la imagen, en este caso $1/255$ para facilitar el entrenamiento a la red, como en casos anteriores. 
+				\item \texttt{validation\_split}: porcentaje de los datos reservados a validación. 
+			\end{itemize}
+			
+			Una vez se tiene declarado el generador, se utiliza su método \texttt{flow\_from\_directory} para que dada la ruta que contiene las imágenes, el tamaño deseado de imagen, y el tamaño de los lotes, se cree el objeto que representa al dataset. De manera similar a la anterior, se ha programado una función \texttt{sample\_ds\_ffd} que permite visualizar nueve elementos del dataset creado, tal y como muestra la \Cref{fig:sample_dataset_au}. \\
+			
+			\begin{figure}
+				\centering
+				\includegraphics[scale = .8]{sample_dataset_au}
+				\caption{Visualización de ejemplo de un dataset aplicando aumento de datos}
+				\label{fig:sample_dataset_au}
+			\end{figure}
+			
+			Contando ahora con el dataset original y el modificado, la técnica del aumento de datos se puede aplicar de dos formas. La primera de ellas es crear un modelo y entrenar únicamente con el datset modificado. Esto puede dar una mayor capacidad de generalización al modelo al mostrar imágenes más diferentes de objetos similares. La segunda de ellas consiste en entrenar el modelo con el dataset original, y después con el dataset modificado (sin cambiar qué imágenes pertenecen a los conjuntos de entrenamiento, validación, y test en cada dataset). Esta puede dar mejores resultados, pues tiene más observaciones y el modelo puede de ver el mismo objeto ``de diferentes formas''. Sin embargo hay que tener cuidado con esta segunda opción, pues podría conducir a situaciones de sobreajuste. 
+			
+		\subsection{Evaluación de los modelos}
+		
+			Si bien gracias a las gráficas que TensorBoard proporciona es posible hacerse una idea de la calidad que tendrán las predicciones de un modelo, no son suficientes. Será entonces el momento de presentar al modelo una serie de imágenes que nunca haya visto para poder evaluar la calidad de sus predicciones mediante una serie de métricas y valores estadísticos. Este conjunto de imágenes que el modelo no ha recibido hasta el momento, es el denominado conjunto de test. \\
+			
+			Para calcular estas métricas en Python, se va a utilizar la librería Scikit-learn, ya que contiene un conjunto de métodos con los que calcular y visualizar la mayoría de métricas empleadas en machine learning. Además, las predicciones sobre los conjuntos de test quedará representadas mediante dos matrices, \texttt{Y\_matrix} y \texttt{Y\_score}. La primera de ellas es una matriz $n \times 2$ que contiene para cada observación su etiqueta real y la predicha. La segunda, contiene las probabilidades de cada observación de pertenecer a cada clase, por tanto es de dimensiones $n \times c$. 
+			
+			$$
+			Y_m = \begin{pmatrix}
+				0 & 0\\
+				2 & 2\\
+				3 & 1\\
+				\vdots & \vdots\\
+				1 & 1
+			\end{pmatrix}\hspace{1cm}
+			Y_s = \begin{pmatrix}
+				0.75 & 0.07 & 0.01 & 0.17\\
+				0.15 & 0.01 & 0.7 & 0.14\\
+				0.02 & 0.97 & 0.01 & 0.01\\
+				\vdots & \vdots & \vdots & \vdots\\
+				0.05 & 0.87 & 0.01 & 0.08
+			\end{pmatrix}
+			$$
+			
+			Dependiendo si el problema en cuestión es de regresión o clasificación, se deben utilizar unas métricas u otras. Debido a que se desea evaluar la calidad de una clasificación, se han elegido las siguientes. 
+			
+			\subsubsection{Matriz de confusión}
+			
+				La matriz de confusión muestra en el caso de clasificación binaria, los verdaderos positivos, verdaderos negativos, falsos positivos, y falsos negativos, mientras que en el caso de clasificación no binaria, en general la relación entre las etiquetas reales de cada observación y las que el modelo le ha asignado. De manera muy visual se puede observar la cantidad de ejemplos de cada clase (pudiendo ver si se encuentran desbalanceadas), cuántos han sido clasificados correctamente, cuántos no, y en general entre qué clases suele confundirse más el modelo. \\
+				
+				\begin{figure}[!h]
+					\centering
+					\begin{subfigure}{.4\textwidth}
+						\centering
+						\includegraphics[scale = .42]{mc_conv}
+						\caption{Normal}
+						\label{fig:mc_conv}
+					\end{subfigure}\hfill
+					\begin{subfigure}{.4\textwidth}
+						\centering
+						\includegraphics[scale = .42]{mc_mb}
+						\caption{Aplicando transfer learning}
+						\label{fig:mc_mb}
+					\end{subfigure}
+					\begin{subfigure}{.4\textwidth}
+						\centering
+						\includegraphics[scale = .42]{mc_convau}
+						\caption{Aplicando aumento de datos}
+						\label{fig:mc_convau}
+					\end{subfigure}\hfill
+					\begin{subfigure}{.4\textwidth}
+						\centering
+						\includegraphics[scale = .42]{mc_mbau}
+						\caption{Aplicando ambas}
+						\label{fig:mc_mbau}
+					\end{subfigure}
+					\caption{Matrices de confusión}
+					\label{fig:mc}
+				\end{figure}
+				
+				En la \Cref{fig:mc} se observan las matrices de confusión de las cuatro situaciones descritas anteriormente. El elemento $a_{ij}$ representa la cantidad de observaciones de la clase $C_i$ que han sido clasificadas como $C_j$ (a partir de ahora, $\hat{C}_j$). La situación ideal se da cuando en el caso de que $i \neq j$, entonces $a_{ij} = 0$, o lo que es lo mismo, que solo haya valores  en la diagonal principal, pues a todos se les estaría asignando la clase correcta. Además, en esta representación gráfica sería deseable que todos los elementos de dicha diagonal tuviesen el mismo color, pues la situación actual describe un desbalanceo entre las clases. Se ve claramente que al aplicar transfer learning (\Cref{fig:mc_mb,fig:mc_mbau}) se obtienen resultados mucho mejores que al entrenar el modelo desde cero, tal y como las curvas de TensorBoard parecían indicar, pues la cantidad de malas clasificaciones es muy pequeña. La diferencia en dicho caso entre usar aumento de datos o no, no es muy significativa. \\
+				
+				Para poder calcular la matriz de confusión, se ha utilizado la función \texttt{confusion\_matrix} de Scikit-learn, que recibe como parámetros un vector con las clases reales de cada observación, y otro con las que el modelo les ha asignado. Mediante la función \texttt{ConfusionMatrixDisplay} se puede ver de manera gráfica la matriz (\Cref{fig:mc}). Con diferentes parámetros se pueden cambiar los colores e incrustar código \LaTeX{} para modificar los textos. Se ha codificado la función \texttt{matriz\_confusion} que recibe el dataset y $Y_m$, y muestra el gráfico con la configuración personalizada. 
+				
+			\subsubsection{Precisión, sensibilidad, y $F_1-$score}
+				
+				Si bien la matriz de confusión permite mostrar de manera visual la calidad de las clasificaciones, es conveniente calcular algunos valores a partir de esta matriz que permitan visualizar de manera numérica dichas calidades. 
