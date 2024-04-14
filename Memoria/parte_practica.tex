@@ -46,11 +46,11 @@
 			
 		\subsection{Creación y entrenamiento de una red convolucional en TensorFlow}\label{subsec:crear_cnn}
 		
-			En esta primera aproximación se va a crear y entrenar una red convolucional desde cero con el dataset mencionado. Mediante la clase \texttt{Sequential} de Keras, se puede proporcionar una lista de las capas que conforman el modelo. La primera de ellas será una capa de convolución, con la particularidad de que se debe indicar el tamaño de entrada, siendo este un tensor de las dimensiones indicadas en la creación del dataset. Se alterna cada capa de convolución de stride $3 \times 3$ y 32 o 64 filtros, con una capa de maxpooling con stride $2 \times 2$. Estos valores han sido elegidos de manera arbitraria. Esta arquitectura se puede visualizar en la \Cref{fig:arq_cnn}. \\
+			En esta primera aproximación se va a crear y entrenar una red convolucional desde cero con el dataset mencionado. Mediante la clase \texttt{Sequential} de Keras, se puede proporcionar una lista de las capas que conforman el modelo. La primera de ellas será una capa de convolución, con la particularidad de que se debe indicar el tamaño de entrada, siendo este un tensor de las dimensiones indicadas en la creación del dataset. Se alterna cada capa de convolución ReLU de stride $3 \times 3$ y 32 o 64 filtros, con una capa de maxpooling con stride $2 \times 2$. Estos valores han sido elegidos de manera arbitraria. Esta arquitectura se puede visualizar en la \Cref{fig:arq_cnn}. \\
 			
 			\begin{figure}[!h]
 				\centering
-				\includegraphics[scale = .6]{arq_cnn}
+				\includegraphics[scale = .55]{arq_cnn}
 				\caption{Arquitectura de la red convolucional}
 				\label{fig:arq_cnn}
 			\end{figure}
@@ -80,13 +80,18 @@
 				
 				conv2d_2 (Conv2D)           (None, 52, 52, 64)        36928     
 				
-				flatten (Flatten)           (None, 173056)            0         
+				max_pooling2d_2 (MaxPoolin  (None, 26, 26, 64)        0         
+				g2D)                                                            
 				
-				dense_2 (Dense)             (None, 4)                 692228    
+				flatten (Flatten)           (None, 43264)             0         
+				
+				dense_2 (Dense)             (None, 8)                 346120    
+				
+				dense_3 (Dense)             (None, 4)                 36        
 				
 				=================================================================
-				Total params: 748548 (2.86 MB)
-				Trainable params: 748548 (2.86 MB)
+				Total params: 402476 (1.54 MB)
+				Trainable params: 402476 (1.54 MB)
 				Non-trainable params: 0 (0.00 Byte)
 				_________________________________________________________________
 			\end{verbatim}
@@ -123,7 +128,7 @@
 				\label{fig:tb_cnn}
 			\end{figure}
 			
-			La situación que describen las gráficas, es negativa y sería la típica no deseada, pues se observa como con el paso de las iteraciones el error crece mientras que la precisión se estanca. En concreto, en la \Cref{fig:tb_cnn_c} se observa cómo el error sobre el conjunto de validación crece, mientras que sobre el conjunto de entrenamiento tiende a cero. Esta es una situación denominada como sobreaprendizaje u \textit{overfitting}. La red no tiene capacidad de aprender ni generalizar, y lo que está haciendo es memorizar los datos de ejemplo que se le presentan, cometiendo entonces errores cuando recibe datos que no ha visto nunca. 
+			La situación que describen las gráficas, es negativa y sería la típica no deseada, pues se observa como con el paso de las iteraciones el error crece mientras que la precisión se estanca en valores no deseados. En concreto, en la \Cref{fig:tb_cnn_c} se observa cómo el error sobre el conjunto de validación crece, mientras que sobre el conjunto de entrenamiento tiende a cero. Esta es una situación denominada como sobreaprendizaje u \textit{overfitting}\cite{overfitting}. La red no tiene capacidad de aprender ni generalizar, y lo que está haciendo es memorizar los datos de ejemplo que se le presentan, cometiendo entonces errores cuando recibe datos que no ha visto nunca. 
 			
 		\subsection{Transfer learning en TensorFlow}
 		
@@ -141,11 +146,13 @@
 				=================================================================
 				keras_layer (KerasLayer)    (None, 1280)              2257984   
 				
-				dense (Dense)               (None, 4)                 5124      
+				dense (Dense)               (None, 8)                 10248     
+				
+				dense_1 (Dense)             (None, 4)                 36        
 				
 				=================================================================
-				Total params: 2263108 (8.63 MB)
-				Trainable params: 5124 (20.02 KB)
+				Total params: 2268268 (8.65 MB)
+				Trainable params: 10284 (40.17 KB)
 				Non-trainable params: 2257984 (8.61 MB)
 				_________________________________________________________________
 			\end{verbatim}
@@ -182,11 +189,11 @@
 				\label{fig:tb_tl}
 			\end{figure}
 			
-			Estas gráficas representan una situación cercana a la ideal. En las \Cref{fig:tb_tl_a,fig:tb_tl_b} se observa cómo con el paso de las iteraciones, el error disminuye y la precisión aumenta. Además, en las \Cref{fig:tb_tl_c,fig:tb_tl_d} se muestra claramente que tanto el error como la precisión se comportan de manera similar sobre los conjuntos de entrenamiento y validación respectivamente, tomando además valores adecuados. 
+			Estas gráficas representan una situación cercana a la ideal. En las \Cref{fig:tb_tl_a,fig:tb_tl_b} se observa cómo con el paso de las iteraciones, el error disminuye y la precisión aumenta hasta llegar a valores adecuados. Además, en las \Cref{fig:tb_tl_c,fig:tb_tl_d} se muestra claramente que tanto el error como la precisión se comportan de manera similar sobre los conjuntos de entrenamiento y validación respectivamente, tomando además valores adecuados. 
 			
 		\subsection{Aumento de datos}
 		
-			Como se ha visto a lo largo de las secciones anteriores, uno de los problemas que se está teniendo en este caso práctico, es la falta de datos. Una técnica utilizada frecuentemente en estos casos es conocida como aumento de datos. Consiste en modificar las imágenes del dataset de entrenamiento para que el modelo disponga de más ejemplos diferentes. Podría entenderse como una parte del proceso de transformación ETL. \\
+			Como se ha visto a lo largo de las secciones anteriores, uno de los problemas que se está teniendo en este caso práctico, es la falta de datos. Una técnica utilizada frecuentemente en estos casos es conocida como aumento de datos. Consiste en modificar las imágenes del dataset de entrenamiento para que el modelo disponga de más ejemplos diferentes\cite{augm}. Podría entenderse como una parte del proceso de transformación ETL. \\
 			
 			Una vez más, es posible aplicar esta técnica mediante funciones de TensorFlow. Para ello se crea un objeto de la clase \texttt{ImageDataGenerator}. Mediante su constructor se pueden declarar los valores que toman los atributos que modificarán las imágenes, siendo algunos de los más destacables: 
 			
@@ -199,7 +206,7 @@
 				\item \texttt{validation\_split}: porcentaje de los datos reservados a validación. 
 			\end{itemize}
 			
-			Una vez se tiene declarado el generador, se utiliza su método \texttt{flow\_from\_directory} para que dada la ruta que contiene las imágenes, el tamaño deseado de imagen, y el tamaño de los lotes, se cree el objeto que representa al dataset. De manera similar a la anterior, se ha programado una función \texttt{sample\_ds\_ffd} que permite visualizar nueve elementos del dataset creado, tal y como muestra la \Cref{fig:sample_dataset_au}. \\
+			Una vez se tiene declarado el generador, se utiliza su método \texttt{flow\_from\_directory} para que dada la ruta que contiene las imágenes, el tamaño deseado de imagen, y el tamaño de los lotes, se cree el objeto que representa al dataset. De manera similar a la anterior, se ha programado una función \texttt{sample\_ds\_ffd} que permite visualizar nueve elementos del dataset creado, tal y como muestra la \Cref{fig:sample_dataset_au}. Esta es una de la manera más común de crear datos nuevos, siendo alguna de las más novedosas las arquitecturas GAN. Están formadas por dos redes, una capaz de crear imágenes y otra capaz de distinguir entre imágenes reales y generadas, y transmitir dicho conocimiento a la primera red, de manera que una intente ``engañar'' a la otra\cite{gan}. \\
 			
 			\begin{figure}
 				\centering
@@ -214,30 +221,30 @@
 		
 			Si bien gracias a las gráficas que TensorBoard proporciona es posible hacerse una idea de la calidad que tendrán las predicciones de un modelo, no son suficientes. Será entonces el momento de presentar al modelo una serie de imágenes que nunca haya visto para poder evaluar la calidad de sus predicciones mediante una serie de métricas y valores estadísticos. Este conjunto de imágenes que el modelo no ha recibido hasta el momento, es el denominado conjunto de test. \\
 			
-			Para calcular estas métricas en Python, se va a utilizar la librería Scikit-learn, ya que contiene un conjunto de métodos con los que calcular y visualizar la mayoría de métricas empleadas en machine learning. Además, las predicciones sobre los conjuntos de test quedará representadas mediante dos matrices, \texttt{Y\_matrix} y \texttt{Y\_score}. La primera de ellas es una matriz $n \times 2$ que contiene para cada observación su etiqueta real y la predicha. La segunda, contiene las probabilidades de cada observación de pertenecer a cada clase, por tanto es de dimensiones $n \times c$. 
+			Para calcular estas métricas en Python, se va a utilizar la librería Scikit-learn, ya que contiene un conjunto de métodos con los que calcular y visualizar la mayoría de métricas empleadas en machine learning. Además, las predicciones sobre los conjuntos de test quedará representadas mediante dos matrices, \texttt{Y\_matrix} y \texttt{Y\_score}. La primera de ellas es una matriz $n \times 3$ que contiene para cada observación su etiqueta real, la predicha, y con qué probabilidad se le asigna. La segunda, contiene las probabilidades de cada observación de pertenecer a cada clase, por tanto es de dimensiones $n \times c$. 
 			
-			$$
-			Y_m = \begin{pmatrix}
-				0 & 0\\
-				2 & 2\\
-				3 & 1\\
-				\vdots & \vdots\\
-				1 & 1
-			\end{pmatrix}\hspace{1cm}
-			Y_s = \begin{pmatrix}
-				0.75 & 0.07 & 0.01 & 0.17\\
-				0.15 & 0.01 & 0.7 & 0.14\\
-				0.02 & 0.97 & 0.01 & 0.01\\
-				\vdots & \vdots & \vdots & \vdots\\
-				0.05 & 0.87 & 0.01 & 0.08
-			\end{pmatrix}
-			$$
+			\begin{align*}
+				Y_m &= \begin{pmatrix}
+					0 & 0 & 0.75\\
+					2 & 2 & 0.7\\
+					3 & 1 & 0.97\\
+					\vdots & \vdots & \vdots\\
+					1 & 1 & 0.87
+				\end{pmatrix} & 
+				Y_s &= \begin{pmatrix}
+					0.75 & 0.07 & 0.01 & 0.17\\
+					0.15 & 0.01 & 0.7 & 0.14\\
+					0.02 & 0.97 & 0.01 & 0.01\\
+					\vdots & \vdots & \vdots & \vdots\\
+					0.05 & 0.87 & 0.01 & 0.08
+				\end{pmatrix}
+			\end{align*}
 			
 			Dependiendo si el problema en cuestión es de regresión o clasificación, se deben utilizar unas métricas u otras. Debido a que se desea evaluar la calidad de una clasificación, se han elegido las siguientes. 
 			
 			\subsubsection{Matriz de confusión}
 			
-				La matriz de confusión muestra en el caso de clasificación binaria, los verdaderos positivos, verdaderos negativos, falsos positivos, y falsos negativos, mientras que en el caso de clasificación no binaria, en general la relación entre las etiquetas reales de cada observación y las que el modelo le ha asignado. De manera muy visual se puede observar la cantidad de ejemplos de cada clase (pudiendo ver si se encuentran desbalanceadas), cuántos han sido clasificados correctamente, cuántos no, y en general entre qué clases suele confundirse más el modelo. \\
+				La matriz de confusión muestra en el caso de clasificación binaria, los verdaderos positivos, verdaderos negativos, falsos positivos, y falsos negativos, mientras que en el caso de clasificación no binaria, en general la relación entre las etiquetas reales de cada observación y las que el modelo le ha asignado\cite{confusion}. De manera muy visual se puede observar la cantidad de ejemplos de cada clase (pudiendo ver si se encuentran desbalanceadas), cuántos han sido clasificados correctamente, cuántos no, y en general entre qué clases suele confundirse más el modelo. \\
 				
 				\begin{figure}[!h]
 					\centering
@@ -275,4 +282,128 @@
 				
 			\subsubsection{Precisión, sensibilidad, y $F_1-$score}
 				
-				Si bien la matriz de confusión permite mostrar de manera visual la calidad de las clasificaciones, es conveniente calcular algunos valores a partir de esta matriz que permitan visualizar de manera numérica dichas calidades. 
+				Si bien la matriz de confusión permite mostrar de manera visual la calidad de las clasificaciones, es conveniente calcular algunos valores \cite{metricas_matriz} a partir de esta matriz que permitan visualizar de manera numérica dichas calidades. La primera de ellas conocida como \textbf{precisión} $(\mathcal{P})$, y puede entenderse como la probabilidad de que un elemento que etiquetado como $C_i$, realmente pertenezca a dicha clase. 
+				
+				$$
+				\mathcal{P} = P(C_i | \hat{C}_i) = \frac{P(C_i \cap \hat{C}_i)}{P(\hat{C}_i)}
+				$$
+				
+				La siguiente se denomina \textbf{sensibilidad} (o recuerdo, $\mathcal{R}$) e indica la probabilidad de que un elemento de la clase $C_i$, se clasifique como tal. 
+				
+				$$
+				\mathcal{R} = P(\hat{C}_i | C_i) = \frac{P(\hat{C}_i \cap C_i)}{P(C_i)}
+				$$
+				
+				En resumen y en términos de probabilidad condicionada, $\mathcal{P}$ puede entenderse como una probabilidad a posteriori (cómo de bien ha clasificado el modelo), mientras que $\mathcal{R}$ puede entenderse como una probabilidad a priori (cómo de bien clasificaría el modelo). Es frecuente calcular la media armónica de estos dos valores para obtener un único valor que evalúe la calidad de clasificación del modelo, comúnmente llamada $F_1$. 
+				
+				$$
+				F_1 = \frac{2}{\mathcal{P}^{-1} + \mathcal{R}^{-1}}
+				$$
+				
+				Para calcular estos valores, se ha hecho uso de la función \texttt{classification\_report} de Scikit-learn, que muestra en una tabla estos valores para cada clase, junto con las medias de dichos valores. En situaciones de clases desbalanceadas como es esta, es conveniente mirar las medias ponderadas (\texttt{weighted avg}) para que malos resultados en clases con pocos elementos contribuyan de manera proporcional al resultado final. 
+				
+				\begin{align*}
+					\overline{\mathcal{P}} &= \sum_{i=1}^n P(C_i)P(C_i | \hat{C}_i) &
+					\overline{\mathcal{R}} &= \sum_{i=1}^n P(C_i)P(\hat{C}_i | C_i)
+				\end{align*}
+				
+				\begin{figure}[!h]
+					\centering
+					\scriptsize
+					\begin{subfigure}{.5\textwidth}
+						\centering
+						\verbatiminput{img/mmc_conv.txt}
+						\caption{Normal}
+						\label{fig:m_conv}
+					\end{subfigure}\hfill
+					\begin{subfigure}{.5\textwidth}
+						\centering
+						\verbatiminput{img/mmc_mb.txt}
+						\caption{Aplicando transfer learning}
+						\label{fig:m_mb}
+					\end{subfigure}
+					\begin{subfigure}{.5\textwidth}
+						\centering
+						\verbatiminput{img/mmc_convau.txt}
+						\caption{Aplicando aumento de datos}
+						\label{fig:m_convau}
+					\end{subfigure}\hfill
+					\begin{subfigure}{.5\textwidth}
+						\centering
+						\verbatiminput{img/mmc_mbau.txt}
+						\caption{Aplicando ambas}
+						\label{fig:m_mbau}
+					\end{subfigure}
+					\caption{Precisión, sensibilidad, y $F_1$}
+					\label{fig:m}
+				\end{figure}
+				
+				En las tablas obtenidas en la \Cref{fig:m}, puede verse como los valores obtenidos corresponden con las situaciones que mostraban las matrices de confusión, siendo los mejores en aquellas que se aplica transfer learning al tener valores mayores, y que a pesar de tener clases desbalanceadas (se puede observar en la columna de \texttt{support}), los valores entre clases son similares (en dichos casos), obteniendo medias ponderadas similares a las calculadas sin ponderar. En los casos más negativos, se observan valores más bajos y comportamientos diferentes dependiendo de la clase. 
+			
+			\subsubsection{Curvas ROC y AUC}
+			
+				Otra manera de evaluar la calidad de un clasificador binario es mediante las conocidas como curvas ROC (\textit{Receiver Operating Characteristic}), que representan en el espacio $[0, 1]\times[0, 1]$ los falsos positivos frente a los verdaderos positivos\cite{roc}. Es más sencillo de entender y representar en términos de probabilidad condicionada, representando $P(\hat{C}_i | \lnot C_i)$ frente a $P(\hat{C}_i | C_i)$. Para determinar entre dos curvas cuál describe un mejor clasificador, lo que se hace es elegir aquella con un AUC (Area Under Curve) mayor. Si se toma la curva ROC como una función $r: [0, 1] \longrightarrow [0, 1]$, entonces el AUC se puede entender como 
+				$$
+				\mathcal{A} = \int_0^1 r(x)\,dx, 
+				$$
+				siendo $\mathcal{A} = 1$ el mejor de los valores posibles. En general, cuanto mayores sean los valores del eje $y$ para valores muy pequeños del eje $x$, mejor será el clasificador, mientras que cuando la curva ROC se aproxime a la función $f(x) = x$, más parecido será el modelo a hacer las clasificaciones al azar. En los casos que no son de clasificación binaria como este, no existe como tal una clase positiva y una negativa. Lo que se hace en su lugar es una de las siguientes aproximaciones\cite{auc}. 
+				
+				\begin{itemize}
+					\item OVO (\textit{one versus one}): para cada clase $C_i$ y $C_j$ con $i \neq j$, se toma una de ellas como clase positiva y la otra como negativa, y se calcula la curva ROC y AUC asociado, disponiendo de un total de $\binom{n}{2}$ o $n(n-1)$ curvas según el autor o la librería utilizada (depende de considerar o no cada elemento de la pareja como positiva y negativa, y viceversa, teniendo que $2\binom{n}{2} = n(n-1)$). 
+					
+					$$
+					\mathcal{A}_{\text{OVO}} = \frac{1}{n(n-1)}\sum_{i=1}^n\sum_{j \neq i}^n P(C_i)\mathcal{A}(C_i, C_j)
+					$$
+					
+					\item OVR (\textit{one versus rest}): para cada clase $C_i$ se toma como clase positiva, y el resto de las clases como una única clase negativa. Se calcula la correspondiente curva ROC y AUC asociado, obteniendo un total de $n$ curvas. 
+					
+					$$
+					\mathcal{A}_{\text{OVR}} = \sum_{i=1}^n P(C_i)\mathcal{A}(C_i, \lnot C_i)
+					$$
+					
+				\end{itemize}
+				
+				Es muy útil visualizar en una misma gráfica las diferentes curvas ROC de una de estas técnicas, sin embargo Scikit-learn no cuenta con ninguna función que haga esto directamente, sólo muestra el valor final. Por ello, se ha codificado una función \texttt{roc\_auc\_ovr} que recibe $Y_m$, $Y_s$, y el nombre de las clases, y devuelve un gráfico en el que se ven las curvas ROC OVR de cada clase, los AUC de cada una, y el global. Para ello se ha hecho uso de la función \texttt{roc\_curve}, que calcula la curva, \texttt{auc}, que calcula el AUC, y \texttt{RocCurveDisplay} que muestra un gráfico de la curva ROC. En la \Cref{fig:roc} se muestran los cuatro resultados para cada uno de los casos, teniendo de nuevo que para las variantes de las \Cref{fig:roc_mb,fig:roc_mbau} se observan los mejores resultados sin haber casi diferencia entre ambos. \\
+				
+				\begin{figure}[!h]
+					\centering
+					\begin{subfigure}{.4\textwidth}
+						\centering
+						\includegraphics[scale = .5]{auc_conv}
+						\caption{Normal}
+						\label{fig:roc_conv}
+					\end{subfigure}\hfill
+					\begin{subfigure}{.4\textwidth}
+						\centering
+						\includegraphics[scale = .5]{auc_mb}
+						\caption{Aplicando transfer learning}
+						\label{fig:roc_mb}
+					\end{subfigure}
+					\begin{subfigure}{.4\textwidth}
+						\centering
+						\includegraphics[scale = .5]{auc_convau}
+						\caption{Aplicando aumento de datos}
+						\label{fig:roc_convau}
+					\end{subfigure}\hfill
+					\begin{subfigure}{.4\textwidth}
+						\centering
+						\includegraphics[scale = .5]{auc_mbau}
+						\caption{Aplicando ambas}
+						\label{fig:roc_mbau}
+					\end{subfigure}
+					\caption{Curvas ROC}
+					\label{fig:roc}
+				\end{figure}
+			
+				Como resumen de esta parte, se puede concluir que el entrenamiento de una red convolucional desde cero es un proceso complejo y que requiere de una cantidad enorme de datos, que en los casos en los que no se dispone de ellos, conduce a resultados negativos, siendo necesario aplicar la técnica de transfer learning. A pesar de haber visto su gran eficacia, se va a realizar una prueba más. \\
+				
+				El dataset empleado, contenía imágenes de diferentes partes de España, por lo que el modelo estaba viendo variantes de cada tipo de objeto. Lo que se va a hacer ahora es separar dicho dataset de manera que contenga únicamente en el conjunto de test imágenes de la ciudad de Guadalajara. Al ser pocas, el experimento no será muy representativo, pero permitirá probar la eficacia de la red generalizando conceptos. Para ello se ha utilizado el mismo modelo que se ha utilizado en el caso de transfer learning (entrenando de nuevo los parámetros desde cero para evitar hacer predicciones de una imagen vista durante el entrenamiento). \\
+				
+				\begin{figure}[!h]
+					\centering
+					\includegraphics[scale = .8]{gu_vs_ga}
+					\caption{Experimento de la capacidad de generalización de la red}
+					\label{fig:comparativa_gu}
+				\end{figure}
+				
+				Como se observa en la \Cref{fig:comparativa_gu}, tras haber entrenado el modelo sin usar imágenes de objetos de Guadalajara, y enseñarle uno como por ejemplo este hito del Camino de Santiago, la red está casi segura que de uno de ellos se trata, a pesar de que sea completamente distinto a los que ha visto durante el entrenamiento con el aspecto típico de Galicia. 

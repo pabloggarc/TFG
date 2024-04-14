@@ -11,3 +11,5 @@
 *.loa
 svg-inkscape/
 PlotNeuralNet/
+Datasets/
+Modelos/

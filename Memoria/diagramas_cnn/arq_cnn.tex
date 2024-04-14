@@ -1,0 +1,167 @@
+
+\documentclass[border=8pt, multi, tikz]{standalone} 
+\usepackage{import}
+\subimport{./PlotNeuralNet/layers/}{init}
+\usetikzlibrary{positioning}
+\usetikzlibrary{3d} %for including external image 
+
+\def\ConvColor{rgb:yellow,5;red,2.5;white,5}
+\def\ConvReluColor{rgb:yellow,5;red,5;white,5}
+\def\PoolColor{rgb:red,1;black,0.3}
+\def\UnpoolColor{rgb:blue,2;green,1;black,0.3}
+\def\FcColor{rgb:blue,5;red,2.5;white,5}
+\def\FcReluColor{rgb:blue,5;red,5;white,4}
+\def\SoftmaxColor{rgb:magenta,5;black,7}   
+\def\SumColor{rgb:blue,5;green,15}
+
+\newcommand{\copymidarrow}{\tikz \draw[-Stealth,line width=0.8mm,draw={rgb:blue,4;red,1;green,1;black,3}] (-0.3,0) -- ++(0.3,0);}
+
+\begin{document}
+\begin{tikzpicture}
+\tikzstyle{connection}=[ultra thick,every node/.style={sloped,allow upside down},draw=\edgecolor,opacity=0.7]
+\tikzstyle{copyconnection}=[ultra thick,every node/.style={sloped,allow upside down},draw={rgb:blue,4;red,1;green,1;black,3},opacity=0.7]
+
+\pic[shift={(0,0,0)}] at (0,0,0) 
+    {Box={
+        name=conv1,
+        caption=Conv2D,
+        xlabel={{(3, 3), }},
+        zlabel=224,
+        fill=\ConvColor,
+        height=64,
+        width=3,
+        depth=64
+        }
+    };
+
+\pic[shift={ (2,0,0) }] at (conv1-east) 
+    {Box={
+        name=pool1,
+        caption=MaxPool2D,
+        fill=\PoolColor,
+        opacity=0.5,
+        height=32,
+        width=3,
+        depth=32
+        }
+    };
+
+\pic[shift={(3.5,0,0)}] at (pool1-east) 
+    {Box={
+        name=conv2,
+        caption= ,
+        xlabel={{(3, 3), }},
+        zlabel=109,
+        fill=\ConvColor,
+        height=31,
+        width=3,
+        depth=31
+        }
+    };
+
+\draw [connection]  (pool1-east)    -- node {\midarrow} (conv2-west);
+
+\pic[shift={ (2,0,0) }] at (conv2-east) 
+    {Box={
+        name=pool2,
+        caption= ,
+        fill=\PoolColor,
+        opacity=0.5,
+        height=15,
+        width=3,
+        depth=15
+        }
+    };
+
+\pic[shift={(2.5,0,0)}] at (pool2-east) 
+    {Box={
+        name=conv3,
+        caption= ,
+        xlabel={{(3, 3), }},
+        zlabel=52,
+        fill=\ConvColor,
+        height=14,
+        width=3,
+        depth=14
+        }
+    };
+
+\draw [connection]  (pool2-east)    -- node {\midarrow} (conv3-west);
+
+\pic[shift={ (1.5,0,0) }] at (conv3-east) 
+    {Box={
+        name=pool3,
+        caption= ,
+        fill=\PoolColor,
+        opacity=0.5,
+        height=7,
+        width=3,
+        depth=7
+        }
+    };
+
+\pic[shift={(2.5,0,0)}] at (pool3-east) 
+    {Box={
+        name=dense1,
+        caption=Flatten,
+        xlabel={{" ","dummy"}},
+        zlabel=43264,
+        fill=\SoftmaxColor,
+        opacity=0.8,
+        height=3,
+        width=1.5,
+        depth=25
+        }
+    };
+
+\draw [connection]  (pool3-east)    -- node {\midarrow} (dense1-west);
+
+\pic[shift={(2.5,0,0)}] at (dense1-east) 
+    {Box={
+        name=dense2,
+        caption=Dense,
+        xlabel={{" ","dummy"}},
+        zlabel=8,
+        fill=\SoftmaxColor,
+        opacity=0.8,
+        height=3,
+        width=1.5,
+        depth=20
+        }
+    };
+
+\draw [connection]  (dense1-east)    -- node {\midarrow} (dense2-west);
+
+\pic[shift={(2.5,0,0)}] at (dense2-east) 
+    {Box={
+        name=softmax,
+        caption=Softmax,
+        xlabel={{" ","dummy"}},
+        zlabel=4,
+        fill=\SoftmaxColor,
+        opacity=0.8,
+        height=3,
+        width=1.5,
+        depth=10
+        }
+    };
+
+\draw [connection]  (dense2-east)    -- node {\midarrow} (softmax-west);
+\draw[densely dashed]
+(conv1-nearnortheast) -- (pool1-nearnorthwest)
+(conv1-nearsoutheast) -- (pool1-nearsouthwest)
+(conv1-farsoutheast)  -- (pool1-farsouthwest)
+(conv1-farnortheast)  -- (pool1-farnorthwest)
+
+(conv2-nearnortheast) -- (pool2-nearnorthwest)
+(conv2-nearsoutheast) -- (pool2-nearsouthwest)
+(conv2-farsoutheast)  -- (pool2-farsouthwest)
+(conv2-farnortheast)  -- (pool2-farnorthwest)
+
+(conv3-nearnortheast) -- (pool3-nearnorthwest)
+(conv3-nearsoutheast) -- (pool3-nearsouthwest)
+(conv3-farsoutheast)  -- (pool3-farsouthwest)
+(conv3-farnortheast)  -- (pool3-farnorthwest)
+;
+\end{tikzpicture}
+\end{document}
