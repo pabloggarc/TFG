@@ -35,6 +35,42 @@
 		\caption{Clasificación de una propuesta de Wayfarer}
 		\label{fig:etiquetas_propuesta}
 	\end{figure}
+	
+	\section{Tecnologías empleadas}
+	
+		\subsection{TensorFlow}
+		
+		\subsection{CUDA}
+		
+			CUDA son las siglas de Compute Unified Device Architecture, y es una tecnología de la marca estadounidense NVIDIA. Esta tecnología hace referencia a un conjunto de elementos que permiten ejecutar código de manera masivamente paralela en una tarjeta gráfica de la compañía, de manera que el tiempo de ejecución es mucho menor que al ejecutarlo de manera secuencial. Entre estos elementos se encuentran el controlador, el compilador, las interfaces para los diferentes lenguajes (la más común la de C/C++), las librerías que contienen algoritmos optimizados, y los propios núcleos CUDA de la GPU\cite{cuda}. \\
+			
+			El hardware de las tarjetas gráficas de NVIDIA se divide en \textit{streaming multiprocessors} (SMs), que a su vez están compuestos de \textit{streaming processors} (SPs) o núclos CUDA, entre otros elementos. A nivel de software, la unidad básica paralela es el hilo, que a nivel de hardware se ejecuta en un SP. Dichos SPs, son unos núcleos capaces de hacer operaciones más sencillas que las que un núcleo de una CPU podría realizar, pero de manera más rápida. A su vez, los hilos se agrupan en bloques, teniendo en cuenta que a nivel de hardware cada bloque se ejecuta en un único SM. Finalmente, todos los elementos se agrupan en una cuadrícula (o \textit{grid}) compuesta de bloques. Cada cuadrícula se ejecuta en una única GPU a nivel de hardware, y ejecuta a nivel de software un kernel\cite{cuda_arq,cuda_arq1}. \\
+			
+			\begin{figure}[!h]
+				\centering
+				\includegraphics[scale = .3]{arquitectura_cuda}
+				\caption{Arquitectura CUDA a nivel de hardware y software\cite{cuda_arq1}}
+				\label{fig:arq_cuda}
+			\end{figure}
+			
+			El hecho de poder realizar miles de operaciones sencillas de manera simultánea, reduce enormemente el tiempo de ejecución de algoritmos que son paralelizables, es decir, que contienen pasos sencillos que son independientes de otros y se pueden realizar al mismo tiempo, como es el caso de una convolución o multiplicación de matrices. Además, se cuenta con diferentes niveles de memoria, con los que se agilizan los tiempos de lectura de elementos que son utilizados frecuentemente. \\
+			
+			La mayoría de algoritmos de aprendizaje automático de TensorFlow tienen implementada su versión paralela, de manera que si se cuenta con una GPU compatible con CUDA, TensorFlow la utilizará para ahorrar el mayor tiempo posible durante los entrenamientos de los modelos. En este caso se dispone de un equipo que cuenta con un procesador Intel Core i7-8700, una GPU NVIDIA GeForce GTX 1060 6GB, y 32 GB de RAM; lo que hace posible la ejecución concurrente de dichos algoritmos. Esta tarjeta gráfica cuenta con 1280 SPs o núcleos CUDA repartidos en 10 SMs. \\
+			
+			Si bien el trabajo de indicar a TensorFlow que haga uso de CUDA es sencillo, no es tan trivial la configuración de drivers de NVIDIA, instalación de CUDA, versión de Python, versión de TensorFlow, versión de sistema operativo, etc. Con el frecuente cambio de versiones de cada componente, se presentan nuevas incompatibilidades entre ellos, haciendo que guías oficiales fallen y que el proceso de configuración inicial sea complicado en sistemas operativos como Windows 11. La manera más sencilla actualmente de realizar una instalación de CUDA y TensorFlow es sobre el sistema operativo Ubuntu en su versión 22.04 LTS. Para instalar y configurar el resto de componentes se ha hecho uso de LambdaStack (\url{https://lambdalabs.com/lambda-stack-deep-learning-software}). Mediante el uso del comando de terminal
+			\begin{verbatim}
+				wget -nv -O- https://lambdalabs.com/install-lambda-stack.sh | sh -
+			\end{verbatim}
+			automáticamente lanza LambdaStack que se encarga de instalar las versiones de Python y sus librerías (TensorFlow y PyTorch entre otras) adecuadas, los drivers de NVIDIA correctos, componentes de CUDA, realiza las configuraciones de variables de entorno, etc. En general, deja el entorno de Ubuntu configurado para poder trabajar en cualquier proyecto de inteligencia artificial en el que se quiera hacer uso de una GPU de NVIDIA. También cuentan con una imagen de Docker que ofrece una experiencia similar. El uso de este servicio es completamente gratuito, y es el que utiliza la compañía que lo gestiona en sus servicios de cloud computing (que sí es de pago). \\
+			
+			Para probar la eficacia del uso de CUDA para proyectos de esta índole, se ha seleccionado un modelo de los que se presentan en la \Cref{subsec:crear_cnn} (entrenamiento de una red convolucional desde cero), y se ha lanzado midiendo el tiempo, el mismo entrenamiento pero con diferente número de épocas sobre CPU y GPU. La \Cref{fig:comparativa_cuda} evidencia cómo el entrenamiento en la GPU llega a ser hasta cinco veces más rápido que en la CPU. Todos los entrenamientos de la \Cref{subsec:crear_cnn} han sido realizados sobre la GPU. 
+			
+			\begin{figure}[!h]
+				\centering
+				\includegraphics[scale = .5]{comp_cuda}
+				\caption{Comparativa de entrenamiento en CPU frente a en GPU}
+				\label{fig:comparativa_cuda}
+			\end{figure}
 
 	\section{Clasificación de imágenes mediante redes convolucionales}
 	
@@ -137,7 +173,7 @@
 			
 			Con la función \texttt{compile} se termina de crear el objeto que representa al modelo, pudiendo especificar un optimizador, la función de pérdida, y las métricas que se muestran durante el entrenamiento. Para este proyecto se utilizarán Adam, entropía cruzada, y precisión respectivamente. El modelo ya está en condiciones de ser entrenado, y esto se logra mediante la función \texttt{fit}, a la que se le proporcionan los datos de entrenamiento (\texttt{x\_train}), los datos de validación (\texttt{x\_val}), el número de épocas (en este caso se han elegido 25), y la ruta de los callbacks. Esta sirve para ir almacenando metadatos del entrenamiento, que mediante una utilidad con la que cuenta TensorFlow llamada TensorBoard, permite monitorizar de manera muy visual la calidad del entrenamiento, tal y como se muestra en la \Cref{fig:tb_cnn}. \\
 			
-			\begin{figure}[!h]
+			\begin{figure}[!h] %Actualizar estas imágenes
 				\centering
 				\begin{subfigure}{.4\textwidth}
 					\centering
@@ -177,7 +213,7 @@
 			
 			En el problema que se está tratando, se va a aplicar esta técnica de la siguiente manera. Como previamente se ha mencionado, las redes convolucionales, pueden verse como un conjunto de capas capaces de extraer características de las imágenes, junto con una red neuronal clásica que es capaz de clasificar en función de dichas características. Teniendo en cuenta que el principal problema del modelo anterior podría ser que no fuera capaz de obtener las características adecuadas que definen a cada clase, la idea es utilizar una serie de capas que sí sean capaces de obtener de manera correcta las características de una imagen, para después poder entrenar la red neuronal clásica con las características adecuadas. \\
 			
-			Con ayuda de la librería TensorHub que trabaja junto con TensorFlow, se pueden importar modelos ya entrenados de \url{https://www.kaggle.com/}. En este caso para aplicar la técnica de transfer learning, se ha decidido utilizar la red MobileNet de Google que se observa en la \Cref{fig:mb}. El modelo se puede importar como si de una capa se tratase al crear un modelo secuencial de Keras. Para lograr la técnica, será clave declarar que los parámetros de dicha capa no se deberán entrenar (pues al importar el modelo ya vienen con unos valores adecuados). A continuación se coloca una capa densa, encargada de clasificar las características que la red de Google extraiga, y que deberá ser entrenada. Esta vez, el número de parámetros a optimizar sí es más adecuado al número de observaciones disponibles. 
+			Con ayuda de la plataforma TensorHub que trabaja junto con TensorFlow, se pueden importar modelos ya entrenados. En este caso para aplicar la técnica de transfer learning, se ha decidido utilizar la red MobileNet de Google que se observa en la \Cref{fig:mb}. El modelo se puede importar como si de una capa se tratase al crear un modelo secuencial de Keras. Para lograr la técnica, será clave declarar que los parámetros de dicha capa no se deberán entrenar (pues al importar el modelo ya vienen con unos valores adecuados). A continuación se coloca una capa densa, encargada de clasificar las características que la red de Google extraiga, y que deberá ser entrenada. Esta vez, el número de parámetros a optimizar sí es más adecuado al número de observaciones disponibles. 
 			
 			\begin{figure}[!h]
 				\centering
@@ -190,11 +226,15 @@
 				_________________________________________________________________
 				Layer (type)                Output Shape              Param #   
 				=================================================================
-				keras_layer (KerasLayer)    (None, 1280)              2257984   
+				mobilenetv2_1.00_224 (Func  (None, 7, 7, 1280)        2257984   
+				tional)                                                         
 				
-				dense (Dense)               (None, 8)                 10248     
+				global_average_pooling2d (  (None, 1280)              0         
+				GlobalAveragePooling2D)                                         
 				
-				dense_1 (Dense)             (None, 4)                 36        
+				dense_2 (Dense)             (None, 8)                 10248     
+				
+				dense_3 (Dense)             (None, 4)                 36        
 				
 				=================================================================
 				Total params: 2268268 (8.65 MB)
@@ -296,25 +336,25 @@
 					\centering
 					\begin{subfigure}{.4\textwidth}
 						\centering
-						\includegraphics[scale = .42]{mc_conv}
+						\includegraphics[scale = .34]{mc_conv}
 						\caption{Normal}
 						\label{fig:mc_conv}
 					\end{subfigure}\hfill
 					\begin{subfigure}{.4\textwidth}
 						\centering
-						\includegraphics[scale = .42]{mc_mb}
+						\includegraphics[scale = .34]{mc_mb}
 						\caption{Aplicando transfer learning}
 						\label{fig:mc_mb}
 					\end{subfigure}
 					\begin{subfigure}{.4\textwidth}
 						\centering
-						\includegraphics[scale = .42]{mc_convau}
+						\includegraphics[scale = .34]{mc_convau}
 						\caption{Aplicando aumento de datos}
 						\label{fig:mc_convau}
 					\end{subfigure}\hfill
 					\begin{subfigure}{.4\textwidth}
 						\centering
-						\includegraphics[scale = .42]{mc_mbau}
+						\includegraphics[scale = .34]{mc_mbau}
 						\caption{Aplicando ambas}
 						\label{fig:mc_mbau}
 					\end{subfigure}
@@ -415,25 +455,25 @@
 					\centering
 					\begin{subfigure}{.4\textwidth}
 						\centering
-						\includegraphics[scale = .5]{auc_conv}
+						\includegraphics[scale = .35]{auc_conv}
 						\caption{Normal}
 						\label{fig:roc_conv}
 					\end{subfigure}\hfill
 					\begin{subfigure}{.4\textwidth}
 						\centering
-						\includegraphics[scale = .5]{auc_mb}
+						\includegraphics[scale = .35]{auc_mb}
 						\caption{Aplicando transfer learning}
 						\label{fig:roc_mb}
 					\end{subfigure}
 					\begin{subfigure}{.4\textwidth}
 						\centering
-						\includegraphics[scale = .5]{auc_convau}
+						\includegraphics[scale = .35]{auc_convau}
 						\caption{Aplicando aumento de datos}
 						\label{fig:roc_convau}
 					\end{subfigure}\hfill
 					\begin{subfigure}{.4\textwidth}
 						\centering
-						\includegraphics[scale = .5]{auc_mbau}
+						\includegraphics[scale = .35]{auc_mbau}
 						\caption{Aplicando ambas}
 						\label{fig:roc_mbau}
 					\end{subfigure}
@@ -445,10 +485,10 @@
 				
 				El dataset empleado, contenía imágenes de diferentes partes de España, por lo que el modelo estaba viendo variantes de cada tipo de objeto. Lo que se va a hacer ahora es separar dicho dataset de manera que contenga únicamente en el conjunto de test imágenes de la ciudad de Guadalajara. Al ser pocas, el experimento no será muy representativo, pero permitirá probar la eficacia de la red generalizando conceptos. Para ello se ha utilizado el mismo modelo que se ha utilizado en el caso de transfer learning (entrenando de nuevo los parámetros desde cero para evitar hacer predicciones de una imagen vista durante el entrenamiento). \\
 				
-				\begin{figure}[!h]
+				\begin{figure}[H]
 					\centering
-					\includegraphics[scale = .8]{gu_vs_ga}
-					\caption{Experimento de la capacidad de generalización de la red}
+					\includegraphics[scale = .65]{gu_vs_ga}
+					\caption{Capacidad de generalización de la red, predicción en Galicia y Guadalajara}
 					\label{fig:comparativa_gu}
 				\end{figure}
 				
