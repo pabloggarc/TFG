@@ -4,7 +4,7 @@
 	
 	Una de las herramientas creadas por esta empresa es Niantic Lightship, que permite a desarrolladores Unity integrar realidad aumentada y mapas con puntos de interés basados en la ubicación real del jugador. Dado que para Niantic resultaba inviable marcar dichos puntos de interés alrededor de todo el mundo, creó Niantic Wayfarer. En esta herramienta, usuarios experimentados de sus juegos pueden hacer propuestas de puntos de interés (llamados Wayspots) para que de manera colaborativa, otros usuarios las valoren. Sin embargo, tras varios años desde su lanzamiento, debido al gran número de propuestas y al reducido número de valoradores, la comunidad notifica largos tiempos de espera en el proceso de valoración de las propuestas. Por este motivo, se propone en este proyecto realizar una primera aproximación a la automatización de este proceso mediante las técnicas de visión e inteligencia artificial presentadas en el marco teórico. \\
 	
-	La valoración de un Wayspot en Wayfarer consta de diferentes etapas. En primer lugar se muestra un título y descripción del Wayspot junto con la imagen que aparecería en los juegos. Además aparece una imagen secundaria con una visión desde otra perspectiva, junto con otro texto que ayudarían al valorador a ubicar la propuesta, tal y como se muestra en la \Cref{fig:info_propuesta}. También aparece un breve cuestionario con una serie de preguntas genéricas que ayudan a determinar si aquello que se solicita cumple una serie de criterios (\Cref{fig:preguntas}). Además, se muestra un mapa que contiene los Wayspots cercanos para verificar que no exista ya, y comprobar con Street View la ubicación sugerida (\Cref{fig:mapa}). Finalmente, se pide clasificar la propuesta en una o varias categorías (\Cref{fig:etiquetas_propuesta}). 
+	La valoración de un Wayspot en Wayfarer consta de diferentes etapas. En primer lugar se muestra un título y descripción del Wayspot junto con la imagen que aparecería en los juegos. Además aparece una imagen secundaria con una visión desde otra perspectiva, junto con otro texto que ayudarían al valorador a ubicar la propuesta, tal y como se muestra en la \Cref{fig:info_propuesta}. También aparece un breve cuestionario con una serie de preguntas genéricas que ayudan a determinar si aquello que se solicita cumple una serie de criterios (\Cref{fig:preguntas}). Además, se muestra un mapa que contiene los Wayspots cercanos para verificar que no exista ya, y comprobar con Street View la ubicación sugerida (\Cref{fig:mapa}). Finalmente, se pide clasificar la propuesta en una o varias categorías. 
 	
 	\begin{figure}[!h]
 		\centering
@@ -17,32 +17,64 @@
 	
 	\begin{figure}[!h]
 		\centering
-		\includegraphics[scale = .4]{cuestionario}
+		\includegraphics[scale = .3]{cuestionario}
 		\caption{Cuestionario de una propuesta en Wayfarer}
 		\label{fig:preguntas}
 	\end{figure}
 	
 	\begin{figure}[!h]
 		\centering
-		\includegraphics[scale = .4]{mapa}
-		\caption{Mapa en una propuesta de Wayfarer}
+		\includegraphics[scale = .3, valign = c]{mapa}\hfill
+		\includegraphics[scale = .3, valign = c]{etiquetas}
+		\caption{Mapa y clasificación de una propuesta de Wayfarer}
 		\label{fig:mapa}
-	\end{figure}
-	
-	\begin{figure}[!h]
-		\centering
-		\includegraphics[scale = .4]{etiquetas}
-		\caption{Clasificación de una propuesta de Wayfarer}
-		\label{fig:etiquetas_propuesta}
 	\end{figure}
 	
 	\section{Tecnologías empleadas}
 	
-		\subsection{TensorFlow}
+		\subsection{Python}
+		
+			Para realizar la codificación del proyecto se ha utilizado el lenguaje de programación Python. Es un lenguaje de alto nivel en el que se pueden seguir diferentes paradigmas de programación, como por ejemplo, el orientado a objetos o el funcional. Sus dos grandes ventajas son su sintaxis, que es muy sencilla y legible; y la gran variedad de bibliotecas que posee para realizar cualquier tipo de tareas, desde desarrollo web, proyectos de aprendizaje automático, desarrollo de videojuegos, creación de animaciones, etc. \\
+			
+			\begin{figure}[!h]
+				\centering
+				\includesvg{python}
+				\caption{Python}
+				\label{fig:py}
+			\end{figure}
+			
+			Para este proyecto, las principales utilizadas son TensorFlow y Scikit-learn. La primera de ellas fue creada por Google y permite construir de manera sencilla modelos de aprendizaje automático, contando con las implementaciones de los principales elementos que los forman, así como algoritmos de entrenamiento, datasets de ejemplo, y funciones auxiliares de utilidad para trabajar con los datos empleados durante el proceso. La segunda de ellas, además de contar también con diversas implementaciones de modelos y algoritmos de aprendizaje automático, es bien conocida por contar con las implementaciones de diferentes métricas para modelos, lo que permite comprobar de manera rápida y visual la calidad de los modelos entrenados. Finalmente, estas bibliotecas hacen uso de otras como pueden ser Matplotlib, utilizada para generar cualquier tipo de figura desde Python. \\
+			
+			\begin{figure}[!h]
+				\centering
+				\begin{subfigure}{.5\textwidth}
+					\centering
+					\includesvg{tf}
+					\caption{TensorFlow}
+					\label{fig:tf}
+				\end{subfigure}\hfill
+				\begin{subfigure}{.5\textwidth}
+					\centering
+					\includesvg[scale = .7]{sklearn}
+					\caption{Scikit-learn}
+					\label{fig:sklearn}
+				\end{subfigure}
+				\caption{Bibliotecas populares de Python}
+				\label{fig:bibliotecas}
+			\end{figure}
+			
+			Por otro lado, no todo son ventajas. Python es un lenguaje interpretado y de tipado dinámico, lo que hace que su ejecución sea mucho más lenta que la de otros lenguajes. Sin embargo, existen soluciones como NumPy, una biblioteca que permite trabajar con grandes matrices de datos en tiempos de ejecución menores que al utilizar listas, gracias a que gran parte de su codificación se realizó utilizando lenguajes de más bajo nivel como C. 
 		
 		\subsection{CUDA}
 		
 			CUDA son las siglas de Compute Unified Device Architecture, y es una tecnología de la marca estadounidense NVIDIA. Esta tecnología hace referencia a un conjunto de elementos que permiten ejecutar código de manera masivamente paralela en una tarjeta gráfica de la compañía, de manera que el tiempo de ejecución es mucho menor que al ejecutarlo de manera secuencial. Entre estos elementos se encuentran el controlador, el compilador, las interfaces para los diferentes lenguajes (la más común la de C/C++), las librerías que contienen algoritmos optimizados, y los propios núcleos CUDA de la GPU\cite{cuda}. \\
+			
+			\begin{figure}[!h]
+				\centering
+				\includesvg[width = .3\textwidth]{nvidia}
+				\caption{NVIDIA}
+				\label{fig:nvidia}
+			\end{figure}
 			
 			El hardware de las tarjetas gráficas de NVIDIA se divide en \textit{streaming multiprocessors} (SMs), que a su vez están compuestos de \textit{streaming processors} (SPs) o núclos CUDA, entre otros elementos. A nivel de software, la unidad básica paralela es el hilo, que a nivel de hardware se ejecuta en un SP. Dichos SPs, son unos núcleos capaces de hacer operaciones más sencillas que las que un núcleo de una CPU podría realizar, pero de manera más rápida. A su vez, los hilos se agrupan en bloques, teniendo en cuenta que a nivel de hardware cada bloque se ejecuta en un único SM. Finalmente, todos los elementos se agrupan en una cuadrícula (o \textit{grid}) compuesta de bloques. Cada cuadrícula se ejecuta en una única GPU a nivel de hardware, y ejecuta a nivel de software un kernel\cite{cuda_arq,cuda_arq1}. \\
 			
@@ -61,7 +93,7 @@
 			\begin{verbatim}
 				wget -nv -O- https://lambdalabs.com/install-lambda-stack.sh | sh -
 			\end{verbatim}
-			automáticamente lanza LambdaStack que se encarga de instalar las versiones de Python y sus librerías (TensorFlow y PyTorch entre otras) adecuadas, los drivers de NVIDIA correctos, componentes de CUDA, realiza las configuraciones de variables de entorno, etc. En general, deja el entorno de Ubuntu configurado para poder trabajar en cualquier proyecto de inteligencia artificial en el que se quiera hacer uso de una GPU de NVIDIA. También cuentan con una imagen de Docker que ofrece una experiencia similar. El uso de este servicio es completamente gratuito, y es el que utiliza la compañía que lo gestiona en sus servicios de cloud computing (que sí es de pago). \\
+			automáticamente lanza LambdaStack que se encarga de instalar las versiones de Python y sus librerías (TensorFlow y PyTorch entre otras) adecuadas, los drivers de NVIDIA correctos, componentes de CUDA, realiza las configuraciones de variables de entorno, etc. En general, deja el entorno de Ubuntu configurado para poder trabajar en cualquier proyecto de inteligencia artificial en el que se quiera hacer uso de una GPU de NVIDIA. También cuentan con una imagen de Docker que ofrece una experiencia similar. El uso de este servicio es completamente gratuito, y es el que utiliza la compañía que lo gestiona en sus servicios de cloud computing (que sí son de pago). \\
 			
 			Para probar la eficacia del uso de CUDA para proyectos de esta índole, se ha seleccionado un modelo de los que se presentan en la \Cref{subsec:crear_cnn} (entrenamiento de una red convolucional desde cero), y se ha lanzado midiendo el tiempo, el mismo entrenamiento pero con diferente número de épocas sobre CPU y GPU. La \Cref{fig:comparativa_cuda} evidencia cómo el entrenamiento en la GPU llega a ser hasta cinco veces más rápido que en la CPU. Todos los entrenamientos de la \Cref{subsec:crear_cnn} han sido realizados sobre la GPU. 
 			
@@ -80,7 +112,7 @@
 		
 		\subsection{Proceso ETL}
 		
-			La solución adoptada para este proceso, ha sido recolectar manualmente imágenes que han superado el proceso de valoración, pudiendo consultar algunas de ellas desde el mapa de uno de los juegos (\url{https://intel.ingress.com/}). En este caso, se estarían clasificando entre las $n$ clases de objetos aceptables las imágenes recibidas, cosa que en un primer momento parece carecer de sentido pues se conoce el resultado de la valoración. Sin embargo, al no tener acceso a propuestas rechazadas, no se pueden recolectar estos datos para entrenar los modelos, pero si de la empresa responsable se tratase, se dispondría de una enorme cantidad de imágenes válidas y no válidas etiquetadas (gracias a la parte del proceso de valoración que muestra la \Cref{fig:etiquetas_propuesta}), y que se podrían cargar de manera automática. En resumen, cambiando simplemente los datos que se cargarían y su fuente, se podrían tomar las siguientes decisiones sin necesidad de modificar el resto del proyecto.  
+			La solución adoptada para este proceso, ha sido recolectar manualmente imágenes que han superado el proceso de valoración, pudiendo consultar algunas de ellas desde el mapa de uno de los juegos (\url{https://intel.ingress.com/}). En este caso, se estarían clasificando entre las $n$ clases de objetos aceptables las imágenes recibidas, cosa que en un primer momento parece carecer de sentido pues se conoce el resultado de la valoración. Sin embargo, al no tener acceso a propuestas rechazadas, no se pueden recolectar estos datos para entrenar los modelos, pero si de la empresa responsable se tratase, se dispondría de una enorme cantidad de imágenes válidas y no válidas etiquetadas (gracias a la parte del proceso de valoración que muestra la \Cref{fig:mapa}), y que se podrían cargar de manera automática. En resumen, cambiando simplemente los datos que se cargarían y su fuente, se podrían tomar las siguientes decisiones sin necesidad de modificar el resto del proyecto.  
 			
 			\begin{itemize}
 				\item Si $I \in C_i, 0 \leq i < m$, rechazar la propuesta
@@ -173,7 +205,7 @@
 			
 			Con la función \texttt{compile} se termina de crear el objeto que representa al modelo, pudiendo especificar un optimizador, la función de pérdida, y las métricas que se muestran durante el entrenamiento. Para este proyecto se utilizarán Adam, entropía cruzada, y precisión respectivamente. El modelo ya está en condiciones de ser entrenado, y esto se logra mediante la función \texttt{fit}, a la que se le proporcionan los datos de entrenamiento (\texttt{x\_train}), los datos de validación (\texttt{x\_val}), el número de épocas (en este caso se han elegido 25), y la ruta de los callbacks. Esta sirve para ir almacenando metadatos del entrenamiento, que mediante una utilidad con la que cuenta TensorFlow llamada TensorBoard, permite monitorizar de manera muy visual la calidad del entrenamiento, tal y como se muestra en la \Cref{fig:tb_cnn}. \\
 			
-			\begin{figure}[!h] %Actualizar estas imágenes
+			\begin{figure}[!h]
 				\centering
 				\begin{subfigure}{.4\textwidth}
 					\centering
@@ -493,3 +525,46 @@
 				\end{figure}
 				
 				Como se observa en la \Cref{fig:comparativa_gu}, tras haber entrenado el modelo sin usar imágenes de objetos de Guadalajara, y enseñarle uno como por ejemplo este hito del Camino de Santiago, la red está casi segura que de uno de ellos se trata, a pesar de que sea completamente distinto a los que ha visto durante el entrenamiento con el aspecto típico de Galicia. 
+				
+			\subsection{Detección de clases desconocidas}
+			
+				Si bien hasta el momento se habían supuesto las condiciones ideales de que los modelos sólo recibían imágenes que contenían uno de los cuatro elementos seleccionados, en el problema que se trata de resolver aun habiendo entrenado un modelo para un número grande de clases, una persona podría enviar un punto de interés que no perteneciese a ninguna de las clases supuestas. En dicho caso, se necesitaría detectar que la imagen no debería pertenecer a ninguna de las clases que el modelo conoce, y descartar para ser evaluada de otra manera. \\
+				
+				Este problema es ampliamente conocido como \textit{open set recognition}, y existen diversas formas de abordarlo. En esta sección se va a demostrar la eficacia de dos de las más populares. En ambos casos se necesitan recopilar datos de imágenes que no pertenezcan a ninguna de las clases. Para esto, también se han tomado imágenes que superaron el proceso de valoración pero que difieren de las clases seleccionadas para este proyecto, como por ejemplo, grafitis, iglesias, fuentes, pistas deportivas, etc. \\
+				
+				La primera de las aproximaciones consiste en tratar el resto de clases desconocidas como una única clase desconocida. Al dataset utilizado en los casos anteriores se ha añadido una clase \texttt{resto} que contiene diversas imágenes mezcladas. Utilizando el mejor de los modelos anteriores (aplicando transfer learning), y teniendo en cuenta que no todas las imágenes de la misma clase guardan relación entre sí, se han obtenido resultados realmente positivos, puesto que el valor del $F_1$ es de $0.956$, casi no hay clasificaciones incorrectas en la matriz de confusión (\Cref{fig:mc_otros}), y las curvas ROC son casi perfectas (\Cref{fig:roc_otros}). \\
+				
+				\begin{figure}[!h]
+					\centering
+					\begin{subfigure}{.5\textwidth}
+						\centering
+						%\includegraphics[scale = .35]{}
+						\caption{Matriz de confusión}
+						\label{fig:mc_otros}
+					\end{subfigure}\hfill
+					\begin{subfigure}{.5\textwidth}
+						\centering
+						%\includegraphics[scale = .35]{}
+						\caption{Curvas ROC y AUC}
+						\label{fig:roc_otros}
+					\end{subfigure}
+					\caption{Métricas en clasificación con clase desconocida}
+					\label{fig:clase_otros}
+				\end{figure}
+				
+				La segunda consiste en utilizar un primer modelo que permita distinguir entre imágenes de las clases conocidas y las que no. Para ello se utiliza un clasificador binario con las clases \texttt{otros} y \texttt{no\_otros}, de manera que las que se etiqueten como \texttt{no\_otros} se pasen a un modelo que sea capaz de distinguir entre las clases originales. Para realizar esto, ambos modelos siguen la arquitectura del mejor modelo de los anteriores, adaptando el número de clases. Se puede visualizar un resumen de esta situación en la \Cref{fig:openset}. 
+				
+				\begin{figure}[!h]
+					\includegraphics[width = \textwidth]{diagrama_open} 
+					\caption{Arquitectura de clasificación con clases desconocidas}
+					\label{fig:openset}
+				\end{figure}
+				
+				Los resultados del entrenamiento del clasificador binario han sido adecuados. Visualizando la matriz de confusión (\Cref{fig:mc_bin}), apenas existen clasificaciones incorrectas. Los valores de la precisión, sensibilidad, y $F_1$ en cada clase son muy positivos. 
+				
+				\begin{figure}[!h]
+					\centering
+					%\includegraphics
+					\caption{Matriz de confusión del clasificador binario}
+					\label{fig:mc_bin}
+				\end{figure}
