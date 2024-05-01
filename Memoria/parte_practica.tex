@@ -517,7 +517,7 @@
 				
 				El dataset empleado, contenía imágenes de diferentes partes de España, por lo que el modelo estaba viendo variantes de cada tipo de objeto. Lo que se va a hacer ahora es separar dicho dataset de manera que contenga únicamente en el conjunto de test imágenes de la ciudad de Guadalajara. Al ser pocas, el experimento no será muy representativo, pero permitirá probar la eficacia de la red generalizando conceptos. Para ello se ha utilizado el mismo modelo que se ha utilizado en el caso de transfer learning (entrenando de nuevo los parámetros desde cero para evitar hacer predicciones de una imagen vista durante el entrenamiento). \\
 				
-				\begin{figure}[H]
+				\begin{figure}[!h]
 					\centering
 					\includegraphics[scale = .65]{gu_vs_ga}
 					\caption{Capacidad de generalización de la red, predicción en Galicia y Guadalajara}
@@ -532,27 +532,33 @@
 				
 				Este problema es ampliamente conocido como \textit{open set recognition}, y existen diversas formas de abordarlo. En esta sección se va a demostrar la eficacia de dos de las más populares. En ambos casos se necesitan recopilar datos de imágenes que no pertenezcan a ninguna de las clases. Para esto, también se han tomado imágenes que superaron el proceso de valoración pero que difieren de las clases seleccionadas para este proyecto, como por ejemplo, grafitis, iglesias, fuentes, pistas deportivas, etc. \\
 				
-				La primera de las aproximaciones consiste en tratar el resto de clases desconocidas como una única clase desconocida. Al dataset utilizado en los casos anteriores se ha añadido una clase \texttt{resto} que contiene diversas imágenes mezcladas. Utilizando el mejor de los modelos anteriores (aplicando transfer learning), y teniendo en cuenta que no todas las imágenes de la misma clase guardan relación entre sí, se han obtenido resultados realmente positivos, puesto que el valor del $F_1$ es de $0.956$, casi no hay clasificaciones incorrectas en la matriz de confusión (\Cref{fig:mc_otros}), y las curvas ROC son casi perfectas (\Cref{fig:roc_otros}). \\
+				La primera de las aproximaciones consiste en tratar el resto de clases desconocidas como una única clase desconocida. Al dataset utilizado en los casos anteriores se ha añadido una clase \texttt{resto} que contiene diversas imágenes mezcladas. Utilizando el mejor de los modelos anteriores (aplicando transfer learning), y teniendo en cuenta que no todas las imágenes de la misma clase guardan relación entre sí, se han obtenido resultados realmente positivos, puesto que el valor del $F_1$ es de $0.956$, casi no hay clasificaciones incorrectas en la matriz de confusión (\Cref{fig:mc_open_otros}), y las curvas ROC son casi perfectas (\Cref{fig:roc_open_otros}). \\
 				
 				\begin{figure}[!h]
 					\centering
 					\begin{subfigure}{.5\textwidth}
 						\centering
-						%\includegraphics[scale = .35]{}
+						\verbatiminput{img/mmc_open_otros.txt}
+						\caption{Precisión, sensibilidad, y $F_1$}
+						\label{fig:m_open_otros}
+					\end{subfigure}
+					\begin{subfigure}{.5\textwidth}
+						\centering
+						\includegraphics[scale = .35]{mc_open_otros}
 						\caption{Matriz de confusión}
-						\label{fig:mc_otros}
+						\label{fig:mc_open_otros}
 					\end{subfigure}\hfill
 					\begin{subfigure}{.5\textwidth}
 						\centering
-						%\includegraphics[scale = .35]{}
+						\includegraphics[scale = .3]{auc_open_otros}
 						\caption{Curvas ROC y AUC}
-						\label{fig:roc_otros}
+						\label{fig:roc_open_otros}
 					\end{subfigure}
 					\caption{Métricas en clasificación con clase desconocida}
 					\label{fig:clase_otros}
 				\end{figure}
 				
-				La segunda consiste en utilizar un primer modelo que permita distinguir entre imágenes de las clases conocidas y las que no. Para ello se utiliza un clasificador binario con las clases \texttt{otros} y \texttt{no\_otros}, de manera que las que se etiqueten como \texttt{no\_otros} se pasen a un modelo que sea capaz de distinguir entre las clases originales. Para realizar esto, ambos modelos siguen la arquitectura del mejor modelo de los anteriores, adaptando el número de clases. Se puede visualizar un resumen de esta situación en la \Cref{fig:openset}. 
+				La segunda consiste en utilizar un primer modelo que permita distinguir entre imágenes de las clases conocidas y las que no. Para ello se utiliza un clasificador binario con las clases \texttt{resto} y \texttt{no\_resto}, y un modelo que sea capaz de distinguir entre las clases originales. Para realizar esto, ambos modelos siguen la arquitectura del mejor modelo de los anteriores, adaptando el número de clases. Se puede visualizar un resumen de esta situación en la \Cref{fig:openset}. \\
 				
 				\begin{figure}[!h]
 					\includegraphics[width = \textwidth]{diagrama_open} 
@@ -560,11 +566,62 @@
 					\label{fig:openset}
 				\end{figure}
 				
-				Los resultados del entrenamiento del clasificador binario han sido adecuados. Visualizando la matriz de confusión (\Cref{fig:mc_bin}), apenas existen clasificaciones incorrectas. Los valores de la precisión, sensibilidad, y $F_1$ en cada clase son muy positivos. 
+				En una primera aproximación podría parecer innecesario evaluar cada imagen en ambos modelos, pudiendo evaluar todas las imágenes en el clasificador binario, y aquellas que sean etiquetadas como \texttt{no\_resto}, ser evaluadas por el segundo clasificador. Sin embargo, esto es incorrecto, pues para medir la calidad de la arquitectura en general se necesita hacer uso de una matriz $Y_s$ (en este caso de dimensiones $n \times 5$) que contenga las probabilidades de pertenecer a cada clase, siendo dichas clases las $C_i$ y $R$. Si hay una imagen que se etiqueta como $R$, se tienen $P(R)$ y $P(\lnot R)$, pero no $P(C_i)$. Para obtener dichas probabilidades, se necesita hacer uso del segundo clasificador, teniendo en cuenta que las probabilidades que devuelve este son $P(C_i|\lnot R)$, tal y como se describe en la \Cref{fig:prob}. \\
+				
+				\begin{figure}[H]
+					\centering
+					% https://tikzcd.yichuanshen.de/#N4Igdg9gJgpgziAXAbVABwnAlgFyxMJZABgBoBGAXVJADcBDAGwFcYkQAdDnGADxwHAsAW3oBzGGAC+IKaXSZc+QigBMpYtTpNW7AEqz5IDNjwEi61VoYs2iTh0aQcAAgNyFp5UQAsFazp2IADCAPrkhp5K5ih+VjQ2uvZctFAQOAgexopmKsh+AMwBtuxhhFJaMFASCCigAGYAThDCSGQgOBBI5DQAFjD0UOyQYGwJgewACgAUegCUkSBNLW00nUjqIP2DwwRjIIz0AEYwjJM53vaNWGK9OCDjJfYzXE7pbgtZy62Im+uIBT6AyG9hG+0SQRmYXIAB9Xs4Potvhs1l1EABWIE7UF7B7aJ4gKGhMBwxwI+Z4w4nM4XGIga63e4VKRAA
+					\begin{tikzcd}
+						&  & R                                                                                      &  &        \\
+						\texttt{imagen} \arrow[rru, "P(R)", no head] \arrow[rrd, "P(\lnot R)"', no head] &  &                                                                                        &  & C_1    \\
+						&  & \lnot R \arrow[rru, "P(C_1|\lnot R)", no head] \arrow[rrd, "P(C_n|\lnot R)"', no head] &  & \vdots \\
+						&  &                                                                                        &  & C_n   
+					\end{tikzcd}
+					\caption{Diagrama de probabilidades}
+					\label{fig:prob}
+				\end{figure}
+				
+				Una vez se dispone de $P(R)$, $P(\lnot R)$, y $P(C_i|\lnot R)$, basta aplicar el Teorema de la probabilidad total para calcular los $P(C_i)$, obteniendo que $P(C_i) = P(C_i | \lnot R) P(\lnot R)$. Para calcular entonces la matriz $Y_s$ necesaria, basta con tomar las matrices $Y_s^{(1)}$ y $Y_s^{(2)}$ (siendo cada una la obtenida por cada uno de los clasificadores), y corregir las probabilidades de la segunda matriz con la segunda columna de la primera matriz y concatenarla con la primera columna de la primera matriz, pudiéndose traducir esto a $Y_s = \left(\text{diag}\left(Y_{s_{i1}}^{(1)}\right)Y_s^{(2)}\middle|Y_{s_{i2}}^{(1)}\right)$, es decir, 
+				$$
+				\begin{gathered}
+					Y_s^{(3)} = \begin{pmatrix}
+						P_1(\lnot R) & 0 & \cdots & 0\\
+						0 & P_2(\lnot R) & \cdots & 0\\
+						\vdots & \vdots & \ddots & \vdots\\
+						0 & 0 & \cdots & P_n(\lnot R)
+					\end{pmatrix}
+					\begin{pmatrix}
+						P_1(C_1) & P_1(C_2) & \cdots & P_1(C_4)\\
+						P_2(C_1) & P_2(C_2) & \cdots & P_2(C_4)\\
+						\vdots & \vdots & \ddots & \vdots\\
+						P_n(C_1) & P_n(C_2) & \cdots & P_n(C_4)
+					\end{pmatrix}\\\\
+					Y_s = \left(Y_s^{(3)} \middle| Y_{s_{i2}}^{(1)}\right). 
+				\end{gathered}
+				$$
+				
+				Por otro lado, ha de tenerse en cuenta que el primer clasificador da las etiquetas 0 y 1, y el segundo del 0 al 3, por lo que también se crea una matriz $Y_m$ en función de las matrices $Y_m^{(1)}$ y $Y_m^{(2)}$ para tener etiquetas del 0 al 4. Con ambas matrices construidas se pueden evaluar los resultados en la \Cref{fig:clase_otros_doble}, pudiendo observar que también son muy positivos e incluso similares a los obtenidos por la arquitectura anterior. Finalmente añadir, que es importante que ambos modelos se entrenen con las mismas imágenes de manera que el rendimiento entre ambos sea similar, pues si por ejemplo el primer clasificador es malo distinguiendo entre $R$ y $\lnot R$, entonces dará igual cómo de bueno sea el segundo clasificador separando entre las otras cuatro clases, y viceversa. Como conclusión, podría elegirse cualquiera de las dos, aunque a efectos prácticos la primera es más interesante al ser más simple y necesitar un único entrenamiento. 
 				
 				\begin{figure}[!h]
 					\centering
-					%\includegraphics
-					\caption{Matriz de confusión del clasificador binario}
-					\label{fig:mc_bin}
+					\begin{subfigure}{.5\textwidth}
+						\centering
+						\verbatiminput{img/mmc_open_bin_multiple.txt}
+						\caption{Precisión, sensibilidad, y $F_1$}
+						\label{fig:m_open_bin_multiple}
+					\end{subfigure}
+					\begin{subfigure}{.5\textwidth}
+						\centering
+						\includegraphics[scale = .35]{mc_open_bin_multiple}
+						\caption{Matriz de confusión}
+						\label{fig:mc_open_bin_multiple}
+					\end{subfigure}\hfill
+					\begin{subfigure}{.5\textwidth}
+						\centering
+						\includegraphics[scale = .35]{auc_open_bin_multiple}
+						\caption{Curvas ROC y AUC}
+						\label{fig:roc_open_bin_multiple}
+					\end{subfigure}
+					\caption{Métricas en clasificación con clase desconocida (doble modelo)}
+					\label{fig:clase_otros_doble}
 				\end{figure}

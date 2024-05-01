@@ -1,11 +1,11 @@
                  precision    recall  f1-score   support
 
 camino_santiago      0.913     1.000     0.955        21
-         cartel      0.952     0.952     0.952        62
-       marcador      0.944     0.944     0.944        18
-         parque      0.860     0.961     0.907        51
-          resto      0.952     0.690     0.800        29
+         cartel      0.967     0.952     0.959        62
+       marcador      0.941     0.889     0.914        18
+         parque      0.942     0.961     0.951        51
+          resto      0.929     0.897     0.912        29
 
-       accuracy                          0.917       181
-      macro avg      0.924     0.909     0.912       181
-   weighted avg      0.921     0.917     0.914       181
+       accuracy                          0.945       181
+      macro avg      0.938     0.940     0.938       181
+   weighted avg      0.945     0.945     0.945       181
