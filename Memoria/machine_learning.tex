@@ -791,7 +791,7 @@
 			
 			\subsection{Codificación}
 			
-				El flujo que sigue un elemento de entrada en un transformer, es bastante más elaborado que el que se sigue en una red neuronal, tal y como se observa en la \Cref{fig:arq_transf}. Inicialmente comienza con la etapa de codificación, el la que el elemento recibido (en este primer ejemplo, un texto) se divide en una serie de tokens o elementos básicos e indivisibles, se añaden los tokens \texttt{\$SOS\$} (start of sequence) y \texttt{\$EOS\$} para marcar el inicio y el final del contenido, y se convierte cada uno de ellos en una serie de embeddings $\textbf{e} \in \mathbb{R}^{d_m}$ que codifican el token. Un ejemplo sería dividir una frase por palabras, y asignar un vector diferente a cada palabra del diccionario, aunque en los modelos reales de NLP no se separa de esta manera. Continuando con el proceso, se necesita almacenar de alguna manera la posición de los tokens de entrada, pues el transformer procesa todos los tokens de manera simultánea y la frase ``\textit{Juan es mayor que María}'', es totalmente diferente a, por ejemplo ``\textit{María es mayor que Juan}'', a pesar de ser dos secuencias con los mismos tokens. Para lograr esto, a cada embedding \textbf{e} se le suma un vector posicional \textbf{p} donde cada una de sus componentes $p_i$ se obtienen de la siguiente manera, siendo $d_m$ la dimensión de los embeddings y $n$ la posición del token. 
+				El flujo que sigue un elemento de entrada en un transformer, es bastante más elaborado que el que se sigue en una red neuronal, tal y como se observa en la \Cref{fig:arq_transf}. Inicialmente comienza con la etapa de codificación, el la que el elemento recibido (en este primer ejemplo, un texto) se divide en una serie de tokens o elementos básicos e indivisibles, se añaden los tokens \texttt{\$SOS\$} (start of sequence) y \texttt{\$EOS\$} (end of sequence) para marcar el inicio y el final del contenido, y se convierte cada uno de ellos en una serie de embeddings $\textbf{e} \in \mathbb{R}^{d_m}$ que codifican el token. Un ejemplo sería dividir una frase por palabras, y asignar un vector diferente a cada palabra del diccionario, aunque en los modelos reales de NLP no separan de esta manera. Continuando con el proceso, se necesita almacenar de alguna manera la posición de los tokens de entrada, pues el transformer procesa todos los tokens de manera simultánea y la frase ``\textit{Juan es mayor que María}'', es totalmente diferente a, por ejemplo ``\textit{María es mayor que Juan}'', a pesar de ser dos secuencias con los mismos tokens. Para lograr esto, a cada embedding \textbf{e} se le suma un vector posicional \textbf{p} donde cada una de sus componentes $p_i$ se obtienen de la siguiente manera, siendo $d_m$ la dimensión de los embeddings y $n$ la posición del token. 
 				
 				$$
 				p_i(n) = \begin{cases}
@@ -800,17 +800,22 @@
 					\end{cases}
 				$$
 				
-				Existen diferentes de maneras de codificar posiciones de tokens, pero en la arquitectura original se utilizó la presentada. El siguiente paso es el conocido como algoritmo de atención, siendo su misión la siguiente. Observando las frases ``\textit{Juan es un catador profesional de vino}'' y ``\textit{María vino ayer de Madrid}'' se ve que el token \texttt{vino} aparece en ambas, e inicialmente se le asignaría un embedding idéntico, sin embargo en ambos casos se le asignaría el mismo embedding, ignorando el contexto en el que aparece el token y perdiendo su significado original. De la misma manera, en la frase ``\textit{Ellos son Juan y María, él es alto y ella es baja}'', necesitaría codificarse que los tokens \texttt{alto} y \texttt{baja} se refieren respectivamente a los tokens \texttt{él} y \texttt{ella}, y a su vez a los tokens \texttt{Juan} y \texttt{María}. La misión del algoritmo de atención es justo esta, transformar los embeddings de cada token para que su codificación se adapte al contexto. \\
+				Existen diferentes de maneras de codificar posiciones de tokens, pero en la arquitectura original se utilizó la presentada. El siguiente paso es el conocido como algoritmo de atención, siendo su misión la siguiente. Observando las frases ``\textit{Juan es un catador profesional de vino}'' y ``\textit{María vino ayer de Madrid}'', se ve que el token \texttt{vino} aparece en ambas, e inicialmente se le asignaría un embedding idéntico (excepto por la posición), ignorando el contexto en el que aparece el token y perdiendo su significado original. De la misma manera, en la frase ``\textit{Ellos son Juan y María, él es alto y ella es baja}'', necesitaría codificarse que los tokens \texttt{alto} y \texttt{baja} se refieren respectivamente a los tokens \texttt{él} y \texttt{ella}, y a su vez a los tokens \texttt{Juan} y \texttt{María}. La misión del algoritmo de atención es justo esta, transformar los embeddings de cada token para que su codificación se adapte al contexto. \\
 				
-				Esto se logra mediante tres matrices $W_Q$, $W_K$, y $W_V$ que almacenan parámetros entrenables del transformer (es decir, aquí reside parte del conocimiento del modelo). Estas se llaman query o consulta, key o clave, y value o valor. El primer paso es calcular el producto de la matriz $W_Q$ con cada embedding $\textbf{e}_i$ obteniendo un vector de consulta $\textbf{q}_i$. De manera similar se realiza con las claves, para obtener los vectores $\textbf{k}_i$. Una vez se tienen todos los vectores consulta y clave, se forman las matrices $Q$ y $K$ que contienen estos vectores, pues al calcular $QK^t$ se obtiene una matriz donde cada una de las entradas es el producto escalar $\textbf{q}_i \cdot \textbf{k}_i$, que es una manera de indicar la relación que existe entre los dos embeddings, o la ``atención'' que presta el uno al otro. Para evitar problemas como el \textit{vanishing gradients}, la matriz se reescala por un factor $\sqrt{d_k}^{-1}$. En algunos casos se aplica el llamado enmascaramiento, que consiste en sustituir ciertos valores por $-\infty$ para eliminar su atención, pues para visualizar en términos de probabilidad qué embedding se relaciona más con otro dado, se aplica la función softmax por columnas. Para dichos casos, se supondrá que $\text{mask}(C)$ aplica la máscara deseada, y en caso contrario $C = \text{mask}(C)$. \\
-				
-				En este punto, se habría detectado la relación entre los tokens de \texttt{Juan} y \texttt{alto}, y los de \texttt{María} y \texttt{baja}, sin embargo, se necesita modificarlos para que dicha información quede codificada. Para realizar esto, se calculan una serie de vectores de valor $\textbf{v}_i$ como el producto de $W_V$ con $\textbf{e}_i$, que forman la matriz $V$. Al multiplicar dicha matriz por la obtenida en el paso anterior, se obtiene la matriz de atención $A$. 
+				Esto se logra mediante tres matrices $Q$, $K$, y $V$ que se llaman query o consulta, key o clave, y value o valor, respectivamente. En este primer ejemplo, dichas matrices son copias de la matriz $E$ de embeddings. La idea es que cada embedding pregunte al resto cómo de relacionados están mediante $QK^t/\sqrt{d_m}$. Esto no es más que el producto escalar de cada par de embeddings normalizado, siendo una manera de medir la similitud entre dos vectores, que al aplicar la función softmax por filas, permite ver claramente para cada embedding cuál le ``presta más atención''. A veces, conviene aplicar una máscara $M$ con ciertos valores de $-\infty$ para forzar que algunos embeddings no presten atención a otros. El resultado obtenido se multiplica por la matriz de valores $V$. Esto representa que si un embedding está relacionado con otro, debe ``llevarse'' parte de él, para codificar tanto su información como la de aquellos embeddings con los que está relacionado. 
 				
 				$$
-				A = \text{softmax}_j\left(\frac{\text{mask}\left(QK^t\right)}{\sqrt{d_k}}\right)V
+				A = \text{softmax}\left(\frac{QK^t\odot M}{\sqrt{d_m}}\right)V
 				$$
 				
-				Esta matriz $A$ contiene una serie de vectores que reflejan el cambio que debe hacerse a cada embedding para que codifiquen la información del contexto recopilada. Si se tiene una matriz $E$ de embeddings, se actualizaría de manera que $E' = E + A$. Al realizar esta suma, el embedding del token \texttt{Juan} ya almacena información sobre que es alto, o por ejemplo en las frases mostradas previamente, los embeddings para el token \texttt{vino} ya serían completamente diferentes. Este proceso se conoce como atención ``de cabeza única'' o simple, pues normalmente se aplica el conocido como de ``cabeza múltiple''. \\
+				En este punto, se habría detectado la relación entre los tokens de \texttt{Juan} y \texttt{alto}, y los de \texttt{María} y \texttt{baja}, reflejando en la matriz $A$ el cambio que debe hacerse a cada embedding para que codifiquen la información del contexto recopilada. La matriz de embeddings, se actualizaría de manera que $E' = E + A$. Al realizar esta suma, el embedding del token \texttt{Juan} ya almacena información sobre que es alto. Este proceso se conoce como auto-atención ``de cabeza única'' o simple, pues normalmente se aplica el conocido como de ``cabeza múltiple''. \\
+				
+				\begin{figure}[!h]
+					\centering
+					\includegraphics[scale = .7, angle = -90]{attention}
+					\caption{Visualización del algoritmo de atención}
+					\label{fig:attention}
+				\end{figure}
 				
 				\begin{algorithm}
 					\SetProgSty{texttt}\DontPrintSemicolon
@@ -818,17 +823,14 @@
 					\caption{Atención simple}
 					\label{algo:attention_simple}
 					
-					\Datos{$E \in \mathbb{R}^{n \times d_m}, W_Q \in \mathbb{R}^{d_m \times d_m}, W_K \in \mathbb{R}^{d_m \times d_m}, W_V \in \mathbb{R}^{d_m \times d_m}$}
+					\Datos{$E \in \mathbb{R}^{n \times d_m}, M \in \mathbb{R}^{n \times n}$}
 					\Resultado{$E' \in \mathbb{R}^{n \times d_m}$}
 					
-					$Q \gets E W_Q$\\
-					$K \gets E W_K$\\
-					$V \gets E W_V$\\
-					$A \gets \text{softmax}_j\left(\frac{\text{mask}\left(QK^t\right)}{\sqrt{d_m}}\right)V$\\
+					$A \gets \text{softmax}\left(\frac{QK^t\odot M}{\sqrt{d_m}}\right)V$\\
 					$E' \gets E + A$
 				\end{algorithm}
 				
-				Consiste en ejecutar en paralelo $h$ cabezas de atención, cada una con sus respectivas matrices $W_Q^{(i)}$, $W_K^{(i)}$, y $W_V^{(i)}$, para obtener $h$ matrices $A^{(i)}$. De esta manera, se consigue que cada cabeza aprenda los diferentes contextos que puede adoptar un token, para finalmente entre todas las cabezas, elegir el adecuado. Esto se ve reflejado en el \Cref{algo:attention_multiple}. \\
+				La atención múltiple consiste en ejecutar en paralelo $h$ cabezas de atención.  Cada una cuenta con unas matrices $W_Q^{(i)}$, $W_K^{(i)}$, y $W_V^{(i)}$ de parámetros entrenables del modelo, que transforman el espacio de representación de los embeddings en $d_k = d_m / h$ para obtener $h$ matrices $A^{(i)}$. De esta manera, se consigue que cada cabeza aprenda los diferentes contextos que puede adoptar un token, para finalmente entre todas las cabezas, elegir el adecuado. Por ejemplo, en el caso del token \texttt{vino} esto ayuda a verificar si está actuando como verbo o como sustantivo. Para devolver los embeddings al espacio de representación original se utiliza una matriz $W_O$, también de parámetros entrenables. Esta variación se ve reflejada en el \Cref{algo:attention_multiple}. \\
 				
 				\begin{algorithm}
 					\SetProgSty{texttt}\DontPrintSemicolon
@@ -837,7 +839,7 @@
 					\caption{Atención múltiple}
 					\label{algo:attention_multiple}
 					
-					\Datos{$E \in \mathbb{R}^{n \times d_m}, W_Q^{(i)} \in \mathbb{R}^{d_k \times d_m}, W_K^{(i)} \in \mathbb{R}^{d_k \times d_m}, W_V^{(i)} \in \mathbb{R}^{d_v \times d_m}, W_O \in \mathbb{R}^{h d_v \times d_m}, h$}
+					\Datos{$E \in \mathbb{R}^{n \times d_m}, M \in \mathbb{R}^{n \times n}, W_Q^{(i)} \in \mathbb{R}^{d_k \times d_m}, W_K^{(i)} \in \mathbb{R}^{d_k \times d_m}, W_V^{(i)} \in \mathbb{R}^{d_v \times d_m}, W_O \in \mathbb{R}^{h d_v \times d_m}, h, 1 < i \leq h$}
 					\Resultado{$E' \in \mathbb{R}^{n \times d_m}$}
 					$d_k \gets \frac{d_m}{h}$\\
 					$d_v \gets d_k$\\
@@ -845,12 +847,12 @@
 						$Q^{(i)} \gets E \left(W^{(i)}_Q\right)^t$\\
 						$K^{(i)} \gets E \left(W^{(i)}_K\right)^t$\\
 						$V^{(i)} \gets E \left(W^{(i)}_V\right)^t$\\
-						$A^{(i)} \gets \text{softmax}_j\left(\frac{\text{mask}\left(Q^{(i)}\left(K^{(i)}\right)^{t}\right)}{\sqrt{d}}\right)V^{(i)}$
+						$A^{(i)} \gets \text{softmax}\left(\frac{Q^{(i)}\left(K^{(i)}\right)^{t}\odot M}{\sqrt{d_k}}\right)V^{(i)}$
 					}
 					$E' \gets E + \left(A^{(1)}\middle|A^{(2)}\middle|\cdots\middle|A^{(h)}\right)W_O$
 				\end{algorithm}
 				
-				El proceso de codificación continúa con una normalización de los embeddings. Para realizar dicha normalización\cite{normalization}, se supone que los elementos de cada embedding siguen una distribución $\mathcal{N}(\mu_i, \sigma_i)$, y se normalizan de acuerdo a la ecuación $E' = \Sigma\Gamma\odot(E - M) + B$, es decir, 
+				El proceso de codificación continúa con una normalización de los embeddings. Para realizar dicha normalización\cite{normalization}, se supone que los elementos de cada embedding $\textbf{e}_i$ siguen una distribución $\mathcal{N}(\mu_i, \sigma_i)$, y se normalizan de acuerdo a la ecuación $E' = \Sigma\Gamma\odot(E - M) + B$, es decir, 
 				\begin{align*}
 					E' &= \begin{pmatrix}
 						\sqrt{\sigma^2_1 + \varepsilon}^{-1} & 0 & \cdots & 0\\
@@ -880,9 +882,9 @@
 				
 			\subsection{Decodificación}
 			
-				La etapa de decodificación es bastante similar a la de codificación, ya que la misión del decodificador se puede resumir de manera informal en mezclar las codificaciones del codificador, y las codificaciones de la entrada del decodificador. Todos los bloques del decodificador que se muestran en dicha \Cref{fig:arq_transf} ya han sido explicados a falta de dos. El más simple es el que aparece como \textit{Linear}, que no son más que redes neuronales que traducen embeddings a tokens. \\
+				La etapa de decodificación es bastante similar a la de codificación, ya que la misión del decodificador se puede resumir de manera informal en mezclar las codificaciones del codificador, y las codificaciones de la entrada del decodificador. Todos los bloques del decodificador que se muestran en la \Cref{fig:arq_transf} ya han sido explicados a excepción de un detalle. \\
 				
-				Por último, aparece una capa de atención múltiple que es algo diferente de la ya explicada, ya que en realidad está calculando la atención múltiple-cruzada (\Cref{algo:attention_multiple-cruzada}). Este cálculo es idéntico al de la atención múltiple, pero en vez de utilizar los embeddings del decodificador ($E_2$) para calcular las consultas, claves, y valores; se utilizan solo para calcular las consultas. Para calcular las claves y valores se utilizan los embeddings de la salida del codificador ($E_1$), pues de esta manera ``preguntan'' a los del decodificador para encontrar las relaciones entre los tokens de entrada del codificador y los del decodificador. 
+				Aparece una capa de atención múltiple que es algo diferente de la comentada, ya que en realidad está calculando la atención múltiple-cruzada (\Cref{algo:attention_multiple-cruzada}). Este cálculo es idéntico al de la atención múltiple, pero en vez de utilizar los embeddings del decodificador ($E_2$) para calcular las consultas, claves, y valores; se utilizan solo para calcular las consultas. Para calcular las claves y valores se utilizan los embeddings de la salida del codificador ($E_1$), pues de esta manera ``preguntan'' a los del decodificador para encontrar las relaciones entre los tokens de entrada del codificador y los del decodificador. 
 				
 				\begin{algorithm}
 					\SetProgSty{texttt}\DontPrintSemicolon
@@ -891,7 +893,7 @@
 					\caption{Atención múltiple-cruzada}
 					\label{algo:attention_multiple-cruzada}
 					
-					\Datos{$E_1 \in \mathbb{R}^{n \times d_m}, E_2 \in \mathbb{R}^{n \times d_m}, W_Q^{(i)} \in \mathbb{R}^{d_k \times d_m}, W_K^{(i)} \in \mathbb{R}^{d_k \times d_m}, W_V^{(i)} \in \mathbb{R}^{d_v \times d_m}, W_O \in \mathbb{R}^{h d_v \times d_m}, h$}
+					\Datos{$E_1 \in \mathbb{R}^{n \times d_m}, E_2 \in \mathbb{R}^{n \times d_m}, M \in \mathbb{R}^{n \times n}, W_Q^{(i)} \in \mathbb{R}^{d_k \times d_m}, W_K^{(i)} \in \mathbb{R}^{d_k \times d_m}, W_V^{(i)} \in \mathbb{R}^{d_v \times d_m}, W_O \in \mathbb{R}^{h d_v \times d_m}, h, 1 < i \leq h$}
 					\Resultado{$E_2' \in \mathbb{R}^{n \times d_m}$}
 					$d_k \gets \frac{d_m}{h}$\\
 					$d_v \gets d_k$\\
@@ -899,7 +901,7 @@
 						$Q^{(i)} \gets E_2 \left(W^{(i)}_Q\right)^t$\\
 						$K^{(i)} \gets E_1 \left(W^{(i)}_K\right)^t$\\
 						$V^{(i)} \gets E_1 \left(W^{(i)}_V\right)^t$\\
-						$A^{(i)} \gets \text{softmax}_j\left(\frac{\text{mask}\left(Q^{(i)}\left(K^{(i)}\right)^{t}\right)}{\sqrt{d}}\right)V^{(i)}$
+						$A^{(i)} \gets \text{softmax}\left(\frac{Q^{(i)}\left(K^{(i)}\right)^{t}\odot M}{\sqrt{d_k}}\right)V^{(i)}$
 					}
 					$E_2' \gets E_2 + \left(A^{(1)}\middle|A^{(2)}\middle|\cdots\middle|A^{(h)}\right)W_O$
 				\end{algorithm}
@@ -915,4 +917,83 @@
 					\item Se continúa introduciendo la salida del decodificador en su entrada, hasta obtener en la salida el token \texttt{\$EOS\$}.
 				\end{enumerate}
 				
+				Actualmente, los transformers pueden tener o no codificador y decodificador, clasificándose principalmente en función de esto. 
+				\begin{itemize}
+					\item Transformers con codificador y decodificador, normalmente orientados y originalmente diseñados para tareas de traducción. Un ejemplo es T5 de Google. 
+					\item Transformers con sólo codificador, normalmente orientados a tareas de clasificación. Un ejemplo son los ViT. 
+					\item Transformers con sólo decodificador, normalmente orientados a tareas de generación de contenido. Un ejemplo es GPT-4 de OpenAI. 
+				\end{itemize}
+				
 				Respecto al entrenamiento, se utilizan las mismas técnicas que en las secciones anteriores, Backpropagation con las funciones de error y optimizadores adecuados, normalmente entropía cruzada y Adam, pues se quiere comparar el token esperado con el predicho. El motivo de utilizar Backpropagation es que un transformer no deja de ser una sucesión de redes neuronales. Por otro lado, añadir que para cada ejemplo de traducción se obtienen diferentes ejemplos con los que entrenar, pues para predecir el token $i$, se necesita predecir correctamente el token $i-1$, por lo que la predicción hasta cada token sirve como un ejemplo de entrenamiento diferente, lo que permite tener una gran cantidad de ejemplos. 
+				
+		\section{Transformers de visión}
+		
+			En la sección anterior se presentaban los transformers como un modelo capaz de mejorar el resultado que se puede obtener con redes convolucionales, además de añadir la capacidad de poder trabajar con texto. Hasta este momento se ha demostrado cómo mediante la arquitectura y algoritmos descritos son capaces de trabajar con textos, siendo ahora las principales preguntas, ¿cómo puede un transformer procesar una imagen? ¿Será necesario variar su arquitectura?\\
+			
+			En 2021, Google vuelve a publicar otro artículo \cite{vit} sobre transformers donde plantean la posibilidad de utilizar este tipo de modelo en tareas relacionadas con imágenes al haber obtenido resultados tan positivos con textos. Al igual que en el artículo donde se presentaban los transformers por primera vez, este también cuenta con un título que resume la solución al problema para presentar los transformers de visión o ViT: ``\textit{Una imagen son $16 \times 16$ palabras}''. \\
+			
+			\begin{figure}[!h]
+				\centering
+				\includegraphics[scale = .5]{vit}
+				\caption{Arquitectura de un transformer de visión}
+				\label{fig:vit_arq}
+			\end{figure}
+			
+			En dicho artículo, se propone reutilizar lo máximo posible la arquitectura original del transformer. La primera de las diferencias reside en la entrada del modelo, y para ello se toma que una imagen consiste en un elemento de dimensiones ${h \times w \times c}$ y se propone separarlo en $n$ subimágenes $p^2 \times c$. Esto es análogo a separar un texto en palabras, excepto que en este caso, todos las divisiones tienen el mismo tamaño. De aquí proviene el nombre del artículo, ya que se propone dividir las imágenes originales en subimágenes de $16 \times 16$ píxeles. De esta manera se obtienen tokens de longitud $cp^2$, pero el modelo trabaja con embeddings de tamaño $d_m$, que mediante una serie de parámetros entrenables se realiza esta conversión de dimensiones. \\
+			
+			Al igual que en el transformer clásico, se necesita guardar información sobre la ubicación de cada subimagen. Aquí aparece la siguiente diferencia, pues cada elemento se ubica mediante una fila y columna, surgiendo el debate sobre si es necesario codificar las filas y columnas, o si basta con almacenar la posición de forma linealizada. Tras varios ensayos, se demuestra que a penas existen diferencias en los resultados obtenidos. \\
+			
+			La siguiente de las diferencias reside en el número de embeddings con los que trabaja un ViT. En el transformer clásico si se contaba con $n$ tokens, entonces la matriz de embeddings tenía dimensiones $n \times d_m$, mientras que con un ViT, es de $(n + 1) \times d_m$. Los transformers de visión trabajan con un token adicional comúnmente llamado CLS, que codifica información del resto de embeddings, es decir, codifica información de la imagen. Este vector permite la clasificación de las imágenes, pues con un ViT debidamente entrenado si recibe dos imágenes con cierta relación, entonces sus CLS deberían ser similares. En general, la salida de este modelo es este vector, para después, utilizarlo como la entrada de una red neuronal para poder clasificarlo. Aquí se observa que los ViT solo constan de la parte del codificador. 
+			
+		\section{Transformers multimodales}
+		
+			En las secciones anteriores se ha demostrado cómo es posible la codificación y clasificación de texto e imágenes (en el caso de texto también generación), hasta el momento sin aparente mejora frente a los tipos de redes neuronales presentadas, pues no se ha respondido la cuestión de cómo trabajar con imágenes y textos simultáneamente, cómo modificar la clasificación de las imágenes o textos sin modificar la arquitectura (una red neuronal clásica clasifica en función del CLS), cómo realizar la clasificación sin conocer el número de clases, cómo realizar la clasificación sin contar con un dataset etiquetado, y una larga lista de tareas aparentemente complicadas y sin relación entre sí pero que tienen una solución común, los transformers multimodales. \\
+			
+			Los modelos multimodales son un tipo de modelos que permiten la entrada de información de diferentes fuentes en diferentes modalidades como por ejemplo, texto, audio, imágenes, vídeo, etc; y que son capaces de establecer relaciones entre estas \cite{multimodal_dl}. Desde el artículo que presentaba el modelo del transformer, cada vez son más las variantes de su arquitectura que aparecen para poder trabajar con diferentes tipos de datos, llegando en la actualidad hasta los transformers multimodales. Los más populares y que ayudan a responder las preguntas que se planteaban a lo largo de este trabajo, son aquellos capaces de trabajar con imágenes y textos. \\
+			
+			El objetivo principal de este tipo de transformers es ser capaz de representar los embeddings de texto y los de imágenes en un espacio común, de manera que por ejemplo los tres elementos mostrados en la \Cref{fig:info_multi}, tengan un embedding similar al tratar de representar un mismo concepto \cite{multimodal_transformers}.
+			
+			\begin{figure}[!h]
+				\centering
+				\begin{subfigure}{.3\textwidth}
+					\centering
+					\includegraphics[scale = .35, valign = c]{imagen_texto_gato}
+					\caption{Imagen de la palabra gato}
+				\end{subfigure}\hfill
+				\begin{subfigure}{.3\textwidth}
+					\centering
+					\includegraphics[scale = .05, valign = c]{imagen_gato}
+					\caption{Imagen de un gato}
+				\end{subfigure}
+				\begin{subfigure}{.3\textwidth}
+					\centering
+					\Large\texttt{Gato}
+					\caption{Texto con la palabra gato}
+				\end{subfigure}
+				\caption{Información multimodal}
+				\label{fig:info_multi}
+			\end{figure} 
+			
+			Una manera de comparar si dos embeddings son similares es mediante el coseno del ángulo que forman ambos embeddings \cite{cosine}, pues no dejan ser vectores. Si el valor es próximo a uno significa que están codificando un concepto semánticamente relacionado al tener una dirección similar. Si el valor es próximo a cero, codifican ideas distintas, pues son dos vectores ortogonales, sus direcciones no son similares. En el caso de la \Cref{fig:info_multi}, si el transformer ha sido entrenado adecuadamente, el coseno formado por cada una de las tres posibles parejas de vectores debería ser similar y cercano a 1, indicando que las tres representaciones se refieren al mismo concepto. 
+			
+			$$
+			\cos(\theta) = \frac{\textbf{a} \cdot \textbf{b}}{\|\textbf{a}\|\cdot\|\textbf{b}\|}
+			$$
+			
+			Gracias a esta idea de tener conceptos en diferentes modalidades representados en un mismo espacio, se pueden realizar tareas muy útiles como la búsqueda de una imagen dada una descripción textual, la búsqueda de la imagen más similar a otra, la búsqueda del texto más similar a otro, etc. Todos estos problemas son en realidad el mismo, pues todos los elementos quedan representados como un vector y basta con comparar los productos escalares entre cada par de embeddings, aplicar una función softmax, y elegir el mayor de todos, eligiendo así el embedding que tiene una dirección más similar a la dada. En la \Cref{fig:textos_imagenes} \cite{clip} se visualiza cómo mediante esta idea es posible asignar a cada una de las $n$ imágenes, un conjunto de $k$ descripciones, donde $n \geq k$. 
+			
+			\begin{figure}[!h]
+				\centering
+				\includegraphics[scale = .7]{imagen-texto}
+				\caption{Asignación de textos a imágenes}
+				\label{fig:textos_imagenes}
+			\end{figure}
+			
+			Existen diversas arquitecturas de transformers multimodales capaces de trabajar con imágenes y texto, aunque la forma lograr codificar en embeddings conceptos similares representados de manera diferente, no deja de ser trabajo de los algoritmos de atención múltiple y múltiple-cruzada (\Cref{algo:attention_multiple,algo:attention_multiple-cruzada}). Dependiendo de la arquitectura, existen diferentes variantes del algoritmo de atención múltiple-cruzada (\Cref{fig:variantes_crossed}), aunque el objetivo en todos los casos es el mismo, mezclar y fusionar los embeddings de la imagen y el texto para poder establecer relaciones entre datos aparentemente distintos \cite{multimodal_transformers}. 
+			
+			\begin{figure}[!h]
+				\centering
+				\includegraphics[width = \textwidth]{variantes_crossed}
+				\caption{Variantes del algoritmo de atención múltiple-cruzada}
+				\label{fig:variantes_crossed}
+			\end{figure}
