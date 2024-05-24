@@ -997,3 +997,118 @@
 				\caption{Variantes del algoritmo de atención múltiple-cruzada}
 				\label{fig:variantes_crossed}
 			\end{figure}
+			
+			\subsection{Clasificación no supervisada}
+			
+				En este punto queda una pregunta por responder. ¿Cómo se realiza la clasificación de textos, imágenes, vídeos, u otras modalidades de información sin conocer el número de clases adecuado y sin tener que modificar la arquitectura del modelo? En general, los transformers con codificador orientados a tareas de clasificación, cuentan con el CLS, que en el caso de los ViT originales entregan a una red neuronal clásica, pues no deja de ser un vector $d_m-$dimensional. Al no conocer las clases ni cuántas hay, un posible enfoque es sustituir la red neuronal por un algoritmo de clasificación no supervisada. \\
+				
+				Uno de los más conocidos es el algoritmo $k-$medias \cite{kmeans} o $k-$means en inglés. Dado un número $k$ de clusters o clases, dicho algoritmo es capaz de clasificar una serie de $n$ elementos $\textbf{x}_i \in \mathbb{R}^d$ en $k$ clases sin conocimiento previo. Para ello, fija de manera aleatoria $k$ puntos $\boldsymbol{\mu}_i \in \mathbb{R}^d$ llamados centroides, que representan el centro de cada cluster. Durante cada iteración, se valora si algún elemento debe cambiar de cluster en función de su distancia a los centroides, y se recalcula la posición de cada uno de ellos. De manera formal, se realiza una partición del dataset $S$ en $k$ conjuntos de manera que 
+				$$
+				\bigcup_{i = 1}^k S_i = S, \, \bigcap_{i = 1}^k S_i = \varnothing, \text{ y } S_i \neq \varnothing
+				$$
+				con el fin de minimizar el WCSS, es decir, 
+				$$
+				\argmin_{S_1, \ldots, S_k}\sum_{i = 1}^k\sum_{\textbf{x}\in S_i}\|\textbf{x}-\boldsymbol{\mu}_i\|^2. 
+				$$ 
+				
+				Este proceso se describe en el \Cref{algo:kmeans}. El criterio de parada no es único, también se puede elegir un umbral $\varepsilon$. Dicho umbral podría ser un número máximo de iteraciones, una distancia de cambio de los centroides, etc. 
+				
+				\begin{algorithm}
+					\SetProgSty{texttt}\DontPrintSemicolon
+					
+					\caption{$k-$means}
+					\label{algo:kmeans}
+					
+					\Datos{$S, k$}
+					\Resultado{$S_1, S_2, \hdots, S_k$}
+					\textbf{partir} $S$ aleatoriamente\\
+					\Repetir{$\forall i\in [1, k]\, S_i(t) \neq S_i(t+1)$}{
+						\Para{$i \gets 1$ \KwTo $k$}{
+							$S_i(t) \gets \{\textbf{x}:\|\textbf{x}-\boldsymbol{\mu}_i(t)\|^2\leq\|\textbf{x}-\boldsymbol{\mu}_j(t)\|^2\,\land\,\textbf{x}\not\in S_l(t),\,\forall (j, l) \in [1, k] \times [1, i]\}$\\ 
+							$\boldsymbol{\mu}_i(t+1) \gets \dfrac{1}{|S_i(t)|}\displaystyle\sum_{\textbf{x}\in S_i}\textbf{x}$
+						}
+					}
+				\end{algorithm}
+				
+				Otro de los algoritmos de clasificación no supervisada más popular es el de clusterización jerárquica aglomerativa. La traza de este algoritmo crea un árbol comúnmente llamado dendrograma (\Cref{fig:dendro}), que representa una clasificación de los elementos del dataset \cite{ahc}. 
+				
+				\begin{figure}[!h]
+					\Tree[.$S_3$ $x_1$ [.$S_1$ $x_3$ $x_2$ ] [.$S_2$ $x_4$ $x_5$ ] ]
+					\caption{Dendrograma}
+					\label{fig:dendro}
+				\end{figure}
+				
+				Para lograr la partición del dataset de $n$ elementos en $k$ clusters (con $k \leq n$), inicialmente cada elemento se encuentra en un cluster distinto y durante las iteraciones del algoritmo se van uniendo los clusters más próximos, y determinando la distancia entre estos mediante una función. Existen multitud de ellas, dando lugar a variantes del algoritmo como single, complete, average, Ward, etc. \cite{ahc_variantes}\\
+				
+				\begin{algorithm}
+					\SetProgSty{texttt}\DontPrintSemicolon
+					
+					\caption{Clustering jerárquico aglomerativo}
+					\label{algo:ahc}
+					
+					\Datos{$S, k$}
+					\Resultado{$S_1, S_2, \hdots, S_k$}
+					$\forall i \, S_i \gets \{\textbf{x}_i\}$\\
+					\Para{$j \gets n$ \KwTo $k$}{
+						$D \in \mathbb{R}^{j \times j}$\\ 
+						$\forall(p,q)\,D_{pq} \gets \text{dist}(S_p, S_q)$\\
+						$l, m = \displaystyle\argmin_{a, b}D_{ab}$\\
+						$S_l \gets S_l \cup S_m$\\
+						$S_m \gets \varnothing$
+					}
+					\textbf{eliminar} $\forall i \, S_i = \varnothing$
+				\end{algorithm}
+				
+				Una característica que tienen en común estos dos algoritmos es que, si bien no necesitan de conocimiento previo para realizar la clasificación, sí necesitan conocer el número de clases. En el caso que no se tiene conocimiento suficiente sobre el dataset para poder determinar el valor óptimo de clases, se puede utilizar el conocido como método del codo o rodilla. Este método propone utilizar $k-$means para determinar el $k$ óptimo, tomando aquel que genere un punto que sería el codo en una gráfica que represente cada WCSS para cada $k$, que tendría forma de brazo \cite{elbow}, tal y como describe el \Cref{algo:codo}. \\
+				
+				\begin{figure}[!h]
+					\centering
+					\includegraphics[scale = .4]{elbow_ejemplo}
+					\caption{$k$ óptimo mediante el método del codo}
+					\label{fig:ejemplo_codo}
+				\end{figure}
+				
+				\begin{algorithm}[!h]
+					\SetProgSty{texttt}\DontPrintSemicolon
+					
+					\caption{Método del codo}
+					\label{algo:codo}
+					
+					\Datos{$S, k, a, b$}
+					\Resultado{$k'$}
+					$\textbf{s} \in \mathbb{R}^n$\\
+					$\textbf{d} \in \mathbb{R}^n$\\
+					\Para{$i \gets a$ \KwTo $n$}{
+						$\boldsymbol{\mu} \gets k-\text{means}(S, k)$\\
+						$s_i \gets \displaystyle\sum_{j = 1}^k\sum_{\textbf{x}\in S_j}\|\textbf{x}-\boldsymbol{\mu}_j\|^2$\\
+						$k_i \gets i$
+					}
+					$k' \gets$ kneedle$(\textbf{k}, \textbf{s})$
+				\end{algorithm}
+				
+				
+				La cuestión que queda por resolver es cómo ``calcular el codo''. Este punto se suele definir como el de mayor curvatura, por lo que si dada una serie de valores $\textbf{s}$ de WCSS, mediante una función $\mathscr{C}(k, y)$ se pudiese calcular la curvatura en ese punto, bastaría con tomar el $k$ que maximice $\mathscr{C}(k, y)$. Para realizar esta tarea se suele utilizar el llamado algoritmo \textit{kneedle}. Dicho nombre proviene del juego de palabras knee (rodilla) y needle (aguja), que en el título de la publicación original \cite{kneedle}, se compara con buscar una aguja en un pajar. Tal y como muestra el \Cref{algo:kneedle}, la idea es normalizar los valores, y tomar como punto de curvatura máxima aquel $x$ que maximiza $f(x) - x$. Se puede fijar un umbral para evitar máximos locales. 
+				
+				\begin{figure}[!h]
+					\centering
+					\includegraphics[width = \textwidth]{kneedle}
+					\caption{Punto de mayor curvatura mediante Kneedle}
+					\label{fig:kneedle}
+				\end{figure}
+				
+				\begin{algorithm}
+					\DontPrintSemicolon
+					
+					\caption{Kneedle}
+					\label{algo:kneedle}
+					
+					\Datos{$\textbf{s}, \textbf{k}$}
+					\Resultado{$k'$}
+					$\textbf{d} \in \mathbb{R}^n$\\
+					\Para{$i \gets \min\{\mathbf{k}\}$ \KwTo $\max\{\mathbf{k}\}$}{
+						$s_i' \gets \dfrac{s_i - \min\{\textbf{s}\}}{\max\{\textbf{s}\}-\min\{\textbf{s}\}}$\\
+						$k_i' \gets \dfrac{k_i - \min\{\textbf{\textbf{k}}\}}{\max\{\textbf{k}\}-\min\{\textbf{k}\}}$\\
+						$d_i \gets s_i' - k_i$
+					}
+					$k' \gets \displaystyle\argmax \textbf{d}$
+				\end{algorithm}
