@@ -103,6 +103,28 @@
 				\caption{Comparativa de entrenamiento en CPU frente a en GPU}
 				\label{fig:comparativa_cuda}
 			\end{figure}
+			
+		\subsection{Google Cloud Platform}
+		
+			Google Cloud Platform o GCP es una de las plataformas de cloud computing más conocidas, junto con Amazon Web Services (AWS) y Microsoft Azure. Este tipo de plataformas se encargan de ofrecer servicios IaaS (infraesctructura como servicio), PaaS (plataforma como servicio), y SaaS (software como servicio) muy útiles para empresas a la hora de desarrollar todo tipo de proyectos. Google divide los tipos de servicios que ofrece en diferentes categorías, siendo algunas de las principales las siguientes \cite{gcp}.  
+			
+			\begin{itemize}
+				\item Inteligencia artificial y aprendizaje automático: GCP cuenta con una amplia gama de servicios de inteligencia artificial en sus distintas áreas como por ejemplo, procesamiento de lenguaje, visión artificial, IA generativa, etc. Su plataforma Vertex AI engloba una gran variedad de modelos muy útiles y permite entrenar, desplegar, y gestionar dichos modelos de manera sencilla. En general, se podrían categorizar como servicios PaaS y SaaS. 
+				\item Inteligencia empresarial: Google ofrece herramientas (SaaS) como podrían ser Looker y Looker Studio, que permiten trabajar con datos, analizarlos, visualizarlos, generar informes, y en general, todo tipo de tareas del campo de Business Intelligence. 
+				\item Computación: dentro de este campo Google ofrece diferentes variantes de hardware virtualizado, como por ejemplo, máquinas virtuales, GPUs, ejecución de aplicaciones en contenedores, etc. En resumen, se trata de diferentes servicios IaaS y PaaS
+				\item Bases de datos y almacenamiento: Google ofrece múltiples servicios de almacenamiento de ficheros y bases de datos tanto SQL como NoSQL, de manera segura y escalable. De manera similar al apartado anterior, son principalmente servicios IaaS y PaaS. 
+			\end{itemize}
+			
+			La mayoría de estos servicios son accesibles de manera sencilla vía CLI, API, o los diferentes SDK de los lenguajes de programación más populares. 
+			
+			\begin{figure}[!h]
+				\centering
+				\includegraphics[scale = .2]{gcp}
+				\caption{Google Cloud Platform}
+				\label{fig:gcp}
+			\end{figure}
+			
+			
 
 	\section{Clasificación de imágenes mediante redes convolucionales}
 	
@@ -625,3 +647,67 @@
 					\caption{Métricas en clasificación con clase desconocida (doble modelo)}
 					\label{fig:clase_otros_doble}
 				\end{figure}
+				
+		\section{Clasificación de imágenes mediante transformers multimodales}
+		
+			El objetivo de esta sección será abordar de nuevo el problema resuelto anteriormente, ofreciendo una mejor solución al dejar abierta la posibilidad de trabajar con textos asociados a las imágenes, y no necesitar conocer el número de clases del dataset, tal y como se mostró en el marco teórico. En cuanto a los datos, se reutilizarán aquellos obtenidos del proceso ETL anterior, volcando todas las imágenes en un mismo directorio. \\
+			
+			De manera resumida, la solución está compuesta en primer lugar por un transformer multimodal, capaz de extraer conceptos o ideas representadas en diferentes modalidades, como textos, imágenes, o vídeos, y representarlos en un espacio común, para posteriormente hacer uso de un algoritmo de clasificación no supervisada que permita encontrar el número de clases óptimas, y clasificar los embeddings generados por el transformer. En la \Cref{fig:diagrama_embeddings} se muestra un diagrama de cómo deberían ser los embeddings que genera un modelo de este tipo. Si $\textbf{u}$ es el embedding de \texttt{rey}, $\textbf{v}$ el de \texttt{mujer}, y $\textbf{w}$ el de \texttt{reina}, entonces se espera que $\textbf{u} + \textbf{v} \approx \textbf{w}$. De la misma manera sucedería para una imagen o vídeo que represente los mismos conceptos. \\
+			
+			\begin{figure}[!h]
+				\centering
+				\includegraphics{diagrama_embeddings}
+				\caption{Embeddings de un transformer multimodal}
+				\label{fig:diagrama_embeddings}
+			\end{figure}
+			
+			\subsection{Generación de embeddings con Vertex AI}
+			
+				Para abordar esta solución, la primera de las tareas es disponer del modelo capaz de extraer las ideas de las diferentes modalidades de información. Siendo una de las desventajas de los transformers el enorme volumen de datos de entrenamiento que necesitan para lograr un buen rendimiento, y los pocos datos que se poseen en este caso, no es razonable construir y entrenar un transformer desde cero. Por ello, se ha optado por utilizar un modelo previamente entrenado con grandes volúmenes de datos y que tiene un excelente rendimiento en tareas de esta índole. Dentro de los servicios que ofrece Google Cloud, su plataforma Vertex AI contiene una gran variedad de modelos, cada uno orientado a ciertos tipos de tareas. En concreto, se ofrece un modelo llamado \texttt{multimodalembedding} recomendado para tareas de clasificación y búsquedas semánticas de textos, imágenes, y vídeos \cite{vertex}. Dicho modelo sigue la arquitectura de un transformer multimodal codificador, es decir, recibe textos, imágenes, y vídeos, y es capaz de entregar un vector llamado embedding capaz de representar las ideas que aparecen en las entradas dadas. \\
+				
+				La manera de comunicarse con el modelo es vía API. En la documentación se especifica que para el caso de las imágenes deben tener una resolución (máxima) de $512 \times 512$ píxeles y que deben enviarse codificadas en Base64 o el URI de la imagen en caso de tenerla almacenada en un bucket de Google Cloud Storage. Para el caso de vídeo no se entrará en detalle pues no se utilizará en este proyecto, pero se puede generar un embedding por cada $x$ segundos de vídeo ignorando el contenido del audio. Además, debe estar almacenado en un bucket. En este caso se tienen almacenadas las imágenes en local, y para realizar esta tarea en Python se hace uso de la biblioteca \texttt{Pillow} para redimensionar las imágenes, \texttt{base64} para codificar la imagen redimensionada a Base64, y \texttt{requests} para realizar la llamada. Según indica la documentación, el cuerpo de la llamada HTTP POST, debe contener un fichero JSON que sigue esta estructura,
+				\begin{center}
+					\begin{BVerbatim}[tabsize = 3]
+						{
+							"instances": [
+								{
+									"image": {
+										"bytesBase64Encoded": "/9j/4AAQSkZJRgABAQAA...."
+									}, 
+									"text": "Un parque infantil con columpios...."
+								}
+							]
+						}
+					\end{BVerbatim}
+				\end{center}
+				para recibir como respuesta otro fichero JSON que tiene el siguiente aspecto. 
+				\begin{center}
+					\begin{BVerbatim}[tabsize = 3]
+						{
+							"predictions": [
+								{
+									"textEmbedding": [
+										0.010477379,
+										[...]
+										-0.0169572588,
+										-0.00472954148
+									],
+									"imageEmbedding": [
+										0.00262696808,
+										[...]
+										0.011650892,
+										-0.00452344026
+									]
+								}
+							]
+						}
+					\end{BVerbatim}
+				\end{center}
+				
+				En el JSON que se incluye en el cuerpo de la llamada, se puede elegir el número de dimensiones del embedding. Si no se indica nada, los embeddings tienen 1408 dimensiones. Además, en la cabecera de la llamada se debe indicar el token, que se obtiene en cada llamada mediante el CLI con ayuda del comando \texttt{gcloud auth print-access-token}, ya que por seguridad cambia periódicamente. Si la llamada ha sido exitosa, se recibe el código \texttt{HTTP 200} en la respuesta, y en caso contrario ha sucedido algún error. Además, se especifica que la cantidad máxima de llamadas por minuto y proyecto es de 120, que al realizar el siguiente cálculo se obtiene que no deben superarse las dos llamadas por segundo. 
+				
+				$$
+				\left\lfloor\frac{120\text{ llamadas}}{60\text{ segundos}}\right\rfloor = 2 \text{ llamadas/segundo}
+				$$
+				
+				El tiempo que transcurre desde que se realiza una llamada hasta que se obtiene la respuesta oscila entre $0.5$ y 1 segundos, por lo que el pausando el proceso $0.5$ segundos tras cada llamada se evita superar el límite fijado. Al superar el límite, se recibe el código \texttt{HTTP 429}. Finalmente, se almacenan todos los ficheros JSON de las respuestas en disco, evitando así consumir  créditos y ahorrar tiempo en futuras ejecuciones con el mismo dataset. 
