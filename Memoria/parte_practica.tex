@@ -710,4 +710,64 @@
 				\left\lfloor\frac{120\text{ llamadas}}{60\text{ segundos}}\right\rfloor = 2 \text{ llamadas/segundo}
 				$$
 				
-				El tiempo que transcurre desde que se realiza una llamada hasta que se obtiene la respuesta oscila entre $0.5$ y 1 segundos, por lo que el pausando el proceso $0.5$ segundos tras cada llamada se evita superar el límite fijado. Al superar el límite, se recibe el código \texttt{HTTP 429}. Finalmente, se almacenan todos los ficheros JSON de las respuestas en disco, evitando así consumir  créditos y ahorrar tiempo en futuras ejecuciones con el mismo dataset. 
+				El tiempo que transcurre desde que se realiza una llamada hasta que se obtiene la respuesta oscila entre $0.5$ y 1 segundos, por lo que el pausando el proceso $0.5$ segundos tras cada llamada se evita superar el límite fijado. Al superar el límite, se recibe el código \texttt{HTTP 429}. Finalmente, se almacenan todos los ficheros JSON de las respuestas en disco, evitando así consumir  créditos y ahorrar tiempo en futuras ejecuciones con el mismo dataset. Una vez se han calculado el embedding correspondiente a cada imagen del dataset, es de utilidad crear un dataframe de Pandas que ayude a estructurar toda la información relativa a cada imagen obtenida hasta el momento para trabajar de manera más cómoda. En la \Cref{tab:df_ejemplo} se muestra un extracto de este dataframe. 
+				
+				\begin{table}[!h]
+					\scriptsize
+					\centering
+					\texttt{\input{img/embeddings1}}
+					\caption{Ejemplo de dataframe}
+					\label{tab:df_ejemplo}
+				\end{table}
+				
+			\subsection{Clasificación no supervisada de embeddings}
+				
+				Con motivo de ilustrar la salida del transformer, lo ideal es mostrar los embeddings en el espacio, pues si ha sido capaz de detectar diferencias y similitudes entre las imágenes, estas deberán verse reflejadas también en los embeddings. Visualizar vectores de 1408 componentes en el plano o espacio no es posible ``directamente'', pero gracias a algoritmos como PCA o t-SNE, esto se hace posible. De manera intuitiva, estos algoritmos se comportan como una aplicación $\mathbb{R}^{1408} \longrightarrow \mathbb{R}^2$, intentando perder la mínima cantidad de información al realizar este cambio de dimensiones. No se entrará en detalle del funcionamiento de los algoritmos, pues no influyen en el resultado, simplemente permiten visualizar la situación. En la \Cref{fig:embeddingsR2} se observa el resultado obtenido por ambos algoritmos, distinguiendo claras nubes de puntos. 
+				
+				\begin{figure}[!h]
+					\centering
+					\includegraphics[width = \textwidth]{reduced_embeddings}
+					\caption{Embeddings en $\mathbb{R}^2$ mediante PCA y t-SNE}
+					\label{fig:embeddingsR2}
+				\end{figure}
+				
+				Es en este momento cuando se puede lanzar un algoritmo de clasificación no supervisada como $k-$medias o el de clustering jerárquico aglomerativo para clasificar los embeddings en $k$ clases sin necesidad de tener otro dataset de entrenamiento. En este caso mediante el conocimiento del dataset se sabe que $k$ debe ser igual a 5. Por el contrario, si se dispone de millones de imágenes, no es viable revisar una a una para determinar el valor de $k$. Para resolver este problema, se puede utilizar el método del codo, explicado en el marco teórico. Tal y como se observa en la \Cref{fig:elbow}, se obtiene $k = 5$, de manera idéntica a lo que se conocía mediante la experiencia en el dataset. \\
+				
+				\begin{figure}[!h]
+					\centering
+					\includegraphics[scale = .45]{elbow_kmeans}
+					\caption{Cálculo del $k$ óptimo mediante el método del codo}
+					\label{fig:elbow}
+				\end{figure} 
+				
+				Tras utilizar este valor de $k$ calculado, se pueden lanzar los algoritmos $k-$means y CJA con este valor, y colorear los embeddings de la \Cref{fig:embeddingsR2} para visualizar los clusters detectados por ambos algoritmos. En las \Cref{fig:clusters_kmeans,fig:clusters_cja} se observa cómo aparentemente ambos algoritmos han sido capaces de separar las nubes de puntos. Podría parecer que algunas imágenes están más cerca del centro de un cluster que del que tienen asignado, pero es importante recordar que el proceso de clustering se ha realizado en un espacio de 1408 dimensiones, mientras que estas figuras describen una situación similar en $\mathbb{R}^2$. En el hipotético caso de poder visualizar $\mathbb{R}^{1408}$, sería más evidente la asignación. 
+				
+				\begin{figure}[!h]
+					\centering
+					\includegraphics[width = \textwidth]{reduced_embeddings_k-means}
+					\caption{Clusters calculados con $k-$means}
+					\label{fig:clusters_kmeans}
+				\end{figure} 
+				
+				\begin{figure}[!h]
+					\centering
+					\includegraphics[width = \textwidth]{reduced_embeddings_Clustering jerárquico aglomerativo}
+					\caption{Clusters calculados con CJA}
+					\label{fig:clusters_cja}
+				\end{figure} 
+				
+				Con motivo de poder ilustrar de manera conjunta el resultado del cálculo de embeddings y la clusterización de estos, se muestran en la \Cref{fig:embeddings_visuales} los embeddings representados con ayuda de t-SNE y los clusters calculados por $k-$means, con la diferencia que esta vez los embeddings se sustituyen por sus imágenes correspondientes, y aparecen enmarcadas con el color de su cluster. Con motivo de facilitar la visualización de los clusters, se ha dibujado un círculo de radio el percentil 90 de las distancias al centroide (para evitar que outliers ensucien el dibujo), y centrado en este. \\
+				
+				\begin{figure}[!h]
+					\centering
+					\includegraphics[width = \textwidth]{images_clusters}
+					\caption{Imágenes y clusters}
+					\label{fig:embeddings_visuales}
+				\end{figure} 
+				
+				En esta situación es mucho más fácil visualizar el resultado obtenido. Se puede observar cómo el transformer ha colocado próximas entre sí las imágenes de cada una de las cuatro clases originales. También ha sido capaz de colocar próximas entre sí a las imágenes que pertenecen a la clase resto, viendo cómo aparecen juntos cada uno de los tipos de objetos que conforman dicha clase, murales, piscinas y fuentes, monumentos, recintos deportivos, esculturas religiosas, etc. Además, hay casos en los que ha ubicado alguna imagen entre varios clusters bien diferenciados, como es el caso de un cartel que aparece entre el cluster de los carteles, el de los parques, y el de otros, en concreto cerca de los elementos deportivos. Pero esto no resulta ser desafortunado, pues al hacer zoom sobre dicha imagen se observa un cartel indicando las normas de un parque con máquinas deportivas. 
+				
+			\subsection{Evaluación de la clasificación}
+			
+				
+				
