@@ -382,7 +382,7 @@
 			
 			Dependiendo si el problema en cuestión es de regresión o clasificación, se deben utilizar unas métricas u otras. Debido a que se desea evaluar la calidad de una clasificación, se han elegido las siguientes. 
 			
-			\subsubsection{Matriz de confusión}
+			\subsubsection{Matriz de confusión}\label{subsub:matriz_confusion}
 			
 				La matriz de confusión muestra en el caso de clasificación binaria, los verdaderos positivos, verdaderos negativos, falsos positivos, y falsos negativos, mientras que en el caso de clasificación no binaria, en general la relación entre las etiquetas reales de cada observación y las que el modelo le ha asignado\cite{confusion}. De manera muy visual se puede observar la cantidad de ejemplos de cada clase (pudiendo ver si se encuentran desbalanceadas), cuántos han sido clasificados correctamente, cuántos no, y en general entre qué clases suele confundirse más el modelo. \\
 				
@@ -420,7 +420,7 @@
 				
 				Para poder calcular la matriz de confusión, se ha utilizado la función \texttt{confusion\_matrix} de Scikit-learn, que recibe como parámetros un vector con las clases reales de cada observación, y otro con las que el modelo les ha asignado. Mediante la función \texttt{ConfusionMatrixDisplay} se puede ver de manera gráfica la matriz (\Cref{fig:mc}). Con diferentes parámetros se pueden cambiar los colores e incrustar código \LaTeX{} para modificar los textos. Se ha codificado la función \texttt{matriz\_confusion} que recibe el dataset y $Y_m$, y muestra el gráfico con la configuración personalizada. 
 				
-			\subsubsection{Precisión, sensibilidad, y $F_1-$score}
+			\subsubsection{Precisión, sensibilidad, y $F_1-$score}\label{subsub:f1}
 				
 				Si bien la matriz de confusión permite mostrar de manera visual la calidad de las clasificaciones, es conveniente calcular algunos valores \cite{metricas_matriz} a partir de esta matriz que permitan visualizar de manera numérica dichas calidades. La primera de ellas conocida como \textbf{precisión} $(\mathcal{P})$, y puede entenderse como la probabilidad de que un elemento que etiquetado como $C_i$, realmente pertenezca a dicha clase. 
 				
@@ -756,7 +756,7 @@
 					\label{fig:clusters_cja}
 				\end{figure} 
 				
-				Con motivo de poder ilustrar de manera conjunta el resultado del cálculo de embeddings y la clusterización de estos, se muestran en la \Cref{fig:embeddings_visuales} los embeddings representados con ayuda de t-SNE y los clusters calculados por $k-$means, con la diferencia que esta vez los embeddings se sustituyen por sus imágenes correspondientes, y aparecen enmarcadas con el color de su cluster. Con motivo de facilitar la visualización de los clusters, se ha dibujado un círculo de radio el percentil 90 de las distancias al centroide (para evitar que outliers ensucien el dibujo), y centrado en este. \\
+				Con motivo de poder ilustrar de manera conjunta el resultado del cálculo de embeddings y la clasificación de estos, se muestran en la \Cref{fig:embeddings_visuales} los embeddings representados con ayuda de t-SNE y los clusters calculados por $k-$means, con la diferencia que esta vez los embeddings se sustituyen por sus imágenes correspondientes, y aparecen enmarcadas con el color de su cluster. Con motivo de facilitar la visualización de los clusters, se ha dibujado un círculo de radio el percentil 90 de las distancias al centroide (para evitar que outliers ensucien el dibujo), y centrado en este. \\
 				
 				\begin{figure}[!h]
 					\centering
@@ -765,9 +765,60 @@
 					\label{fig:embeddings_visuales}
 				\end{figure} 
 				
-				En esta situación es mucho más fácil visualizar el resultado obtenido. Se puede observar cómo el transformer ha colocado próximas entre sí las imágenes de cada una de las cuatro clases originales. También ha sido capaz de colocar próximas entre sí a las imágenes que pertenecen a la clase resto, viendo cómo aparecen juntos cada uno de los tipos de objetos que conforman dicha clase, murales, piscinas y fuentes, monumentos, recintos deportivos, esculturas religiosas, etc. Además, hay casos en los que ha ubicado alguna imagen entre varios clusters bien diferenciados, como es el caso de un cartel que aparece entre el cluster de los carteles, el de los parques, y el de otros, en concreto cerca de los elementos deportivos. Pero esto no resulta ser desafortunado, pues al hacer zoom sobre dicha imagen se observa un cartel indicando las normas de un parque con máquinas deportivas. 
+				En esta situación es mucho más fácil visualizar el resultado obtenido. Se puede observar cómo el transformer ha colocado próximas entre sí las imágenes de cada una de las cuatro clases originales. También ha sido capaz de colocar próximas entre sí a las imágenes que pertenecen a la clase resto, viendo cómo aparecen juntos cada uno de los tipos de objetos que conforman dicha clase, murales, piscinas y fuentes, monumentos, recintos deportivos, esculturas religiosas, etc. Además, hay casos en los que ha ubicado alguna imagen entre varios clusters bien diferenciados, como es el caso de un cartel que aparece entre el cluster de los carteles, el de los parques, y el de otros, en concreto cerca de los elementos deportivos. Pero esto no resulta ser desafortunado, pues al hacer zoom sobre dicha imagen se observa un cartel indicando las normas de un parque con máquinas deportivas. Finalmente, se observa que mediante los colores de los bordes, el algoritmo de clasificación no supervisada ha sido capaz de juntar en el mismo cluster imágenes similares. 
 				
 			\subsection{Evaluación de la clasificación}
 			
+				Una vez calculadas las clases o clusters de cada imagen con los dos algoritmos propuestos, se añaden como columnas al dataframe con motivo de agilizar el trabajo de evaluar la calidad de las clasificaciones de embeddings. La \Cref{tab:df_clusters} muestra un extracto. A la hora de realizar la evaluación de la clasificación de los embeddings pueden darse dos situaciones, conocer o no las clases reales. En este caso aprovechando que se conocen las reales, se han abordado ambas situaciones.
+			
+				\begin{table}[!h]
+					\tiny
+					\centering
+					\texttt{\input{img/embeddings2}}
+					\caption{Dataframe con clusters calculados}
+					\label{tab:df_clusters}
+				\end{table}
 				
+				\subsubsection{Índice rand ajustado}
+				
+					En el caso en el que se conocen las clases reales, una de las métricas más populares es el índice rand ajustado o ARI \cite{ari}. Se supone que se dispone de dos particiones del dataset original, $\mathcal{C} = \{C_1, C_2, \ldots, C_r\}$ y $\mathcal{D} = \{D_1, D_2, \ldots, D_s\}$, donde una de ellas es la generada por el algoritmo, y la otra es la original. Con ayuda de cada uno de estos conjuntos se construye la llamada matriz de contingencia, donde la entrada $n_{ij}$ representa el valor de $|C_i \cap D_j|$. En la \Cref{fig:matrices_contingencia} se observan las matrices de contingencia para los clusters generados por los dos algoritmos elegidos. 
+					
+					\begin{figure}[!h]
+						\centering
+						\includegraphics[width = \textwidth]{matrices_contingencia}
+						\caption{Matrices de contingencia}
+						\label{fig:matrices_contingencia}
+					\end{figure} 
+					
+					Estas matrices ayudan a dar una idea de la correspondencia entre los clusters originales y los calculados, observando los elementos que destacan por filas o columnas. Son el primer paso para calcular el ARI, pues sería erróneo pensar que se trata de una clasificación incorrecta el asignar una imagen al cluster $i$, cuando originalmente tenía asignado el cluster $j$, pues puede que sean clusters similares o incluso el mismo, pero que el algoritmo los haya nombrado de diferente manera. Para solucionar este problema, lo que se hace es trabajar con todas las posibles parejas del dataset, y comprobar si pertenecen a las mismas parejas de clusters en ambas particiones, dando lugar a los siguientes cuatro casos. 
+					
+					\begin{itemize}
+						\item $(u \in C_p \,\land\, v \in C_p) \,\land\, (u \in D_q \,\land\, v \in D_q)$
+						\item  $(u \in C_p \,\land\, v \in C_p) \,\land\, (u \in D_q \,\land\, v \not\in D_q)$
+						\item  $(u \in C_p \,\land\, v \not\in C_p) \,\land\, (u \in D_q \,\land\, v \in D_q)$
+						\item  $(u \in C_p \,\land\, v \not\in C_p) \,\land\, (u \in D_q \,\land\, v \not\in D_q)$
+					\end{itemize}
+					
+					A partir de estos casos obtenidos de las matrices de contingencia, se construyen las matrices de confusión que se observan en la \Cref{fig:matrices_confusion_transf}, y que representan la misma idea que en la \Cref{subsub:matriz_confusion}. Se desea que el valor en los elementos de la diagonal principal sea máximo, pues representa el número $A$ de acuerdos; y que sean mínimos el resto, pues representan el valor de desacuerdos $D$. 
+					
+					\begin{figure}[!h]
+						\centering
+						\includegraphics[width = \textwidth]{matrices_confusion_transf}
+						\caption{Matrices de confusión}
+						\label{fig:matrices_confusion_transf}
+					\end{figure} 
+					
+					En este punto se puede calcular el índice rand $\mathcal{R}_I$, que sería el equivalente a la precisión $\mathcal{P}$ presentada en la \Cref{subsub:f1}, pues se calcula como la tasa de acuerdos. En la siguiente ecuación se muestra su cálculo en base a la matriz de contingencia, donde $n_{i\cdot}$ representa la suma de las columnas de la fila $i$, y $n_{\cdot j}$ representa la suma de las filas de la columna $j$. 
+					
+					$$
+					\mathcal{R}_I = \frac{A}{A + D} = \frac{\displaystyle\binom{n}{2} + 2\sum_{i = 1}^r\sum_{j = 1}^s \binom{n_{ij}}{2} - \sum_{i = 1}^r \binom{n_{i\cdot}}{2} - \sum_{j = 1}^s \binom{n_{\cdot j}}{2}}{\displaystyle\binom{n}{2}}
+					$$
+					
+					Una vez conocido el valor del índice rand, es inmedianto calcular su versión ajustada. Su misión es evitar un valor adecuado por particiones al azar, pues un valor alto de $\mathcal{R}_I$ no necesariamente implica una buena calidad de clustering. Se podría por ejemplo, de manera aleatoria separar el dataset en dos clusters dos veces. Si el número de elementos del dataset es elevado, no sería raro observar que bastantes elementos aparecen en los mismos clusters en ambas particiones, lo que según el $\mathcal{R}_I$ indicaría un buen clustering cuando probablemente no sea así. Se calcula de la siguiente manera. 
+					
+					$$
+					\mathcal{R}_{A_I} = \frac{\mathcal{R}_{I} - E[\mathcal{R}_I]}{\max\{\mathcal{R}_I\} - E[\mathcal{R}_I]} = \frac{\displaystyle\sum_{i = 1}^r\sum_{j = 1}^s\binom{n_{ij}}{2} - \binom{n}{2}^{-1}\sum_{i = 1}^r\binom{n_{i\cdot}}{2}\sum_{j = 1}^s\binom{n_{\cdot j}}{2}}{\displaystyle\frac{1}{2}\left(\sum_{i = 1}^r \binom{n_{i\cdot}}{2} + \sum_{j = 1}^s \binom{n_{\cdot j}}{2}\right) - \binom{n}{2}^{-1}\sum_{i = 1}^r\binom{n_{i\cdot}}{2}\sum_{j = 1}^s\binom{n_{\cdot j}}{2}}
+					$$
+					
+					Valores próximos a 1 indican un buen clustering, cercanos a 0 similar a hacerlo de manera aleatoria, y cercanos a $-1$ (en general menor que cero) peor que de manera aleatoria. Para la clasificación realizada con $k-$means se obtiene un ARI de $0.943$, y con CJA $0.952$. Ambos resultados son muy adecuados. 
 				
