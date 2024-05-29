@@ -1087,7 +1087,7 @@
 				\end{algorithm}
 				
 				
-				La cuestión que queda por resolver es cómo ``calcular el codo''. Este punto se suele definir como el de mayor curvatura, por lo que si dada una serie de valores $\textbf{s}$ de WCSS, mediante una función $\mathscr{C}(k, y)$ se pudiese calcular la curvatura en ese punto, bastaría con tomar el $k$ que maximice $\mathscr{C}(k, y)$. Para realizar esta tarea se suele utilizar el llamado algoritmo \textit{kneedle}. Dicho nombre proviene del juego de palabras knee (rodilla) y needle (aguja), que en el título de la publicación original \cite{kneedle}, se compara con buscar una aguja en un pajar. Tal y como muestra el \Cref{algo:kneedle}, la idea es normalizar los valores, y tomar como punto de curvatura máxima aquel $x$ que maximiza $f(x) - x$. Se puede fijar un umbral para evitar máximos locales. 
+				La cuestión que queda por resolver es cómo ``calcular el codo''. Este punto se suele definir como el de mayor curvatura, por lo que si dada una serie de valores $\textbf{s}$ de WCSS, mediante una función $\mathcal{K}(k, y)$ se pudiese calcular la curvatura en ese punto, bastaría con tomar el $k$ que maximice $\mathcal{K}(k, y)$. Para realizar esta tarea se suele utilizar el llamado algoritmo \textit{kneedle}. Dicho nombre proviene del juego de palabras knee (rodilla) y needle (aguja), que en el título de la publicación original \cite{kneedle}, se compara con buscar una aguja en un pajar. Tal y como muestra el \Cref{algo:kneedle}, la idea es normalizar los valores, y tomar como punto de curvatura máxima aquel $x$ que maximiza $f(x) - x$. Se puede fijar un umbral para evitar máximos locales. 
 				
 				\begin{figure}[!h]
 					\centering

@@ -808,7 +808,7 @@
 						\label{fig:matrices_confusion_transf}
 					\end{figure} 
 					
-					En este punto se puede calcular el índice rand $\mathcal{R}_I$, que sería el equivalente a la precisión $\mathcal{P}$ presentada en la \Cref{subsub:f1}, pues se calcula como la tasa de acuerdos. En la siguiente ecuación se muestra su cálculo en base a la matriz de contingencia, donde $n_{i\cdot}$ representa la suma de las columnas de la fila $i$, y $n_{\cdot j}$ representa la suma de las filas de la columna $j$. 
+					En este punto se puede calcular el índice rand $\mathcal{R}_I$, que sería el equivalente a la precisión $\mathcal{P}$ presentada en la \Cref{subsub:f1}, pues se calcula como la tasa de acuerdos. En la siguiente ecuación se muestra su cálculo en base a la matriz de contingencia, donde $n_{i\cdot}$ representa la suma de las columnas de la fila $i$, y $n_{\cdot j}$ la suma de las filas de la columna $j$. 
 					
 					$$
 					\mathcal{R}_I = \frac{A}{A + D} = \frac{\displaystyle\binom{n}{2} + 2\sum_{i = 1}^r\sum_{j = 1}^s \binom{n_{ij}}{2} - \sum_{i = 1}^r \binom{n_{i\cdot}}{2} - \sum_{j = 1}^s \binom{n_{\cdot j}}{2}}{\displaystyle\binom{n}{2}}
@@ -821,4 +821,62 @@
 					$$
 					
 					Valores próximos a 1 indican un buen clustering, cercanos a 0 similar a hacerlo de manera aleatoria, y cercanos a $-1$ (en general menor que cero) peor que de manera aleatoria. Para la clasificación realizada con $k-$means se obtiene un ARI de $0.943$, y con CJA $0.952$. Ambos resultados son muy adecuados. 
+					
+				\subsubsection{Homogeneidad, completitud, y $V-$measure}
+				
+					De manera similar que la $F_1-$score relacionaba la precisión y la sensibilidad en el contexto de modelos de clasificación, en el caso de algoritmos de clustering en los que se conocen las clases reales es popular utilizar la $V-$measure, que indica cómo de bueno es el clustering realizado en función de la homogeneidad y completitud de los clusters. Dichos cálculos se basan en la entropía, entropía condicionada y entropía conjunta. 
+					
+					$$
+					\begin{gathered}
+						H(\mathscr{C}) = \sum_{i = 1}^{|\mathcal{C}|}P(\mathscr{C}_i)\log_2(P(\mathscr{C}_i))\\
+						\begin{aligned}
+							H(\mathscr{C} | \mathscr{D}) &= -\sum_{i = 1}^{|\mathcal{C}|}\sum_{j = 1}^{|\mathcal{D}|} P(\mathscr{C}_i \cap \mathscr{D}_j) \log_2 (P(\mathscr{C}_i | \mathscr{D}_j)) &
+							H(\mathscr{C}, \mathscr{D}) &= -\sum_{i = 1}^{|\mathcal{C}|}\sum_{j = 1}^{|\mathcal{D}|} P(\mathscr{C}_i \cap \mathscr{D}_j) \log_2 (P(\mathscr{C}_i \cap \mathscr{D}_j))
+						\end{aligned}
+					\end{gathered}
+					$$
+					
+					En las ecuaciones anteriores \cite{entropia}, los términos $\mathscr{C}$ y $\mathscr{D}$ son variables aleatorias discretas que representan los clusters de las particiones $\mathcal{C}$ y $\mathcal{D}$ a los que pertenece un determiando elemento, y abreviando, $P(\mathscr{C}_i) = P(\mathscr{C} = C_i)$. El concepto de homogeneidad $h$ hace referencia a que cada cluster contenga únicamente elementos de una misma clase; mientras que el de completitud $c$, que todos los miembros de una clase se asignen al mismo cluster \cite{vmeasure}. 
+					
+					$$
+					\begin{aligned}
+						h &= \begin{cases}
+							1 & \text{si}\, H(\mathscr{C}, \mathscr{D}) = 0\\
+							1 - \frac{H(\mathscr{C}|\mathscr{D})}{H(\mathscr{C})} & \text{si}\, H(\mathscr{C}, \mathscr{D}) \neq 0\\
+						\end{cases} & 
+						c &= \begin{cases}
+							1 & \text{si}\, H(\mathscr{D}, \mathscr{C}) = 0\\
+							1 - \frac{H(\mathscr{D}|\mathscr{C})}{H(\mathscr{D})} & \text{si}\, H(\mathscr{D}, \mathscr{C}) \neq 0\\
+						\end{cases}
+					\end{aligned}
+					$$
+					
+					Para los algoritmos de clustering presentados, se obtienen unos valores $(h, c, V)$ adecuados. En el caso de $k-$means se obtiene $(0.923, 0.924, 0.924)$, y para CJA $(0.938, 0.937, 0.937)$. La $V-$measure se calcula de la siguiente manera. 
+					
+					$$
+					V = \frac{2hc}{h + c}
+					$$
+					
+					No es recomendable utilizar esta métrica de manera exclusiva en casos con pocas observaciones (menos de 1000) o un número elevado de clusters (más de 10). En dichos casos es recomendable respaldarla con otras como el ARI. En este caso, se ve como ambas indican un buen clustering.
+					
+				\subsubsection{Coeficiente de la silueta}
+				
+					 Otra métrica popular para medir la calidad de un clustering es el coeficiente de la silueta \cite{formulas_silhouette}. Esta no necesita conocer las clases reales, pues mide cómo de parecido es un elemento $\textbf{x}_i$ a los de su cluster, es decir, cómo de compactos son los clusters; y además mide la diferenciación entre clusters, es decir, cómo de separados están. 
+					 
+					 $$
+					 \begin{gathered}
+					 	a_i = \frac{1}{|C_l| - 1}\sum_{\substack{\textbf{x}_j\in C_l\\ i\neq j}}\|\textbf{x}_i - \textbf{x}_j\|\\
+					 	b_i = \min_{m \neq l}\left\lbrace\frac{1}{|C_m|}\sum_{\textbf{x}_j\in C_m}\|\textbf{x}_i - \textbf{x}_j\|\right\rbrace\\
+					 	\mathcal{S} = \frac{1}{n}\sum_{i = 1}^{n}\frac{b_i - a_i}{\text{máx}\{a_i, b_i\}}
+					 \end{gathered}
+					 $$
+					 
+					 El cómo de compactos son los clusters lo miden los $a_i$, mientras que la separación entre clusters lo miden los $b_i$. El valor de $\mathcal{S}$ varía entre $-1$ y 1, indicando los valores cercanos a 1 un clustering perfecto (puntos parecidos entre sí en un mismo cluster, y clusters separados), valores cercanos a $-1$ un mal clustering (parecería más razonable asignar algunos puntos a otros clusters), y valores cercanos a cero indican que no estaría claro a qué cluster deberían asignarse algunos puntos al no estar bien separados los clusters \cite{interpretacion_silhouette}. En la \Cref{fig:silhouette_kmeans} se muestra el cálculo del coeficiente de la silueta para el clustering realizado con $k-$means. Se obtiene un valor próximo a cero, indicando que el clustering no es bueno en cuanto a separación de los clusters. \\
+					 
+					 \begin{figure}[!h]
+					 	\centering
+					 	\includegraphics[scale = .7]{silhouette_kmeans}
+					 	\caption{Coeficiente de la silueta para $k-$means}
+					 	\label{fig:silhouette_kmeans}
+					 \end{figure} 
 				
