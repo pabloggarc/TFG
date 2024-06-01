@@ -10,6 +10,16 @@
 *.lof
 *.loa
 *.env
+*.acn
+*.acr
+*.alg
+*.glg
+*.glo
+*.gls
+*.ist
+*.glsdefs
+*.ist
+*.lot
 svg-inkscape/
 PlotNeuralNet/
 Datasets/

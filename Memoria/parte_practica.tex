@@ -1,6 +1,6 @@
 \chapter{Optimización del proceso de valoración de puntos de interés}
 
-	Después de analizar diversos modelos de aprendizaje automático, junto con sus características y los algoritmos asociados, se ofrece un ejemplo práctico que ilustra la aplicación de estos modelos para abordar un problema de la vida real y buscar una solución adecuada. Para ello se presenta la compañía Niantic, fundada en 2010 como parte de una startup de Google, que se especializa en el desarrollo de juegos para dispositivos móviles que utilizan realidad aumentada (AR). Algunas de sus creaciones más destacadas han sido los juegos Ingress y Pokémon GO. \\
+	Después de analizar diversos modelos de aprendizaje automático, junto con sus características y los algoritmos asociados, se ofrece un ejemplo práctico que ilustra la aplicación de estos modelos para abordar un problema de la vida real y buscar una solución adecuada. Para ello se presenta la compañía Niantic, fundada en 2010 como parte de una startup de Google, que se especializa en el desarrollo de juegos para dispositivos móviles que utilizan \gls{ar}. Algunas de sus creaciones más destacadas han sido los juegos Ingress y Pokémon GO. \\
 	
 	Una de las herramientas creadas por esta empresa es Niantic Lightship, que permite a desarrolladores Unity integrar realidad aumentada y mapas con puntos de interés basados en la ubicación real del jugador. Dado que para Niantic resultaba inviable marcar dichos puntos de interés alrededor de todo el mundo, creó Niantic Wayfarer. En esta herramienta, usuarios experimentados de sus juegos pueden hacer propuestas de puntos de interés (llamados Wayspots) para que de manera colaborativa, otros usuarios las valoren. Sin embargo, tras varios años desde su lanzamiento, debido al gran número de propuestas y al reducido número de valoradores, la comunidad notifica largos tiempos de espera en el proceso de valoración de las propuestas. Por este motivo, se propone en este proyecto realizar una primera aproximación a la automatización de este proceso mediante las técnicas de visión e inteligencia artificial presentadas en el marco teórico. \\
 	
@@ -67,7 +67,7 @@
 		
 		\subsection{CUDA}
 		
-			CUDA son las siglas de Compute Unified Device Architecture, y es una tecnología de la marca estadounidense NVIDIA. Esta tecnología hace referencia a un conjunto de elementos que permiten ejecutar código de manera masivamente paralela en una tarjeta gráfica de la compañía, de manera que el tiempo de ejecución es mucho menor que al ejecutarlo de manera secuencial. Entre estos elementos se encuentran el controlador, el compilador, las interfaces para los diferentes lenguajes (la más común la de C/C++), las librerías que contienen algoritmos optimizados, y los propios núcleos CUDA de la GPU\cite{cuda}. \\
+			\gls{cuda} es una tecnología de la marca estadounidense NVIDIA. Esta tecnología hace referencia a un conjunto de elementos que permiten ejecutar código de manera masivamente paralela en una tarjeta gráfica de la compañía, de manera que el tiempo de ejecución es mucho menor que al ejecutarlo de manera secuencial. Entre estos elementos se encuentran el controlador, el compilador, las interfaces para los diferentes lenguajes (la más común la de C/C++), las librerías que contienen algoritmos optimizados, y los propios núcleos \gls{cuda} de la \gls{gpu} \cite{cuda}. \\
 			
 			\begin{figure}[!h]
 				\centering
@@ -76,26 +76,26 @@
 				\label{fig:nvidia}
 			\end{figure}
 			
-			El hardware de las tarjetas gráficas de NVIDIA se divide en \textit{streaming multiprocessors} (SMs), que a su vez están compuestos de \textit{streaming processors} (SPs) o núclos CUDA, entre otros elementos. A nivel de software, la unidad básica paralela es el hilo, que a nivel de hardware se ejecuta en un SP. Dichos SPs, son unos núcleos capaces de hacer operaciones más sencillas que las que un núcleo de una CPU podría realizar, pero de manera más rápida. A su vez, los hilos se agrupan en bloques, teniendo en cuenta que a nivel de hardware cada bloque se ejecuta en un único SM. Finalmente, todos los elementos se agrupan en una cuadrícula (o \textit{grid}) compuesta de bloques. Cada cuadrícula se ejecuta en una única GPU a nivel de hardware, y ejecuta a nivel de software un kernel\cite{cuda_arq,cuda_arq1}. \\
+			El hardware de las tarjetas gráficas de NVIDIA se divide en \gls{sm}, que a su vez están compuestos de \gls{sp} o núclos \gls{cuda}, entre otros elementos. A nivel de software, la unidad básica paralela es el hilo, que a nivel de hardware se ejecuta en un \gls{sp}. Dichos \gls{sp}, son unos núcleos capaces de hacer operaciones más sencillas que las que un núcleo de una \gls{cpu} podría realizar, pero de manera más rápida. A su vez, los hilos se agrupan en bloques, teniendo en cuenta que a nivel de hardware cada bloque se ejecuta en un único \gls{sm}. Finalmente, todos los elementos se agrupan en una cuadrícula (o \textit{grid}) compuesta de bloques. Cada cuadrícula se ejecuta en una única \gls{gpu} a nivel de hardware, y ejecuta a nivel de software un kernel \cite{cuda_arq,cuda_arq1}. \\
 			
 			\begin{figure}[!h]
 				\centering
 				\includegraphics[scale = .3]{arquitectura_cuda}
-				\caption{Arquitectura CUDA a nivel de hardware y software\cite{cuda_arq1}}
+				\caption{Arquitectura CUDA a nivel de hardware y software \cite{cuda_arq1}}
 				\label{fig:arq_cuda}
 			\end{figure}
 			
 			El hecho de poder realizar miles de operaciones sencillas de manera simultánea, reduce enormemente el tiempo de ejecución de algoritmos que son paralelizables, es decir, que contienen pasos sencillos que son independientes de otros y se pueden realizar al mismo tiempo, como es el caso de una convolución o multiplicación de matrices. Además, se cuenta con diferentes niveles de memoria, con los que se agilizan los tiempos de lectura de elementos que son utilizados frecuentemente. \\
 			
-			La mayoría de algoritmos de aprendizaje automático de TensorFlow tienen implementada su versión paralela, de manera que si se cuenta con una GPU compatible con CUDA, TensorFlow la utilizará para ahorrar el mayor tiempo posible durante los entrenamientos de los modelos. En este caso se dispone de un equipo que cuenta con un procesador Intel Core i7-8700, una GPU NVIDIA GeForce GTX 1060 6GB, y 32 GB de RAM; lo que hace posible la ejecución concurrente de dichos algoritmos. Esta tarjeta gráfica cuenta con 1280 SPs o núcleos CUDA repartidos en 10 SMs. \\
+			La mayoría de algoritmos de aprendizaje automático de TensorFlow tienen implementada su versión paralela, de manera que si se cuenta con una \gls{gpu} compatible con \gls{cuda}, TensorFlow la utilizará para ahorrar el mayor tiempo posible durante los entrenamientos de los modelos. En este caso se dispone de un equipo que cuenta con un procesador Intel Core i7-8700, una \gls{gpu} NVIDIA GeForce GTX 1060 6GB, y 32 GB de RAM; lo que hace posible la ejecución concurrente de dichos algoritmos. Esta tarjeta gráfica cuenta con 1280 \gls{sp} o núcleos \gls{cuda} repartidos en 10 \gls{sm}. \\
 			
-			Si bien el trabajo de indicar a TensorFlow que haga uso de CUDA es sencillo, no es tan trivial la configuración de drivers de NVIDIA, instalación de CUDA, versión de Python, versión de TensorFlow, versión de sistema operativo, etc. Con el frecuente cambio de versiones de cada componente, se presentan nuevas incompatibilidades entre ellos, haciendo que guías oficiales fallen y que el proceso de configuración inicial sea complicado en sistemas operativos como Windows 11. La manera más sencilla actualmente de realizar una instalación de CUDA y TensorFlow es sobre el sistema operativo Ubuntu en su versión 22.04 LTS. Para instalar y configurar el resto de componentes se ha hecho uso de LambdaStack (\url{https://lambdalabs.com/lambda-stack-deep-learning-software}). Mediante el uso del comando de terminal
+			Si bien el trabajo de indicar a TensorFlow que haga uso de \gls{cuda} es sencillo, no es tan trivial la configuración de drivers de NVIDIA, instalación de \gls{cuda}, versión de Python, versión de TensorFlow, versión de sistema operativo, etc. Con el frecuente cambio de versiones de cada componente, se presentan nuevas incompatibilidades entre ellos, haciendo que guías oficiales fallen y que el proceso de configuración inicial sea complicado en sistemas operativos como Windows 11. La manera más sencilla actualmente de realizar una instalación de \gls{cuda} y TensorFlow es sobre el sistema operativo Ubuntu en su versión 22.04 LTS. Para instalar y configurar el resto de componentes se ha hecho uso de LambdaStack (\url{https://lambdalabs.com/lambda-stack-deep-learning-software}). Mediante el uso del comando de terminal
 			\begin{verbatim}
 				wget -nv -O- https://lambdalabs.com/install-lambda-stack.sh | sh -
 			\end{verbatim}
-			automáticamente lanza LambdaStack que se encarga de instalar las versiones de Python y sus librerías (TensorFlow y PyTorch entre otras) adecuadas, los drivers de NVIDIA correctos, componentes de CUDA, realiza las configuraciones de variables de entorno, etc. En general, deja el entorno de Ubuntu configurado para poder trabajar en cualquier proyecto de inteligencia artificial en el que se quiera hacer uso de una GPU de NVIDIA. También cuentan con una imagen de Docker que ofrece una experiencia similar. El uso de este servicio es completamente gratuito, y es el que utiliza la compañía que lo gestiona en sus servicios de cloud computing (que sí son de pago). \\
+			automáticamente lanza LambdaStack que se encarga de instalar las versiones de Python y sus librerías (TensorFlow y PyTorch entre otras) adecuadas, los drivers de NVIDIA correctos, componentes de \gls{cuda}, realiza las configuraciones de variables de entorno, etc. En general, deja el entorno de Ubuntu configurado para poder trabajar en cualquier proyecto de inteligencia artificial en el que se quiera hacer uso de una \gls{gpu} de NVIDIA. También cuentan con una imagen de Docker que ofrece una experiencia similar. El uso de este servicio es completamente gratuito, y es el que utiliza la compañía que lo gestiona en sus servicios de cloud computing (que sí son de pago). \\
 			
-			Para probar la eficacia del uso de CUDA para proyectos de esta índole, se ha seleccionado un modelo de los que se presentan en la \Cref{subsec:crear_cnn} (entrenamiento de una red convolucional desde cero), y se ha lanzado midiendo el tiempo, el mismo entrenamiento pero con diferente número de épocas sobre CPU y GPU. La \Cref{fig:comparativa_cuda} evidencia cómo el entrenamiento en la GPU llega a ser hasta cinco veces más rápido que en la CPU. Todos los entrenamientos de la \Cref{subsec:crear_cnn} han sido realizados sobre la GPU. 
+			Para probar la eficacia del uso de \gls{cuda} para proyectos de esta índole, se ha seleccionado un modelo de los que se presentan en la \Cref{subsec:crear_cnn} (entrenamiento de una red convolucional desde cero), y se ha lanzado midiendo el tiempo, el mismo entrenamiento pero con diferente número de épocas sobre \gls{cpu} y \gls{gpu}. La \Cref{fig:comparativa_cuda} evidencia cómo el entrenamiento en la \gls{gpu} llega a ser hasta cinco veces más rápido que en la \gls{cpu}. Todos los entrenamientos de la \Cref{subsec:crear_cnn} han sido realizados sobre la \gls{gpu}. 
 			
 			\begin{figure}[!h]
 				\centering
@@ -106,16 +106,16 @@
 			
 		\subsection{Google Cloud Platform}
 		
-			Google Cloud Platform o GCP es una de las plataformas de cloud computing más conocidas, junto con Amazon Web Services (AWS) y Microsoft Azure. Este tipo de plataformas se encargan de ofrecer servicios IaaS (infraesctructura como servicio), PaaS (plataforma como servicio), y SaaS (software como servicio) muy útiles para empresas a la hora de desarrollar todo tipo de proyectos. Google divide los tipos de servicios que ofrece en diferentes categorías, siendo algunas de las principales las siguientes \cite{gcp}.  
+			\gls{gcp} es una de las plataformas de cloud computing más conocidas, junto con \gls{aws} y Microsoft Azure. Este tipo de plataformas se encargan de ofrecer servicios \gls{iaas}, \gls{paas}, y \gls{saas} muy útiles para empresas a la hora de desarrollar todo tipo de proyectos. Google divide los tipos de servicios que ofrece en diferentes categorías, siendo algunas de las principales las siguientes \cite{gcp}.  
 			
 			\begin{itemize}
-				\item Inteligencia artificial y aprendizaje automático: GCP cuenta con una amplia gama de servicios de inteligencia artificial en sus distintas áreas como por ejemplo, procesamiento de lenguaje, visión artificial, IA generativa, etc. Su plataforma Vertex AI engloba una gran variedad de modelos muy útiles y permite entrenar, desplegar, y gestionar dichos modelos de manera sencilla. En general, se podrían categorizar como servicios PaaS y SaaS. 
-				\item Inteligencia empresarial: Google ofrece herramientas (SaaS) como podrían ser Looker y Looker Studio, que permiten trabajar con datos, analizarlos, visualizarlos, generar informes, y en general, todo tipo de tareas del campo de Business Intelligence. 
-				\item Computación: dentro de este campo Google ofrece diferentes variantes de hardware virtualizado, como por ejemplo, máquinas virtuales, GPUs, ejecución de aplicaciones en contenedores, etc. En resumen, se trata de diferentes servicios IaaS y PaaS
-				\item Bases de datos y almacenamiento: Google ofrece múltiples servicios de almacenamiento de ficheros y bases de datos tanto SQL como NoSQL, de manera segura y escalable. De manera similar al apartado anterior, son principalmente servicios IaaS y PaaS. 
+				\item Inteligencia artificial y aprendizaje automático: \gls{gcp} cuenta con una amplia gama de servicios de inteligencia artificial en sus distintas áreas como por ejemplo, procesamiento de lenguaje, visión artificial, \gls{ia} generativa, etc. Su plataforma Vertex AI engloba una gran variedad de modelos muy útiles y permite entrenar, desplegar, y gestionar dichos modelos de manera sencilla. En general, se podrían categorizar como servicios \gls{paas} y \gls{saas}. 
+				\item Inteligencia empresarial: Google ofrece herramientas (\gls{saas}) como podrían ser Looker y Looker Studio, que permiten trabajar con datos, analizarlos, visualizarlos, generar informes, y en general, todo tipo de tareas del campo de Business Intelligence. 
+				\item Computación: dentro de este campo Google ofrece diferentes variantes de hardware virtualizado, como por ejemplo, máquinas virtuales, GPUs, ejecución de aplicaciones en contenedores, etc. En resumen, se trata de diferentes servicios \gls{iaas} y \gls{paas}
+				\item Bases de datos y almacenamiento: Google ofrece múltiples servicios de almacenamiento de ficheros y bases de datos tanto \gls{sql} como NoSQL, de manera segura y escalable. De manera similar al apartado anterior, son principalmente servicios \gls{iaas} y \gls{paas}. 
 			\end{itemize}
 			
-			La mayoría de estos servicios son accesibles de manera sencilla vía CLI, API, o los diferentes SDK de los lenguajes de programación más populares. 
+			La mayoría de estos servicios son accesibles de manera sencilla vía \gls{cli}, \gls{api}, o los diferentes \gls{sdk} de los lenguajes de programación más populares. 
 			
 			\begin{figure}[!h]
 				\centering
@@ -130,7 +130,7 @@
 	
 		Una primera aproximación a agilizar el proceso de valoración comentado, sería detectar el objeto que se muestra en la imagen de la propuesta, para que en caso de que sea algo aceptable proseguir con el proceso de valoración, o en caso contrario, rechazar directamente la propuesta. En general, en función del objeto que aparezca en la imagen, se tienen directamente las respuestas a las preguntas de la \Cref{fig:preguntas}. \\
 		
-		Para comenzar este caso práctico, lo primero a realizar es el proceso conocido como ETL, que consiste en la extracción, transformación, y carga de los datos; para posteriormente poder trabajar con ellos y proporcionárselos al modelo. Comenzando por la extracción de datos, se presenta el primero de los problemas. La idea es utilizar imágenes que realmente hayan pasado por este proceso de valoración para poder hacer el proyecto lo más realista posible, sin embargo, ni Wayfarer ni ninguno de los juegos poseen alguna API (al menos de manera pública) que permita recolectar de manera programática las imágenes utilizadas o información relativa a ellas. 
+		Para comenzar este caso práctico, lo primero a realizar es el proceso conocido como \gls{etl}, que consiste en la extracción, transformación, y carga de los datos; para posteriormente poder trabajar con ellos y proporcionárselos al modelo. Comenzando por la extracción de datos, se presenta el primero de los problemas. La idea es utilizar imágenes que realmente hayan pasado por este proceso de valoración para poder hacer el proyecto lo más realista posible, sin embargo, ni Wayfarer ni ninguno de los juegos poseen alguna \gls{api} (al menos de manera pública) que permita recolectar de manera programática las imágenes utilizadas o información relativa a ellas. 
 		
 		\subsection{Proceso ETL}
 		
@@ -175,7 +175,7 @@
 			
 		\subsection{Creación y entrenamiento de una red convolucional en TensorFlow}\label{subsec:crear_cnn}
 		
-			En esta primera aproximación se va a crear y entrenar una red convolucional desde cero con el dataset mencionado. En este caso, se han elegido cuatro tipos de objetos que frecuentemente se proponen como puntos de interés: parques infantiles, carteles informativos, marcadores de ruta, e hitos del Camino de Santiago. Mediante la clase \texttt{Sequential} de Keras, se puede proporcionar una lista de las capas que conforman el modelo. La primera de ellas será una capa de convolución, con la particularidad de que se debe indicar el tamaño de entrada, siendo este un tensor de las dimensiones indicadas en la creación del dataset. Se alterna cada capa de convolución ReLU de stride $3 \times 3$ y 32 o 64 filtros, con una capa de maxpooling con stride $2 \times 2$. Estos valores han sido elegidos de manera arbitraria. Esta arquitectura se puede visualizar en la \Cref{fig:arq_cnn}. \\
+			En esta primera aproximación se va a crear y entrenar una red convolucional desde cero con el dataset mencionado. En este caso, se han elegido cuatro tipos de objetos que frecuentemente se proponen como puntos de interés: parques infantiles, carteles informativos, marcadores de ruta, e hitos del Camino de Santiago. Mediante la clase \texttt{Sequential} de Keras, se puede proporcionar una lista de las capas que conforman el modelo. La primera de ellas será una capa de convolución, con la particularidad de que se debe indicar el tamaño de entrada, siendo este un tensor de las dimensiones indicadas en la creación del dataset. Se alterna cada capa de convolución \gls{relu} de stride $3 \times 3$ y 32 o 64 filtros, con una capa de maxpooling con stride $2 \times 2$. Estos valores han sido elegidos de manera arbitraria. Esta arquitectura se puede visualizar en la \Cref{fig:arq_cnn}. \\
 			
 			\begin{figure}[!h]
 				\centering
@@ -257,7 +257,7 @@
 				\label{fig:tb_cnn}
 			\end{figure}
 			
-			La situación que describen las gráficas, es negativa y sería la típica no deseada, pues se observa como con el paso de las iteraciones el error crece mientras que la precisión se estanca en valores no deseados. En concreto, en la \Cref{fig:tb_cnn_c} se observa cómo el error sobre el conjunto de validación crece, mientras que sobre el conjunto de entrenamiento tiende a cero. Esta es una situación denominada como sobreaprendizaje u \textit{overfitting}\cite{overfitting}. La red no tiene capacidad de aprender ni generalizar, y lo que está haciendo es memorizar los datos de ejemplo que se le presentan, cometiendo entonces errores cuando recibe datos que no ha visto nunca. 
+			La situación que describen las gráficas, es negativa y sería la típica no deseada, pues se observa como con el paso de las iteraciones el error crece mientras que la precisión se estanca en valores no deseados. En concreto, en la \Cref{fig:tb_cnn_c} se observa cómo el error sobre el conjunto de validación crece, mientras que sobre el conjunto de entrenamiento tiende a cero. Esta es una situación denominada como sobreaprendizaje u \textit{overfitting} \cite{overfitting}. La red no tiene capacidad de aprender ni generalizar, y lo que está haciendo es memorizar los datos de ejemplo que se le presentan, cometiendo entonces errores cuando recibe datos que no ha visto nunca. 
 			
 		\subsection{Transfer learning en TensorFlow}
 		
@@ -267,12 +267,12 @@
 			
 			En el problema que se está tratando, se va a aplicar esta técnica de la siguiente manera. Como previamente se ha mencionado, las redes convolucionales, pueden verse como un conjunto de capas capaces de extraer características de las imágenes, junto con una red neuronal clásica que es capaz de clasificar en función de dichas características. Teniendo en cuenta que el principal problema del modelo anterior podría ser que no fuera capaz de obtener las características adecuadas que definen a cada clase, la idea es utilizar una serie de capas que sí sean capaces de obtener de manera correcta las características de una imagen, para después poder entrenar la red neuronal clásica con las características adecuadas. \\
 			
-			Con ayuda de la plataforma TensorHub que trabaja junto con TensorFlow, se pueden importar modelos ya entrenados. En este caso para aplicar la técnica de transfer learning, se ha decidido utilizar la red MobileNet de Google que se observa en la \Cref{fig:mb}. El modelo se puede importar como si de una capa se tratase al crear un modelo secuencial de Keras. Para lograr la técnica, será clave declarar que los parámetros de dicha capa no se deberán entrenar (pues al importar el modelo ya vienen con unos valores adecuados). A continuación se coloca una capa densa, encargada de clasificar las características que la red de Google extraiga, y que deberá ser entrenada. Esta vez, el número de parámetros a optimizar sí es más adecuado al número de observaciones disponibles. 
+			En TensorFlow se pueden importar modelos ya entrenados. En este caso para aplicar la técnica de transfer learning, se ha decidido utilizar la red MobileNet de Google que se observa en la \Cref{fig:mb}. El modelo se puede importar como si de una capa se tratase al crear un modelo secuencial de Keras. Para lograr la técnica, será clave declarar que los parámetros de dicha capa no se deberán entrenar (pues al importar el modelo ya vienen con unos valores adecuados). A continuación se coloca una capa densa, encargada de clasificar las características que la red de Google extraiga, y que deberá ser entrenada. Esta vez, el número de parámetros a optimizar sí es más adecuado al número de observaciones disponibles. 
 			
 			\begin{figure}[!h]
 				\centering
 				\includegraphics[scale = .3]{mb}
-				\caption{MobileNetV2}
+				\caption{MobileNet \cite{mobilenet}}
 				\label{fig:mb}
 			\end{figure}
 			
@@ -333,7 +333,7 @@
 			
 		\subsection{Aumento de datos}
 		
-			Como se ha visto a lo largo de las secciones anteriores, uno de los problemas que se está teniendo en este caso práctico, es la falta de datos. Una técnica utilizada frecuentemente en estos casos es conocida como aumento de datos. Consiste en modificar las imágenes del dataset de entrenamiento para que el modelo disponga de más ejemplos diferentes\cite{augm}. Podría entenderse como una parte del proceso de transformación ETL. \\
+			Como se ha visto a lo largo de las secciones anteriores, uno de los problemas que se está teniendo en este caso práctico, es la falta de datos. Una técnica utilizada frecuentemente en estos casos es conocida como aumento de datos. Consiste en modificar las imágenes del dataset de entrenamiento para que el modelo disponga de más ejemplos diferentes \cite{augm}. Podría entenderse como una parte del proceso de transformación \gls{etl}. \\
 			
 			Una vez más, es posible aplicar esta técnica mediante funciones de TensorFlow. Para ello se crea un objeto de la clase \texttt{ImageDataGenerator}. Mediante su constructor se pueden declarar los valores que toman los atributos que modificarán las imágenes, siendo algunos de los más destacables: 
 			
@@ -346,7 +346,7 @@
 				\item \texttt{validation\_split}: porcentaje de los datos reservados a validación. 
 			\end{itemize}
 			
-			Una vez se tiene declarado el generador, se utiliza su método \texttt{flow\_from\_directory} para que dada la ruta que contiene las imágenes, el tamaño deseado de imagen, y el tamaño de los lotes, se cree el objeto que representa al dataset. De manera similar a la anterior, se ha programado una función \texttt{sample\_ds\_ffd} que permite visualizar nueve elementos del dataset creado, tal y como muestra la \Cref{fig:sample_dataset_au}. Esta es una de la manera más común de crear datos nuevos, siendo alguna de las más novedosas las arquitecturas GAN. Están formadas por dos redes, una capaz de crear imágenes y otra capaz de distinguir entre imágenes reales y generadas, y transmitir dicho conocimiento a la primera red, de manera que una intente ``engañar'' a la otra\cite{gan}. \\
+			Una vez se tiene declarado el generador, se utiliza su método \texttt{flow\_from\_directory} para que dada la ruta que contiene las imágenes, el tamaño deseado de imagen, y el tamaño de los lotes, se cree el objeto que representa al dataset. De manera similar a la anterior, se ha programado una función \texttt{sample\_ds\_ffd} que permite visualizar nueve elementos del dataset creado, tal y como muestra la \Cref{fig:sample_dataset_au}. Esta es una de la manera más común de crear datos nuevos, siendo alguna de las más novedosas las arquitecturas \gls{gan}. Están formadas por dos redes, una capaz de crear imágenes y otra capaz de distinguir entre imágenes reales y generadas, y transmitir dicho conocimiento a la primera red, de manera que una intente ``engañar'' a la otra \cite{gan}. \\
 			
 			\begin{figure}
 				\centering
@@ -384,7 +384,7 @@
 			
 			\subsubsection{Matriz de confusión}\label{subsub:matriz_confusion}
 			
-				La matriz de confusión muestra en el caso de clasificación binaria, los verdaderos positivos, verdaderos negativos, falsos positivos, y falsos negativos, mientras que en el caso de clasificación no binaria, en general la relación entre las etiquetas reales de cada observación y las que el modelo le ha asignado\cite{confusion}. De manera muy visual se puede observar la cantidad de ejemplos de cada clase (pudiendo ver si se encuentran desbalanceadas), cuántos han sido clasificados correctamente, cuántos no, y en general entre qué clases suele confundirse más el modelo. \\
+				La matriz de confusión muestra en el caso de clasificación binaria, los verdaderos positivos, verdaderos negativos, falsos positivos, y falsos negativos, mientras que en el caso de clasificación no binaria, en general la relación entre las etiquetas reales de cada observación y las que el modelo le ha asignado \cite{confusion}. De manera muy visual se puede observar la cantidad de ejemplos de cada clase (pudiendo ver si se encuentran desbalanceadas), cuántos han sido clasificados correctamente, cuántos no, y en general entre qué clases suele confundirse más el modelo. \\
 				
 				\begin{figure}[!h]
 					\centering
@@ -482,20 +482,20 @@
 			
 			\subsubsection{Curvas ROC y AUC}
 			
-				Otra manera de evaluar la calidad de un clasificador binario es mediante las conocidas como curvas ROC (\textit{Receiver Operating Characteristic}), que representan en el espacio $[0, 1]\times[0, 1]$ los falsos positivos frente a los verdaderos positivos\cite{roc}. Es más sencillo de entender y representar en términos de probabilidad condicionada, representando $P(\hat{C}_i | \lnot C_i)$ frente a $P(\hat{C}_i | C_i)$. Para determinar entre dos curvas cuál describe un mejor clasificador, lo que se hace es elegir aquella con un AUC (Area Under Curve) mayor. Si se toma la curva ROC como una función $r: [0, 1] \longrightarrow [0, 1]$, entonces el AUC se puede entender como 
+				Otra manera de evaluar la calidad de un clasificador binario es mediante las conocidas como curvas \gls{roc}, que representan en el espacio $[0, 1]\times[0, 1]$ los falsos positivos frente a los verdaderos positivos \cite{roc}. Es más sencillo de entender y representar en términos de probabilidad condicionada, representando $P(\hat{C}_i | \lnot C_i)$ frente a $P(\hat{C}_i | C_i)$. Para determinar entre dos curvas cuál describe un mejor clasificador, lo que se hace es elegir aquella con un \gls{auc} mayor. Si se toma la curva \gls{roc} como una función $r: [0, 1] \longrightarrow [0, 1]$, entonces el \gls{auc} se puede entender como 
 				$$
 				\mathcal{A} = \int_0^1 r(x)\,dx, 
 				$$
-				siendo $\mathcal{A} = 1$ el mejor de los valores posibles. En general, cuanto mayores sean los valores del eje $y$ para valores muy pequeños del eje $x$, mejor será el clasificador, mientras que cuando la curva ROC se aproxime a la función $f(x) = x$, más parecido será el modelo a hacer las clasificaciones al azar. En los casos que no son de clasificación binaria como este, no existe como tal una clase positiva y una negativa. Lo que se hace en su lugar es una de las siguientes aproximaciones\cite{auc}. 
+				siendo $\mathcal{A} = 1$ el mejor de los valores posibles. En general, cuanto mayores sean los valores del eje $y$ para valores muy pequeños del eje $x$, mejor será el clasificador, mientras que cuando la curva \gls{roc} se aproxime a la función $f(x) = x$, más parecido será el modelo a hacer las clasificaciones al azar. En los casos que no son de clasificación binaria como este, no existe como tal una clase positiva y una negativa. Lo que se hace en su lugar es una de las siguientes aproximaciones \cite{auc}. 
 				
 				\begin{itemize}
-					\item OVO (\textit{one versus one}): para cada clase $C_i$ y $C_j$ con $i \neq j$, se toma una de ellas como clase positiva y la otra como negativa, y se calcula la curva ROC y AUC asociado, disponiendo de un total de $\binom{n}{2}$ o $n(n-1)$ curvas según el autor o la librería utilizada (depende de considerar o no cada elemento de la pareja como positiva y negativa, y viceversa, teniendo que $2\binom{n}{2} = n(n-1)$). 
+					\item \gls{ovo}: para cada clase $C_i$ y $C_j$ con $i \neq j$, se toma una de ellas como clase positiva y la otra como negativa, y se calcula la curva \gls{roc} y \gls{auc} asociado, disponiendo de un total de $\binom{n}{2}$ o $n(n-1)$ curvas según el autor o la librería utilizada (depende de considerar o no cada elemento de la pareja como positiva y negativa, y viceversa, teniendo que $2\binom{n}{2} = n(n-1)$). 
 					
 					$$
 					\mathcal{A}_{\text{OVO}} = \frac{1}{n(n-1)}\sum_{i=1}^n\sum_{j \neq i}^n P(C_i)\mathcal{A}(C_i, C_j)
 					$$
 					
-					\item OVR (\textit{one versus rest}): para cada clase $C_i$ se toma como clase positiva, y el resto de las clases como una única clase negativa. Se calcula la correspondiente curva ROC y AUC asociado, obteniendo un total de $n$ curvas. 
+					\item \gls{ovr}: para cada clase $C_i$ se toma como clase positiva, y el resto de las clases como una única clase negativa. Se calcula la correspondiente curva \gls{roc} y \gls{auc} asociado, obteniendo un total de $n$ curvas. 
 					
 					$$
 					\mathcal{A}_{\text{OVR}} = \sum_{i=1}^n P(C_i)\mathcal{A}(C_i, \lnot C_i)
@@ -503,7 +503,7 @@
 					
 				\end{itemize}
 				
-				Es muy útil visualizar en una misma gráfica las diferentes curvas ROC de una de estas técnicas, sin embargo Scikit-learn no cuenta con ninguna función que haga esto directamente, sólo muestra el valor final. Por ello, se ha codificado una función \texttt{roc\_auc\_ovr} que recibe $Y_m$, $Y_s$, y el nombre de las clases, y devuelve un gráfico en el que se ven las curvas ROC OVR de cada clase, los AUC de cada una, y el global. Para ello se ha hecho uso de la función \texttt{roc\_curve}, que calcula la curva, \texttt{auc}, que calcula el AUC, y \texttt{RocCurveDisplay} que muestra un gráfico de la curva ROC. En la \Cref{fig:roc} se muestran los cuatro resultados para cada uno de los casos, teniendo de nuevo que para las variantes de las \Cref{fig:roc_mb,fig:roc_mbau} se observan los mejores resultados sin haber casi diferencia entre ambos. \\
+				Es muy útil visualizar en una misma gráfica las diferentes curvas \gls{roc} de una de estas técnicas, sin embargo Scikit-learn no cuenta con ninguna función que haga esto directamente, sólo muestra el valor final. Por ello, se ha codificado una función \texttt{roc\_auc\_ovr} que recibe $Y_m$, $Y_s$, y el nombre de las clases, y devuelve un gráfico en el que se ven las curvas \gls{roc} OVR de cada clase, los \gls{auc} de cada una, y el global. Para ello se ha hecho uso de la función \texttt{roc\_curve}, que calcula la curva, \texttt{auc}, que calcula el \gls{auc}, y \texttt{RocCurveDisplay} que muestra un gráfico de la curva \gls{roc}. En la \Cref{fig:roc} se muestran los cuatro resultados para cada uno de los casos, teniendo de nuevo que para las variantes de las \Cref{fig:roc_mb,fig:roc_mbau} se observan los mejores resultados sin haber casi diferencia entre ambos. \\
 				
 				\begin{figure}[!h]
 					\centering
@@ -554,7 +554,7 @@
 				
 				Este problema es ampliamente conocido como \textit{open set recognition}, y existen diversas formas de abordarlo. En esta sección se va a demostrar la eficacia de dos de las más populares. En ambos casos se necesitan recopilar datos de imágenes que no pertenezcan a ninguna de las clases. Para esto, también se han tomado imágenes que superaron el proceso de valoración pero que difieren de las clases seleccionadas para este proyecto, como por ejemplo, grafitis, iglesias, fuentes, pistas deportivas, etc. \\
 				
-				La primera de las aproximaciones consiste en tratar el resto de clases desconocidas como una única clase desconocida. Al dataset utilizado en los casos anteriores se ha añadido una clase \texttt{resto} que contiene diversas imágenes mezcladas. Utilizando el mejor de los modelos anteriores (aplicando transfer learning), y teniendo en cuenta que no todas las imágenes de la misma clase guardan relación entre sí, se han obtenido resultados realmente positivos, puesto que el valor del $F_1$ es de $0.956$, casi no hay clasificaciones incorrectas en la matriz de confusión (\Cref{fig:mc_open_otros}), y las curvas ROC son casi perfectas (\Cref{fig:roc_open_otros}). \\
+				La primera de las aproximaciones consiste en tratar el resto de clases desconocidas como una única clase desconocida. Al dataset utilizado en los casos anteriores se ha añadido una clase \texttt{resto} que contiene diversas imágenes mezcladas. Utilizando el mejor de los modelos anteriores (aplicando transfer learning), y teniendo en cuenta que no todas las imágenes de la misma clase guardan relación entre sí, se han obtenido resultados realmente positivos, puesto que el valor del $F_1$ es de $0.956$, casi no hay clasificaciones incorrectas en la matriz de confusión (\Cref{fig:mc_open_otros}), y las curvas \gls{roc} son casi perfectas (\Cref{fig:roc_open_otros}). \\
 				
 				\begin{figure}[!h]
 					\centering
@@ -650,7 +650,7 @@
 				
 		\section{Clasificación de imágenes mediante transformers multimodales}
 		
-			El objetivo de esta sección será abordar de nuevo el problema resuelto anteriormente, ofreciendo una mejor solución al dejar abierta la posibilidad de trabajar con textos asociados a las imágenes, y no necesitar conocer el número de clases del dataset, tal y como se mostró en el marco teórico. En cuanto a los datos, se reutilizarán aquellos obtenidos del proceso ETL anterior, volcando todas las imágenes en un mismo directorio. \\
+			El objetivo de esta sección será abordar de nuevo el problema resuelto anteriormente, ofreciendo una mejor solución al dejar abierta la posibilidad de trabajar con textos asociados a las imágenes, y no necesitar conocer el número de clases del dataset, tal y como se mostró en el marco teórico. En cuanto a los datos, se reutilizarán aquellos obtenidos del proceso \gls{etl} anterior, volcando todas las imágenes en un mismo directorio. \\
 			
 			De manera resumida, la solución está compuesta en primer lugar por un transformer multimodal, capaz de extraer conceptos o ideas representadas en diferentes modalidades, como textos, imágenes, o vídeos, y representarlos en un espacio común, para posteriormente hacer uso de un algoritmo de clasificación no supervisada que permita encontrar el número de clases óptimas, y clasificar los embeddings generados por el transformer. En la \Cref{fig:diagrama_embeddings} se muestra un diagrama de cómo deberían ser los embeddings que genera un modelo de este tipo. Si $\textbf{u}$ es el embedding de \texttt{rey}, $\textbf{v}$ el de \texttt{mujer}, y $\textbf{w}$ el de \texttt{reina}, entonces se espera que $\textbf{u} + \textbf{v} \approx \textbf{w}$. De la misma manera sucedería para una imagen o vídeo que represente los mismos conceptos. \\
 			
@@ -665,7 +665,7 @@
 			
 				Para abordar esta solución, la primera de las tareas es disponer del modelo capaz de extraer las ideas de las diferentes modalidades de información. Siendo una de las desventajas de los transformers el enorme volumen de datos de entrenamiento que necesitan para lograr un buen rendimiento, y los pocos datos que se poseen en este caso, no es razonable construir y entrenar un transformer desde cero. Por ello, se ha optado por utilizar un modelo previamente entrenado con grandes volúmenes de datos y que tiene un excelente rendimiento en tareas de esta índole. Dentro de los servicios que ofrece Google Cloud, su plataforma Vertex AI contiene una gran variedad de modelos, cada uno orientado a ciertos tipos de tareas. En concreto, se ofrece un modelo llamado \texttt{multimodalembedding} recomendado para tareas de clasificación y búsquedas semánticas de textos, imágenes, y vídeos \cite{vertex}. Dicho modelo sigue la arquitectura de un transformer multimodal codificador, es decir, recibe textos, imágenes, y vídeos, y es capaz de entregar un vector llamado embedding capaz de representar las ideas que aparecen en las entradas dadas. \\
 				
-				La manera de comunicarse con el modelo es vía API. En la documentación se especifica que para el caso de las imágenes deben tener una resolución (máxima) de $512 \times 512$ píxeles y que deben enviarse codificadas en Base64 o el URI de la imagen en caso de tenerla almacenada en un bucket de Google Cloud Storage. Para el caso de vídeo no se entrará en detalle pues no se utilizará en este proyecto, pero se puede generar un embedding por cada $x$ segundos de vídeo ignorando el contenido del audio. Además, debe estar almacenado en un bucket. En este caso se tienen almacenadas las imágenes en local, y para realizar esta tarea en Python se hace uso de la biblioteca \texttt{Pillow} para redimensionar las imágenes, \texttt{base64} para codificar la imagen redimensionada a Base64, y \texttt{requests} para realizar la llamada. Según indica la documentación, el cuerpo de la llamada HTTP POST, debe contener un fichero JSON que sigue esta estructura,
+				La manera de comunicarse con el modelo es vía \gls{api}. En la documentación se especifica que para el caso de las imágenes deben tener una resolución (máxima) de $512 \times 512$ píxeles y que deben enviarse codificadas en Base64 o el \gls{uri} de la imagen en caso de tenerla almacenada en un bucket de Google Cloud Storage. Para el caso de vídeo no se entrará en detalle pues no se utilizará en este proyecto, pero se puede generar un embedding por cada $x$ segundos de vídeo ignorando el contenido del audio. Además, debe estar almacenado en un bucket. En este caso se tienen almacenadas las imágenes en local, y para realizar esta tarea en Python se hace uso de la biblioteca \texttt{Pillow} para redimensionar las imágenes, \texttt{base64} para codificar la imagen redimensionada a Base64, y \texttt{requests} para realizar la llamada. Según indica la documentación, el cuerpo de la llamada \gls{http} POST, debe contener un fichero \gls{json} que sigue esta estructura,
 				\begin{center}
 					\begin{BVerbatim}[tabsize = 3]
 						{
@@ -680,7 +680,7 @@
 						}
 					\end{BVerbatim}
 				\end{center}
-				para recibir como respuesta otro fichero JSON que tiene el siguiente aspecto. 
+				para recibir como respuesta otro fichero \gls{json} que tiene el siguiente aspecto. 
 				\begin{center}
 					\begin{BVerbatim}[tabsize = 3]
 						{
@@ -704,13 +704,13 @@
 					\end{BVerbatim}
 				\end{center}
 				
-				En el JSON que se incluye en el cuerpo de la llamada, se puede elegir el número de dimensiones del embedding. Si no se indica nada, los embeddings tienen 1408 dimensiones. Además, en la cabecera de la llamada se debe indicar el token, que se obtiene en cada llamada mediante el CLI con ayuda del comando \texttt{gcloud auth print-access-token}, ya que por seguridad cambia periódicamente. Si la llamada ha sido exitosa, se recibe el código \texttt{HTTP 200} en la respuesta, y en caso contrario ha sucedido algún error. Además, se especifica que la cantidad máxima de llamadas por minuto y proyecto es de 120, que al realizar el siguiente cálculo se obtiene que no deben superarse las dos llamadas por segundo. 
+				En el \gls{json} que se incluye en el cuerpo de la llamada, se puede elegir el número de dimensiones del embedding. Si no se indica nada, los embeddings tienen 1408 dimensiones. Además, en la cabecera de la llamada se debe indicar el token, que se obtiene en cada llamada mediante el \gls{cli} con ayuda del comando \texttt{gcloud auth print-access-token}, ya que por seguridad cambia periódicamente. Si la llamada ha sido exitosa, se recibe el código \texttt{HTTP 200} en la respuesta, y en caso contrario ha sucedido algún error. Además, se especifica que la cantidad máxima de llamadas por minuto y proyecto es de 120, que al realizar el siguiente cálculo se obtiene que no deben superarse las dos llamadas por segundo. 
 				
 				$$
 				\left\lfloor\frac{120\text{ llamadas}}{60\text{ segundos}}\right\rfloor = 2 \text{ llamadas/segundo}
 				$$
 				
-				El tiempo que transcurre desde que se realiza una llamada hasta que se obtiene la respuesta oscila entre $0.5$ y 1 segundos, por lo que el pausando el proceso $0.5$ segundos tras cada llamada se evita superar el límite fijado. Al superar el límite, se recibe el código \texttt{HTTP 429}. Finalmente, se almacenan todos los ficheros JSON de las respuestas en disco, evitando así consumir  créditos y ahorrar tiempo en futuras ejecuciones con el mismo dataset. Una vez se han calculado el embedding correspondiente a cada imagen del dataset, es de utilidad crear un dataframe de Pandas que ayude a estructurar toda la información relativa a cada imagen obtenida hasta el momento para trabajar de manera más cómoda. En la \Cref{tab:df_ejemplo} se muestra un extracto de este dataframe. 
+				El tiempo que transcurre desde que se realiza una llamada hasta que se obtiene la respuesta oscila entre $0.5$ y 1 segundos, por lo que el pausando el proceso $0.5$ segundos tras cada llamada se evita superar el límite fijado. Al superar el límite, se recibe el código \texttt{HTTP 429}. Finalmente, se almacenan todos los ficheros \gls{json} de las respuestas en disco, evitando así consumir  créditos y ahorrar tiempo en futuras ejecuciones con el mismo dataset. Una vez se han calculado el embedding correspondiente a cada imagen del dataset, es de utilidad crear un dataframe de Pandas que ayude a estructurar toda la información relativa a cada imagen obtenida hasta el momento para trabajar de manera más cómoda. En la \Cref{tab:df_ejemplo} se muestra un extracto de este dataframe. 
 				
 				\begin{table}[!h]
 					\scriptsize
@@ -722,7 +722,7 @@
 				
 			\subsection{Clasificación no supervisada de embeddings}
 				
-				Con motivo de ilustrar la salida del transformer, lo ideal es mostrar los embeddings en el espacio, pues si ha sido capaz de detectar diferencias y similitudes entre las imágenes, estas deberán verse reflejadas también en los embeddings. Visualizar vectores de 1408 componentes en el plano o espacio no es posible ``directamente'', pero gracias a algoritmos como PCA o t-SNE, esto se hace posible. De manera intuitiva, estos algoritmos se comportan como una aplicación $\mathbb{R}^{1408} \longrightarrow \mathbb{R}^2$, intentando perder la mínima cantidad de información al realizar este cambio de dimensiones. No se entrará en detalle del funcionamiento de los algoritmos, pues no influyen en el resultado, simplemente permiten visualizar la situación. En la \Cref{fig:embeddingsR2} se observa el resultado obtenido por ambos algoritmos, distinguiendo claras nubes de puntos. 
+				Con motivo de ilustrar la salida del transformer, lo ideal es mostrar los embeddings en el espacio, pues si ha sido capaz de detectar diferencias y similitudes entre las imágenes, estas deberán verse reflejadas también en los embeddings. Visualizar vectores de 1408 componentes en el plano o espacio no es posible ``directamente'', pero gracias a algoritmos como \gls{pca} o \gls{tsne}, esto se hace posible. De manera intuitiva, estos algoritmos se comportan como una aplicación $\mathbb{R}^{1408} \longrightarrow \mathbb{R}^2$, intentando perder la mínima cantidad de información al realizar este cambio de dimensiones. No se entrará en detalle del funcionamiento de los algoritmos, pues no influyen en el resultado, simplemente permiten visualizar la situación. En la \Cref{fig:embeddingsR2} se observa el resultado obtenido por ambos algoritmos, distinguiendo claras nubes de puntos. 
 				
 				\begin{figure}[!h]
 					\centering
@@ -740,7 +740,7 @@
 					\label{fig:elbow}
 				\end{figure} 
 				
-				Tras utilizar este valor de $k$ calculado, se pueden lanzar los algoritmos $k-$means y CJA con este valor, y colorear los embeddings de la \Cref{fig:embeddingsR2} para visualizar los clusters detectados por ambos algoritmos. En las \Cref{fig:clusters_kmeans,fig:clusters_cja} se observa cómo aparentemente ambos algoritmos han sido capaces de separar las nubes de puntos. Podría parecer que algunas imágenes están más cerca del centro de un cluster que del que tienen asignado, pero es importante recordar que el proceso de clustering se ha realizado en un espacio de 1408 dimensiones, mientras que estas figuras describen una situación similar en $\mathbb{R}^2$. En el hipotético caso de poder visualizar $\mathbb{R}^{1408}$, sería más evidente la asignación. 
+				Tras utilizar este valor de $k$ calculado, se pueden lanzar los algoritmos $k-$means y \gls{cja} con este valor, y colorear los embeddings de la \Cref{fig:embeddingsR2} para visualizar los clusters detectados por ambos algoritmos. En las \Cref{fig:clusters_kmeans,fig:clusters_cja} se observa cómo aparentemente ambos algoritmos han sido capaces de separar las nubes de puntos. Podría parecer que algunas imágenes están más cerca del centro de un cluster que del que tienen asignado, pero es importante recordar que el proceso de clustering se ha realizado en un espacio de 1408 dimensiones, mientras que estas figuras describen una situación similar en $\mathbb{R}^2$. En el hipotético caso de poder visualizar $\mathbb{R}^{1408}$, sería más evidente la asignación. 
 				
 				\begin{figure}[!h]
 					\centering
@@ -756,7 +756,7 @@
 					\label{fig:clusters_cja}
 				\end{figure} 
 				
-				Con motivo de poder ilustrar de manera conjunta el resultado del cálculo de embeddings y la clasificación de estos, se muestran en la \Cref{fig:embeddings_visuales} los embeddings representados con ayuda de t-SNE y los clusters calculados por $k-$means, con la diferencia que esta vez los embeddings se sustituyen por sus imágenes correspondientes, y aparecen enmarcadas con el color de su cluster. Con motivo de facilitar la visualización de los clusters, se ha dibujado un círculo de radio el percentil 90 de las distancias al centroide (para evitar que outliers ensucien el dibujo), y centrado en este. \\
+				Con motivo de poder ilustrar de manera conjunta el resultado del cálculo de embeddings y la clasificación de estos, se muestran en la \Cref{fig:embeddings_visuales} los embeddings representados con ayuda de \gls{tsne} y los clusters calculados por $k-$means, con la diferencia que esta vez los embeddings se sustituyen por sus imágenes correspondientes, y aparecen enmarcadas con el color de su cluster. Con motivo de facilitar la visualización de los clusters, se ha dibujado un círculo de radio el percentil 90 de las distancias al centroide (para evitar que outliers ensucien el dibujo), y centrado en este. \\
 				
 				\begin{figure}[!h]
 					\centering
@@ -781,7 +781,7 @@
 				
 				\subsubsection{Índice rand ajustado}
 				
-					En el caso en el que se conocen las clases reales, una de las métricas más populares es el índice rand ajustado o ARI \cite{ari}. Se supone que se dispone de dos particiones del dataset original, $\mathcal{C} = \{C_1, C_2, \ldots, C_r\}$ y $\mathcal{D} = \{D_1, D_2, \ldots, D_s\}$, donde una de ellas es la generada por el algoritmo, y la otra es la original. Con ayuda de cada uno de estos conjuntos se construye la llamada matriz de contingencia, donde la entrada $n_{ij}$ representa el valor de $|C_i \cap D_j|$. En la \Cref{fig:matrices_contingencia} se observan las matrices de contingencia para los clusters generados por los dos algoritmos elegidos. 
+					En el caso en el que se conocen las clases reales, una de las métricas más populares es el \gls{ari} \cite{ari}. Se supone que se dispone de dos particiones del dataset original, $\mathcal{C} = \{C_1, C_2, \ldots, C_r\}$ y $\mathcal{D} = \{D_1, D_2, \ldots, D_s\}$, donde una de ellas es la generada por el algoritmo, y la otra es la original. Con ayuda de cada uno de estos conjuntos se construye la llamada matriz de contingencia, donde la entrada $n_{ij}$ representa el valor de $|C_i \cap D_j|$. En la \Cref{fig:matrices_contingencia} se observan las matrices de contingencia para los clusters generados por los dos algoritmos elegidos. 
 					
 					\begin{figure}[!h]
 						\centering
@@ -790,7 +790,7 @@
 						\label{fig:matrices_contingencia}
 					\end{figure} 
 					
-					Estas matrices ayudan a dar una idea de la correspondencia entre los clusters originales y los calculados, observando los elementos que destacan por filas o columnas. Son el primer paso para calcular el ARI, pues sería erróneo pensar que se trata de una clasificación incorrecta el asignar una imagen al cluster $i$, cuando originalmente tenía asignado el cluster $j$, pues puede que sean clusters similares o incluso el mismo, pero que el algoritmo los haya nombrado de diferente manera. Para solucionar este problema, lo que se hace es trabajar con todas las posibles parejas del dataset, y comprobar si pertenecen a las mismas parejas de clusters en ambas particiones, dando lugar a los siguientes cuatro casos. 
+					Estas matrices ayudan a dar una idea de la correspondencia entre los clusters originales y los calculados, observando los elementos que destacan por filas o columnas. Son el primer paso para calcular el \gls{ari}, pues sería erróneo pensar que se trata de una clasificación incorrecta el asignar una imagen al cluster $i$, cuando originalmente tenía asignado el cluster $j$, pues puede que sean clusters similares o incluso el mismo, pero que el algoritmo los haya nombrado de diferente manera. Para solucionar este problema, lo que se hace es trabajar con todas las posibles parejas del dataset, y comprobar si pertenecen a las mismas parejas de clusters en ambas particiones, dando lugar a los siguientes cuatro casos. 
 					
 					\begin{itemize}
 						\item $(u \in C_p \,\land\, v \in C_p) \,\land\, (u \in D_q \,\land\, v \in D_q)$
@@ -820,7 +820,7 @@
 					\mathcal{R}_{A_I} = \frac{\mathcal{R}_{I} - E[\mathcal{R}_I]}{\max\{\mathcal{R}_I\} - E[\mathcal{R}_I]} = \frac{\displaystyle\sum_{i = 1}^r\sum_{j = 1}^s\binom{n_{ij}}{2} - \binom{n}{2}^{-1}\sum_{i = 1}^r\binom{n_{i\cdot}}{2}\sum_{j = 1}^s\binom{n_{\cdot j}}{2}}{\displaystyle\frac{1}{2}\left(\sum_{i = 1}^r \binom{n_{i\cdot}}{2} + \sum_{j = 1}^s \binom{n_{\cdot j}}{2}\right) - \binom{n}{2}^{-1}\sum_{i = 1}^r\binom{n_{i\cdot}}{2}\sum_{j = 1}^s\binom{n_{\cdot j}}{2}}
 					$$
 					
-					Valores próximos a 1 indican un buen clustering, cercanos a 0 similar a hacerlo de manera aleatoria, y cercanos a $-1$ (en general menor que cero) peor que de manera aleatoria. Para la clasificación realizada con $k-$means se obtiene un ARI de $0.943$, y con CJA $0.952$. Ambos resultados son muy adecuados. 
+					Valores próximos a 1 indican un buen clustering, cercanos a 0 similar a hacerlo de manera aleatoria, y cercanos a $-1$ (en general menor que cero) peor que de manera aleatoria. Para la clasificación realizada con $k-$means se obtiene un \gls{ari} de $0.943$, y con \gls{cja} $0.952$. Ambos resultados son muy adecuados. 
 					
 				\subsubsection{Homogeneidad, completitud, y $V-$measure}
 				
@@ -851,13 +851,13 @@
 					\end{aligned}
 					$$
 					
-					Para los algoritmos de clustering presentados, se obtienen unos valores $(h, c, V)$ adecuados. En el caso de $k-$means se obtiene $(0.923, 0.924, 0.924)$, y para CJA $(0.938, 0.937, 0.937)$. La $V-$measure se calcula de la siguiente manera. 
+					Para los algoritmos de clustering presentados, se obtienen unos valores $(h, c, V)$ adecuados. En el caso de $k-$means se obtiene $(0.923, 0.924, 0.924)$, y para \gls{cja} $(0.938, 0.937, 0.937)$. La $V-$measure se calcula de la siguiente manera. 
 					
 					$$
 					V = \frac{2hc}{h + c}
 					$$
 					
-					No es recomendable utilizar esta métrica de manera exclusiva en casos con pocas observaciones (menos de 1000) o un número elevado de clusters (más de 10). En dichos casos es recomendable respaldarla con otras como el ARI. En este caso, se ve como ambas indican un buen clustering.
+					No es recomendable utilizar esta métrica de manera exclusiva en casos con pocas observaciones (menos de 1000) o un número elevado de clusters (más de 10). En dichos casos es recomendable respaldarla con otras como el \gls{ari}. En este caso, se ve como ambas indican un buen clustering.
 					
 				\subsubsection{Coeficiente de la silueta}
 				

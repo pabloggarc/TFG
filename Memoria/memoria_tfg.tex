@@ -2,6 +2,8 @@
 
 \usepackage{tfg}
 
+\makeglossaries
+
 \begin{document}
 	
 	% PORTADA E INFORMACIÓN INICIAL
@@ -27,13 +29,15 @@
 	\paginavacia
 	\listoffigures
 	\paginavacia
-	\listofalgorithms 
+	\listofalgorithms
+	\newpage\thispagestyle{empty}
+	\input{acronimos}
+	\glsaddall\printglossary[type = \acronymtype, title = {Acrónimos y siglas}]
+	\paginavacia
 	
 	% TFG
 	
 	\input{introduccion}
-	\paginavacia
-	\input{fundamentos}
 	\paginavacia
 	\input{machine_learning}
 	\paginavacia

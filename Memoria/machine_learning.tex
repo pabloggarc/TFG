@@ -1,10 +1,28 @@
 \chapter{Aprendizaje automático y profundo}
 
+	\section{Breve historia de la Inteligencia Artificial}
+	
+		Ya desde hace varias décadas, se planteaba la posibilidad de que las máquinas fuesen capaces de realizar tareas diferentes a meros cálculos. La persona que realizó dicha afirmación fue la matemática Ada Lovelace, que en 1842 programó el considerado primer algoritmo. No fue hasta bastantes años más tarde en 1956 cuando se celebra la Conferencia de Darmouth por los hoy considerados padres de la \gls{ia}, en la que se propone estudiar la Inteligencia Artificial como una ciencia más. En dicha época existían dos corrientes, la simbólica y la conexionista. \\
+		
+		La primera de ellas se ocupaba de resolver problemas de toma de decisiones y de obtención de conclusiones. Fueron populares los algoritmos de búsqueda y los sistemas expertos. Por otro lado, la corriente conexionista trataba de simular el comportamiento de las neuronas humanas de manera artificial, haciendo que estas neuronas artificiales pudiesen aprender. De aquí surgía el perceptrón que también fue presentado en esta conferencia. Más tarde, entre 1970 y 1980, con el libro de Minsky sobre los perceptrones y sus limitaciones, investigaciones en falso, y bajos recursos, decae el interés y la investigación de la \gls{ia}. Sin embargo, esta etapa vacía finaliza con la llegada del algoritmo de retropropagación que permitía entrenar redes neuronales multicapa, trayendo consigo infinidad de nuevos proyectos. \\
+		
+		Años después, avanzados los 2000, se empieza a ver lo poderosos que pueden llegar a ser ciertos modelos de \gls{ia} al vencer a campeones del mundo en juegos, como a Kasparov en el ajedrez o a Jie en Go. Con la llegada de más y mejores recursos y financiación, hacia 2010 se populariza el uso de redes neuronales para trabajar con imágenes, resolver problemas de clasificación, etc \cite{historiaIA}. \\
+		
+		Hace diez años surge uno de los modelos de \gls{ia} con el que se inicia el paradigma que más popularidad está tomando en la actualidad. Este es el de la \gls{ia} generativa. En 2014 Ian Goodfellow presenta las redes \gls{gan} con las que crear nuevos datos, por ejemplo rostros humanos que no existen en realidad, tal y como se muestra en \url{https://thispersondoesnotexist.com/}. Gracias a la \gls{ia} generativa combinada con modelos de lenguajes, han ido surgiendo en los últimos años herramientas muy poderosas como ChatGPT con la que entablar cualquier tipo de conversación, solicitar información o ayuda para resolver cualquier problema; DALL-E o MidJourney a las que solicitar crear una imagen mediante una descripción por texto, o incluso un vídeo con Sora. 
+	
+	\section{Tipos de aprendizaje y problemas}
+	
+		Al intentar resolver un problema relacionado con el aprendizaje automático, normalmente el primer paso es elegir un modelo que se adapte correctamente al dominio y tipo del problema. De manera ingenua, se puede entender como una especie de caja negra a la que dada una serie de entradas devuelve una serie de salidas que dependen de dichas entradas, y una serie de operaciones con respecto a un conjunto de parámetros $\Theta$. Por tanto, para obtener las salidas deseadas para una serie de entradas, el trabajo es encontrar los parámetros óptimos $\Theta^*$ que produzcan dichas salidas. Esto se logra mediante un algoritmo de aprendizaje o entrenamiento, siendo el segundo paso elegir uno acorde al modelo. Normalmente se dispone de dos tipos de aprendizaje, aprendizaje supervisado y aprendizaje no supervisado. Como tercer paso, se debe de medir de alguna manera cómo de bien o mal se está comportando el modelo y el algoritmo, tal y como se estudiará más adelante \cite{Szeliski}. \\
+		
+		En los problemas de aprendizaje supervisados, se dispone de un conjunto de datos o \textit{dataset}, que contiene los valores de salida deseados para diferentes valores de entrada, normalmente recogiendo situaciones del pasado para poder extrapolar este conocimiento a situaciones del futuro. Los principales problemas que de aprendizaje supervisado son los problemas de clasificación y de regresión. En los problemas de clasificación, se dispone de una serie de clases $C_1, C_2, \hdots, C_n$, y para una serie de valores de entrada $x_1, x_2, \hdots, x_m$, debe decidirse a qué clase pertenece dicha entrada. Un ejemplo sería decidir si un paciente va a sufrir un cierto tipo de cáncer dada su edad, peso, y otras constantes vitales. Algunos de los modelos más populares para llevar a cabo este tipo de tareas son árboles de decisión, máquinas de soporte vectorial, Naïve Bayes, $k-$vecinos, y redes neuronales; siendo estas últimas objeto de estudio en este trabajo. Otro tipo de problema popular a la hora de disponer de datos etiquetados, son los problemas de regresión, que se diferencian principalmente de la clasificación en que en este caso, los valores no son clases (valores discretos) sino valores continuos. Para resolver este tipo de problemas se suelen utilizar regresiones lineales y no lineales (exponencial, polinómica, etc), o también se pueden adaptar modelos utilizados en problemas de clasificación, como las redes neuronales. Un ejemplo de un problema de regresión sería predecir las horas que dormirá una persona dada su edad, horas trabajadas en el día, etc. \\
+		
+		Por otro lado, en los problemas de aprendizaje no supervisado no se dispone de los valores de salida esperados para una cierta observación (justo al contrario que en el caso supervisado), pues será trabajo del algoritmo encontrar relaciones y patrones entre los datos proporcionados. En este tipo de aprendizaje también se trata el problema de clasificación, sin embargo, es más común llamarlo clustering o segmentación, pues a priori no se conoce el número de clases y cuáles son, es el algoritmo el que deberá encontrar relaciones entre los datos para determinar esto. Algoritmos populares para realizar esta tarea son $k-$medias, \gls{cja}, \gls{gmm}, y DBSCAN. Un ejemplo sencillo de este problema es detectar las diferentes regiones y objetos representados en una imagen, pues inicialmente no se conoce el número de regiones u objetos, y deben detectarse todas, asignando cada píxel de la imagen a cada una de ellas. 
+
 	\section{Perceptrón}
 	
-		Ya en el año 1958, el psicólogo Frank Rosenblatt propuso un modelo llamado perceptrón el cual estaba basado en el comportamiento y funcionamiento de las neuronas de un humano, y que podía aprender ponderando cada coeficiente de entrada a la neurona\cite{historiaIA}. Hoy en día, tal y como se mostrará en esta sección, el perceptrón es la unidad fundamental de muchos modelos de \textit{machine learing} y \textit{deep learning}. \\
+		Ya en el año 1958, el psicólogo Frank Rosenblatt propuso un modelo llamado perceptrón el cual estaba basado en el comportamiento y funcionamiento de las neuronas de un humano, y que podía aprender ponderando cada coeficiente de entrada a la neurona \cite{historiaIA}. Hoy en día, tal y como se mostrará en esta sección, el perceptrón es la unidad fundamental de muchos modelos de \textit{machine learing} y \textit{deep learning}. \\
 		
-		Como se verá durante esta sección, este modelo ayuda a solucionar problemas de clasificación supervisada. Se dispone de una serie de valores de entrada $x_1, x_2, \hdots, x_n$ y se tiene una serie de valores de salida $y_1, y_2, \hdots, y_m$ que representan a qué clase pertenece la entrada ($2^m$ clases posibles). Esto se consigue mediante la ayuda de sus parámetros, que son una serie de pesos $w_1, w_2, \hdots, w_n$ y un sesgo o \textit{bias} $b$; y sus hiperparámetros, entre los que se encuentra una función $f$ de activación. 
+		Como se verá durante esta sección, este modelo ayuda a solucionar problemas de clasificación supervisada. Se dispone de una serie de valores de entrada $x_1, x_2, \hdots, x_n$ y se tiene una serie de valores de salida $y_1, y_2, \hdots, y_m$ que representan a qué clase pertenece la entrada ($2^m$ clases posibles). Esto se consigue mediante la ayuda de sus parámetros, que son una serie de pesos $w_1, w_2, \hdots, w_n$ y un sesgo o \textit{bias} $b$; y sus hiperparámetros, entre los que se encuentra una función $f$ de activación. \\
 		
 		\begin{figure}[!h]
 			\centering
@@ -56,7 +74,7 @@
 		\right.
 		$$
 		
-		Para dar un ejemplo claro de cómo funciona el perceptrón, se pueden tomar una serie de observaciones que tengan dos valores de entrada y uno de salida. Además, se supondrá que existen dos clases. Esto a fin de cuentas es asignar un valor de 0 o 1 a cada punto de $\mathbb{R}^2$ tal y como se describe en la \Cref{fig:labeled_data}. 
+		Para dar un ejemplo claro de cómo funciona el perceptrón, se pueden tomar una serie de observaciones que tengan dos valores de entrada y uno de salida. Además, se supondrá que existen dos clases. Esto a fin de cuentas es asignar un valor de 0 o 1 a cada punto de $\mathbb{R}^2$ tal y como se describe en la \Cref{fig:labeled_data}. \\
 		
 		\begin{figure}[!h]
 			\centering
@@ -70,9 +88,9 @@
 			\label{fig:labeled_data}
 		\end{figure}
 		
-		Una solución rápida sería trazar una recta $r: ax + by + c = 0$ que separe $\mathbb{R}^2$ en dos regiones, de forma que todo punto que pertenezca a una región pertenece entonces a una misma clase, tal y como se observa en la \Cref{fig:separated_label_data}. Esta recta suele llamarse \textit{decision boundary} o frontera de decisión. El problema entonces es hallar la recta $r$, pero se cumple que para este ejemplo es de la forma $w_1 x + w_2 y + b = 0$, siendo el problema encontrar los parámetros adecuados del modelo. La idea puede extrapolarse a diferente tamaño de entrada tomando un hiperplano de la forma $\textbf{w}^t \textbf{x} + b = 0$. \\
+		Una solución rápida sería trazar una recta $r: ax + by + c = 0$ que separe $\mathbb{R}^2$ en dos regiones, de forma que todo punto que pertenezca a una región pertenece entonces a una misma clase, tal y como se observa en la \Cref{fig:separated_label_data}. Esta recta suele llamarse \textit{decision boundary} o frontera de decisión. El problema entonces es hallar la recta $r$, pero se cumple que para este ejemplo es de la forma $w_1 x + w_2 y + b = 0$, siendo el problema encontrar los parámetros adecuados del modelo. La idea puede extrapolarse a diferente tamaño de entrada tomando un hiperplano de la forma $\textbf{w}^T \textbf{x} + b = 0$. \\
 		
-		Las preguntas a resolver ahora son, ¿existen siempre dichos parámetros? ¿Cómo pueden hallarse? El propio Minsky se hizo estas preguntas en \cite{perceptrons} y se dio cuenta de que dichos parámetros sí pueden hallarse en un número finito de pasos, siempre y cuando los puntos sean linealmente separables. Un ejemplo que no es linealmente separable es el de la función XOR tal y como se muestra en la \Cref{table:xor,fig:xor}, pues no existe una recta $r$ que separe $\mathbb{R}^2$ en dos regiones de tal forma que cada región contenga puntos de una única clase, sería necesaria una frontera de decisión no lineal. 
+		Las preguntas a resolver ahora son, ¿existen siempre dichos parámetros? ¿Cómo pueden hallarse? El propio Minsky se hizo estas preguntas en \cite{perceptrons} y se dio cuenta de que dichos parámetros sí pueden hallarse en un número finito de pasos, siempre y cuando los puntos sean linealmente separables. Un ejemplo que no es linealmente separable es el de la función \gls{xor} tal y como se muestra en la \Cref{table:xor,fig:xor}, pues no existe una recta $r$ que separe $\mathbb{R}^2$ en dos regiones de tal forma que cada región contenga puntos de una única clase, sería necesaria una frontera de decisión no lineal. \\
 		
 		\begin{figure}
 			\centering
@@ -97,7 +115,7 @@
 				1 & 0 & 1\\\hline
 				1 & 1 & 0\\\hline
 			\end{tabular}
-			\caption{Función XOR}
+			\caption{Función \gls{xor}}
 			\label{table:xor}
 		\end{table}
 		
@@ -113,7 +131,7 @@
 			\label{fig:xor}
 		\end{figure}
 		
-		En cuanto a la pregunta de cómo hallar los parámetros, se consideran las siguientes ecuaciones\cite{nndesign}, donde $\textbf{w}$ es el vector de pesos, $t$ el valor esperado, y $a$ la salida del perceptrón y se aplica el \Cref{algo:perceptron} para obtener los parámetros óptimos. En dicho algoritmo se supondrá que existe una matriz $X$ de $n$ filas que contiene los diferentes $\textbf{x}$. 
+		En cuanto a la pregunta de cómo hallar los parámetros, se consideran las siguientes ecuaciones \cite{nndesign}, donde $\textbf{w}$ es el vector de pesos, $t$ el valor esperado, y $a$ la salida del perceptrón y se aplica el \Cref{algo:perceptron} para obtener los parámetros óptimos. En dicho algoritmo se supondrá que existe una matriz $X$ de $n$ filas que contiene los diferentes $\textbf{x}$. 
 		
 		\begin{equation}
 			\label{eq:perceptron}
@@ -121,12 +139,12 @@
 				\textbf{w}(k+1) = \textbf{w}(k) + e(k)\textbf{x}(k)\\
 				b(k+1) = b(k) + e(k)\\
 				e(k) = t(k) - a(k)\\
-				a(k) = \mathcal{U}(\textbf{w}^t(k)\textbf{x}(k))
+				a(k) = \mathcal{U}(\textbf{w}^T(k)\textbf{x}(k))
 			\end{gathered}
 		\end{equation}
 		
 		
-		\begin{algorithm}
+		\begin{algorithm}[!h]
 			\SetProgSty{texttt}\DontPrintSemicolon
 			
 			\caption{Regla de aprendizaje del perceptrón}
@@ -149,121 +167,56 @@
 			}
 		\end{algorithm}
 		
-		A cada una de las iteraciones que realiza el bucle exterior se les denomina épocas o \textit{epoch}, que consiste en realizar el proceso de entrenamiento sobre todo el conjunto de datos. En este caso se está suponiendo que no va a recibir casos que no sean linealmente separables, pero de lo contrario se puede añadir un contador \texttt{max\_epochs} y fijar un número máximo para no caer en un bucle infinito. No sería tarea fácil determinar dicho valor, pues aunque el algoritmo converge en los casos previamente explicados, no en todos lo hace de manera rápida. A continuación se muestra cómo obtener una solución para el caso de la \Cref{fig:labeled_data} aplicando el \Cref{algo:perceptron}. 
+		A cada una de las iteraciones que realiza el bucle exterior se les denomina épocas o \textit{epoch}, que consiste en realizar el proceso de entrenamiento sobre todo el conjunto de datos. En este caso se está suponiendo que no va a recibir casos que no sean linealmente separables, pero de lo contrario se puede añadir un contador \texttt{max\_epochs} y fijar un número máximo para no caer en un bucle infinito. No sería tarea fácil determinar dicho valor, pues aunque el algoritmo converge en los casos previamente explicados, no en todos lo hace de manera rápida. \\
+		
+		La ejecución del \Cref{algo:perceptron} para el caso de la \Cref{fig:labeled_data} finaliza tras dos épocas, donde en la primera de ellas va ajustando los pesos y el sesgo de manera adecuada, y en la segunda verifica que todas las observaciones han sido clasificadas de manera correcta. La frontera de decisión obtenida es la recta $r: 2x - 2 = 0$, que es una recta vertical. Una observación a realizar es que $\textbf{x}(1) \in r$, por tanto ¿a qué clase pertenece? Esto depende de la función de activación empleada, al utilizar $\mathcal{U}$ la clasificación es correcta, pero al cambiarla por otra, podría no serlo y necesitaría de más épocas para realizar correctamente la clasificación. \\
+		
+		La última cuestión que queda por tratar respecto al perceptrón es el porqué se verifica que en el caso de que los puntos dados sean linealmente separables, en un número finito de pasos, el \Cref{algo:perceptron} terminará su ejecución y con el $\textbf{w}$ óptimo, tal y como se enunciaba en el Teorema de Convergencia del Perceptrón. A continuación se presenta su demostración basándose en la que se encuentra en \cite{nndesign}, de forma más clara y simple. Para comenzar con la demostración será necesario definir una serie de elementos, comenzando por $\Omega(k)$ y $\textbf{z}(k)$.  
 		
 		$$
-		X = \begin{pmatrix}
-			1 & -1 & 0\\
-			2 & 2 & -1
-		\end{pmatrix} \,\,\, \textbf{t} = \begin{pmatrix}
-		1 & 0 & 0
-		\end{pmatrix} \,\,\, \textbf{w}(0) = \begin{pmatrix}
-		1\\1 \end{pmatrix} \,\,\, b(0) = 0
-		$$
-		
-		\begin{enumerate}[label = \textbf{\arabic*. }]
-			\setcounter{enumi}{-1}
-			\item \begin{itemize}
-				\item $a(0) = \mathcal{U}(\textbf{w}^t(0)\textbf{x}(0)) = \mathcal{U}\left(\begin{pmatrix}1 & 1\end{pmatrix}\begin{pmatrix}
-					1\\2 \end{pmatrix} + 0\right) = 1$
-				\item $e(0) = t(0) - a(0) = 1 - 1 = 0$
-				\item $\textbf{w}(1) = \textbf{w}(0)$
-				\item $b(1) = b(0)$
-			\end{itemize}
-			
-			\item \begin{itemize}
-				\item $a(1) = \mathcal{U}(\textbf{w}^t(1)\textbf{x}(1)) = \mathcal{U}\left(\begin{pmatrix}1 & 1\end{pmatrix}\begin{pmatrix}
-					-1\\2 \end{pmatrix} + 0\right) = 1$
-				\item $e(1) = t(1) - a(1) = 0 - 1 = -1$
-				\item $\textbf{w}(2) = \textbf{w}(1) + e(1)\textbf{x}(1) = \begin{pmatrix}1\\ 1\end{pmatrix} - \begin{pmatrix}-1\\2\end{pmatrix} = \begin{pmatrix}2\\ -1\end{pmatrix}$
-				\item $b(2) = b(1) + e(1) = -1$
-			\end{itemize}
-			
-			\item \begin{itemize}
-				\item $a(2) = \mathcal{U}(\textbf{w}^t(2)\textbf{x}(2)) = \mathcal{U}\left(\begin{pmatrix}2 & -1\end{pmatrix}\begin{pmatrix}
-					0\\-1 \end{pmatrix} -1\right) = 1$
-				\item $e(2) = t(2) - a(2) = 0 - 1 = -1$
-				\item $\textbf{w}(3) = \textbf{w}(2) + e(2)\textbf{x}(2) = \begin{pmatrix}2\\ -1\end{pmatrix} - \begin{pmatrix}0\\-1\end{pmatrix} = \begin{pmatrix}2\\ 0\end{pmatrix}$
-				\item $b(3) = b(2) + e(2) = -2$
-				\item $\texttt{acabar} = \texttt{true} \land \texttt{false} \land \texttt{false} = \texttt{false}$
-			\end{itemize}
-			
-			\item \begin{itemize}
-				\item $a(3) = \mathcal{U}(\textbf{w}^t(3)\textbf{x}(3\pmod{3})) = \mathcal{U}\left(\begin{pmatrix}2 & 0\end{pmatrix}\begin{pmatrix}
-					1\\2 \end{pmatrix} -2\right) = 1$
-				\item $e(3) = t(3) - a(3) = 1 - 1 = 0$
-				\item $\textbf{w}(4) = \textbf{w}(3)$
-				\item $b(4) = b(3)$
-			\end{itemize}
-			
-			\item \begin{itemize}
-				\item $a(4) = \mathcal{U}(\textbf{w}^t(4)\textbf{x}(4\pmod{3})) = \mathcal{U}\left(\begin{pmatrix}2 & 0\end{pmatrix}\begin{pmatrix}
-					-1\\2 \end{pmatrix} -2\right) = 0$
-				\item $e(4) = t(4) - a(4) = 0 - 0 = 0$
-				\item $\textbf{w}(5) = \textbf{w}(4)$
-				\item $b(5) = b(4)$
-			\end{itemize}
-			
-			\item \begin{itemize}
-				\item $a(5) = \mathcal{U}(\textbf{w}^t(5)\textbf{x}(5\pmod{3})) = \mathcal{U}\left(\begin{pmatrix}2 & 0\end{pmatrix}\begin{pmatrix}
-					0\\-1 \end{pmatrix} -2\right) = 0$
-				\item $e(5) = t(5) - a(5) = 0 - 0 = 0$
-				\item $\textbf{w}(6) = \textbf{w}(5)$
-				\item $b(6) = b(5)$
-				\item $\texttt{acabar} = \texttt{true} \land \texttt{true} \land \texttt{true} = \texttt{true}$
-			\end{itemize}
-		\end{enumerate}
-		
-		La ejecución del algoritmo finaliza tras dos épocas, donde en la primera de ellas va ajustando los pesos y el sesgo de manera adecuada, y en la segunda verifica que todas las observaciones han sido clasificadas de manera correcta. La frontera de decisión obtenida es la recta $r: 2x - 2 = 0$, que es una recta vertical. Una observación a realizar es que $\textbf{x}(1) \in r$, por tanto ¿a qué clase pertenece? Esto depende de la función de activación empleada, al utilizar $\mathcal{U}$ la clasificación es correcta, pero al cambiarla por otra, podría no serlo y necesitaría de más épocas para realizar correctamente la clasificación. \\
-		
-		La última cuestión que queda por tratar respecto al perceptrón es el porqué se verifica que en el caso de que los puntos dados sean linealmente separables, en un número finito de pasos, el \Cref{algo:perceptron} terminará su ejecución y con el $\textbf{w}$ óptimo, tal y como se enunciaba en el \textbf{Teorema de Convergencia del Perceptrón}. A continuación se realiza su demostración basándose en la que se encuentra en \cite{nndesign} pero de forma más clara y simple. Para comenzar con la demostración será necesario definir una serie de elementos, comenzando por $\Omega(k)$ y $\textbf{z}(k)$. Se entiende que se están concatenando vectores, no definiendo ``vectores dentro de vectores''. 
-		
-		$$
-		\Omega(k) = \begin{pmatrix}
-			\textbf{w}(k)\\
+		\Omega(k) = \left(\begin{array}{c}
+			\textbf{w}(k)\\\hline
 			b(k)
-		\end{pmatrix} \,\,\, \textbf{z}(k) = \begin{pmatrix}
-		\textbf{x}(k)\\
+		\end{array}\right) \,\,\, \textbf{z}(k) = \left(\begin{array}{c}
+		\textbf{x}(k)\\\hline
 		1
-		\end{pmatrix}
+		\end{array}\right)
 		 \,\,\, \Omega(0) = \begin{pmatrix}
 			0\\0\\\vdots\\0
 		\end{pmatrix}
 		$$
 		
-		Con estos elementos y el cálculo de $a(k)$ en la \Cref{eq:perceptron} es fácil ver que $n(k) = \Omega^t(k)\textbf{z}(k)$. Recordando los posibles valores de $t(k)$, se deseaba que si dicho valor era 1, entonces $n(k) \geq 0$; y en caso de que valiese 0 entonces se deseaba tener $n(k) < 0$, en resumen, que $t(k) - a(k) = 0$. Otra forma de ver esto es afirmar que en el caso en que $t(k) \neq a(k)$, entonces $\Omega(k)$ debe actualizarse de acuerdo a la \Cref{eq:perceptron}. De esta forma $\Omega(k + 1) = \Omega(k) + e(k)\textbf{z}(k)$. Ahora se considerará un vector $\Omega^*$ de forma que 
+		Con estos elementos y el cálculo de $a(k)$ en la \Cref{eq:perceptron} es fácil ver que $n(k) = \Omega^T(k)\textbf{z}(k)$. Recordando los posibles valores de $t(k)$, se deseaba que si dicho valor era 1, entonces $n(k) \geq 0$; y en caso de que valiese 0 entonces se deseaba tener $n(k) < 0$, en resumen, que $t(k) - a(k) = 0$. Otra forma de ver esto es afirmar que en el caso en que $t(k) \neq a(k)$, entonces $\Omega(k)$ debe actualizarse de acuerdo a la \Cref{eq:perceptron}. De esta forma $\Omega(k + 1) = \Omega(k) + e(k)\textbf{z}(k)$. Ahora se considerará un vector $\Omega^*$ de forma que 
 		$$
-		\forall k \exists \Omega^* \,\, \mathcal{U}(\Omega^{*^t}\textbf{z}(k)) = t(k),
+		\forall k \exists \Omega^* \,\, \mathcal{U}\left(\Omega^{*^T}\textbf{z}(k)\right) = t(k),
 		$$
 		es decir, $\Omega^*$ es el vector de pesos óptimo. Además, por comodidad se normalizarán todas las distancias del problema, de manera que $\|\Omega^{*}\| = 1$ y $\|\textbf{z}(k)\| \leq 1$. El último elemento a considerar será $\delta$, que será definido como
 		$$
-		\delta = \min\lbrace\Omega^{*^t}\textbf{z}(i)\rbrace, 
+		\delta = \min\left\lbrace\Omega^{*^T}\textbf{z}(i)\right\rbrace, 
 		$$
-		tomando además que $\delta > 0$ pues otra manera de definirlo es la distancia al punto más cercano a la frontera de decisión óptima. Con estos elementos se puede comenzar la demostración. Como la regla de actualización es $\Omega(k + 1) = \Omega(k) + e(k)\textbf{z}(k)$, al vector de pesos en un determinado instante (clasificación fallida) se le suma o resta $\textbf{z}(k)$ y a priori no se sabe cuántas veces se va a repetir esto, por lo que la idea de la demostración será ver si la norma del vector de pesos tiene una cota superior e inferior, es decir, se para de sumar o restar otros vectores $\textbf{z}(i)$, de manera que el algoritmo terminaría. Para obtener esto basta con comparar el comportamiento de $\Omega^t(k) \Omega^*$ frente a $\Omega^t(k)\Omega(k)$ (es decir, $\|\Omega\|^2$). \\
+		tomando además que $\delta > 0$ pues otra manera de definirlo es la distancia al punto más cercano a la frontera de decisión óptima. Con estos elementos se puede comenzar la demostración. Como la regla de actualización es $\Omega(k + 1) = \Omega(k) + e(k)\textbf{z}(k)$, al vector de pesos en un determinado instante (clasificación fallida) se le suma o resta $\textbf{z}(k)$ y a priori no se sabe cuántas veces se va a repetir esto, por lo que la idea de la demostración será ver si la norma del vector de pesos tiene una cota superior e inferior, es decir, se para de sumar o restar otros vectores $\textbf{z}(i)$, de manera que el algoritmo terminaría. Para obtener esto basta con comparar el comportamiento de $\Omega^T(k) \Omega^*$ frente a $\Omega^T(k)\Omega(k)$ (es decir, $\|\Omega\|^2$). \\
 		
 		Con el primero de los términos, al tratar de corregir un error se verifica que
-		
 		$$
-		\Omega^t(k+1)\Omega^* = (\Omega(k) + e(k)\textbf{z}(k))^t \Omega^* = \Omega^t(k)\Omega^* + e(k)\Omega^{*^t}\textbf{z}(k). 
+		\Omega^T(k+1)\Omega^* = (\Omega(k) + e(k)\textbf{z}(k))^T \Omega^* = \Omega^T(k)\Omega^* + e(k)\Omega^{*^T}\textbf{z}(k). 
 		$$
-		
 		Además, por la manera en la que se ha definido $\delta$, el segundo sumando pertenece al intervalo $(-\infty, -\delta] \cup [\delta, \infty)$, pudiendo deducir la siguiente desigualdad, por lo que en una actualización el término sólo varía por lo menos en $\delta$ unidades.  
 		
 		\begin{equation}
 			\label{eq:inf_delta}
-			\Omega^t(k+1)\Omega^* \geq \Omega^t(k)\Omega^* + \delta
+			\Omega^T(k+1)\Omega^* \geq \Omega^T(k)\Omega^* + \delta
 		\end{equation}
 		
-		De la misma manera que se ha analizado el comportamiento de $\Omega^t(k) \Omega^*$ se procede con la actualización de $\Omega^t(k)\Omega(k)$. 
+		De la misma manera que se ha analizado el comportamiento de $\Omega^T(k) \Omega^*$ se procede con la actualización de $\Omega^T(k)\Omega(k)$. 
 		
 		\begin{align*}
-			\Omega^t(k+1)\Omega(k+1) &= (\Omega(k) + e(k)\textbf{z}(k))^t(\Omega(k) + e(k)\textbf{z}(k))\\
-			&= \Omega^2(k) + (e(k)\textbf{z}(k))^2 + 2e(k)\Omega^t(k)\textbf{z}(k)\\
-			&= \Omega^t(k)\Omega(k) + e^2(k)\textbf{z}^t(k)\textbf{z}(k) + 2e(k)\Omega^t(k)\textbf{z}(k)\\
-			&= \Omega^t(k)\Omega(k) + e^2(k)\textbf{z}^t(k)\textbf{z}(k) + 2e(k)n(k)
+			\Omega^T(k+1)\Omega(k+1) &= (\Omega(k) + e(k)\textbf{z}(k))^T(\Omega(k) + e(k)\textbf{z}(k))\\
+			&= \Omega^2(k) + (e(k)\textbf{z}(k))^2 + 2e(k)\Omega^T(k)\textbf{z}(k)\\
+			&= \Omega^T(k)\Omega(k) + e^2(k)\textbf{z}^T(k)\textbf{z}(k) + 2e(k)\Omega^T(k)\textbf{z}(k)\\
+			&= \Omega^T(k)\Omega(k) + e^2(k)\textbf{z}^T(k)\textbf{z}(k) + 2e(k)n(k)
 		\end{align*}
 		
-		En el segundo sumando se tiene que siempre será menor o igual que 1, pues por definición $0 \leq \textbf{z}^t(k)\textbf{z}(k) = \|\textbf{z}(k)\|^2 \leq 1$. Además, el tercer sumando siempre será cero o negativo, pues en todos los casos posibles en los que $e(k) \neq 0$ se cumple que $e(k)n(k) < 0$: 
+		En el segundo sumando se tiene que siempre será menor o igual que 1, pues por definición $0 \leq \textbf{z}^T(k)\textbf{z}(k) = \|\textbf{z}(k)\|^2 \leq 1$. Además, el tercer sumando siempre será cero o negativo, pues en todos los casos posibles en los que $e(k) \neq 0$ se cumple que $e(k)n(k) < 0$: 
 		
 		\begin{itemize}
 			\item Si $t(k) = 1 \land n(k) < 0$, entonces $a(k) = 0 \land e(k) > 0$
@@ -274,16 +227,16 @@
 		
 		\begin{equation}
 			\label{eq:sup_delta}
-			\Omega^t(k+1)\Omega(k+1) \leq \Omega^t(k)\Omega(k) + 1
+			\Omega^T(k+1)\Omega(k+1) \leq \Omega^T(k)\Omega(k) + 1
 		\end{equation}
 		
-		Una vez se ha observado cómo varían estos términos al actualizarlos, se puede observar qué pasaría con ellos al hacer $m$ actualizaciones. Con el resultado obtenido en las \Cref{eq:inf_delta,eq:sup_delta} se pueden deducir las desigualdades $\delta m \leq \Omega^t(m)\Omega^*$ y $\Omega^t(m)\Omega(m) \leq m$. \\
+		Una vez se ha observado cómo varían estos términos al actualizarlos, se puede observar qué pasaría con ellos al hacer $m$ actualizaciones. Con el resultado obtenido en las \Cref{eq:inf_delta,eq:sup_delta} se pueden deducir las desigualdades $\delta m \leq \Omega^T(m)\Omega^*$ y $\Omega^T(m)\Omega(m) \leq m$. \\
 		
-		Ahora al aplicar la desigualdad de Cauchy--Schwarz\footnote{Esta desigualdad afirma que $\|\textbf{u}\textbf{v}\| \leq \|\textbf{u}\|\|\textbf{v}\|$. }, el valor de $\|\Omega^*\|$, y la propiedad transitiva, se obtiene una cota superior y otra inferior (ambas recuadradas) para $\|\Omega^t(m)\|$, lo que demuestra que el número de actualizaciones es finito y que por tanto el algoritmo converge. 
+		Ahora al aplicar la desigualdad de Cauchy--Schwarz\footnote{Esta desigualdad afirma que $\|\textbf{u}\textbf{v}\| \leq \|\textbf{u}\|\|\textbf{v}\|$. }, el valor de $\|\Omega^*\|$, y la propiedad transitiva, se obtiene una cota superior y otra inferior (ambas recuadradas) para $\|\Omega^T(m)\|$, lo que demuestra que el número de actualizaciones es finito y que por tanto el algoritmo converge. 
 		
 		\begin{align*}
-			\boxed{\delta m} &\leq \Omega^t(m)\Omega^* = \|\Omega^t(m)\Omega^*\|\\
-			&\leq \|\Omega^t(m)\| \|\Omega^*\| = \|\Omega^t(m)\| = \sqrt{\Omega^t(m)\Omega(m)}\\
+			\boxed{\delta m} &\leq \Omega^T(m)\Omega^* = \|\Omega^T(m)\Omega^*\|\\
+			&\leq \|\Omega^T(m)\| \|\Omega^*\| = \|\Omega^T(m)\| = \sqrt{\Omega^T(m)\Omega(m)}\\
 			& \leq \boxed{\sqrt{m}} 
 		\end{align*}
 		
@@ -297,9 +250,9 @@
 		
 	\section{Redes neuronales artificiales}
 	
-		El descubrimiento del perceptrón junto con el teorema que garantizaba que cualquier conjunto de puntos linealmente separable podría ser aprendido mediante este, supuso un gran avance en la IA al igual que una gran desilusión por parte de muchos al no poder aprender una función tan simple como la XOR. Esto causó el llamado el primer invierno de la IA, que finalizó con la llegada de las redes neuronales multicapa y el algoritmo de la retroprogragación. \\
+		El descubrimiento del perceptrón junto con el teorema que garantizaba que cualquier conjunto de puntos linealmente separable podría ser aprendido mediante este, supuso un gran avance en la \gls{ia} al igual que una gran desilusión por parte de muchos al no poder aprender una función tan simple como la \gls{xor}. Esto causó el llamado el primer invierno de la \gls{ia}, que finalizó con la llegada de las redes neuronales multicapa y el algoritmo de la retroprogragación. \\
 		
-		En 1989, George Cybenko enunció y consiguió demostrar el \textbf{Teorema de Aproximación Universal}\cite{teoremaAproximacion}. Este afirma que dada una red neuronal con una capa de entrada, una capa oculta con suficientes neuronas, y una capa de salida; es un aproximador universal de funciones. Es decir, si existe una relación entre dos variables $\textbf{x}$ e $\textbf{y}$, entonces una red neuronal con la arquitectura mencionada y el entrenamiento adecuado, encontrará dicha relación y podrá comportarse como una función $f$ tal que $\textbf{y} = f(\textbf{x})$. Este se considera un gran resultado, pues consigue acabar con las limitaciones del perceptrón que habían generado un decaimiento por el interés en la IA. 
+		En 1989, George Cybenko enunció y consiguió demostrar el Teorema de Aproximación Universal \cite{teoremaAproximacion}. Este afirma que dada una red neuronal con una capa de entrada, una capa oculta con suficientes neuronas, y una capa de salida; es un aproximador universal de funciones. Es decir, si existe una relación entre dos variables $\textbf{x}$ e $\textbf{y}$, entonces una red neuronal con la arquitectura mencionada y el entrenamiento adecuado, encontrará dicha relación y podrá comportarse como una función $f$ tal que $\textbf{y} = f(\textbf{x})$. Este se considera un gran resultado, pues consigue acabar con las limitaciones del perceptrón que habían generado un decaimiento por el interés en la \gls{ia}. \\
 		
 		\begin{figure}[!h]
 			\centering
@@ -450,11 +403,11 @@
 		$$
 		L(k) = \sum(\textbf{t}(k) - \textbf{a}^{(M)}(k))^2, 
 		$$
-		aunque existen otras muchas, cada una adecuada a cada tipo de problema y modelo, como por ejemplo el error cuadrático medio, error absoluto, error absoluto medio, error logarítmico, error exponencial, entropía cruzada, etc\cite{funcionesError}.\\
+		aunque existen otras muchas, cada una adecuada a cada tipo de problema y modelo, como por ejemplo el error cuadrático medio, error absoluto, error absoluto medio, error logarítmico, error exponencial, entropía cruzada, etc \cite{funcionesError}.\\
 		
 		La pregunta ahora sería que, al igual que existía una ecuación para actualizar los parámetros del perceptrón ¿existe para una red neuronal? Para deducirla fácilmente, basta en pensar que $L$ es una función que depende de los parámetros de la red y que se quiere que su valor sea lo más pequeño posible para diferentes vectores de entrada, es decir, encontrar los valores de los parámetros que minimizan $L$. Esto es un problema clásico de cálculo que en el caso de una variable se resuelve igualando a cero la derivada de la función, y en el caso de varias, mediante la matriz Hessiana. Sin embargo, dichos métodos para una función de tantas variables y con expresiones complejas, no son muy eficientes. \\
 		
-		Esto se soluciona con ayuda de un algoritmo conocido como descenso por gradiente\cite{descenso}. Este algoritmo calcula de manera iterativa una aproximación de los mínimos de una función con ayuda del vector gradiente de una función. El vector gradiente de una función $f$ se define como 
+		Esto se soluciona con ayuda de un algoritmo conocido como descenso por gradiente \cite{descenso}. Este algoritmo calcula de manera iterativa una aproximación de los mínimos de una función con ayuda del vector gradiente de una función. El vector gradiente de una función $f$ se define como 
 		$$
 		\nabla f(x_1, x_2, \hdots, x_n) = \left(\frac{\partial f}{\partial x_1}, \frac{\partial f}{\partial x_2}, \hdots, \frac{\partial f}{\partial x_n}\right), 
 		$$
@@ -474,7 +427,7 @@
 			}
 		\end{algorithm}
 		
-		Como se observa en el \Cref{algo:descenso}, se comienza en un punto aleatorio, lo que puede variar la calidad de la solución dependiendo de la ejecución, y además se introduce un término $\alpha$ llamado \textbf{tasa de aprendizaje}. Pueden existir casos en los que la magnitud del gradiente sea muy grande, lo que resulta en desplazamientos bruscos y una convergencia más lenta, tal y como se refleja en la \Cref{fig:descenso}. Si se hubiese fijado un valor máximo de $k = 25$, en los casos de las \Cref{fig:descenso_grande,fig:descenso_peq}, no se hubiese llegado a una buena aproximación del mínimo por haber elegido un $\alpha$ inadecuado. 
+		Como se observa en el \Cref{algo:descenso}, se comienza en un punto aleatorio, lo que puede variar la calidad de la solución dependiendo de la ejecución, y además se introduce un término $\alpha$ llamado tasa de aprendizaje. Pueden existir casos en los que la magnitud del gradiente sea muy grande, lo que resulta en desplazamientos bruscos y una convergencia más lenta, tal y como se refleja en la \Cref{fig:descenso}. Si se hubiese fijado un valor máximo de $k = 25$, en los casos de las \Cref{fig:descenso_grande,fig:descenso_peq}, no se hubiese llegado a una buena aproximación del mínimo por haber elegido un $\alpha$ inadecuado. 
 		
 		\begin{figure}[H]
 			\centering
@@ -507,7 +460,7 @@
 		\frac{\partial f}{\partial x} = \sum_{i=1}^n \frac{\partial f}{\partial u_{i1}}\frac{\partial u_{im}}{\partial x}\prod_{j=1}^{m-1}\frac{\partial u_{ij}}{\partial u_{ij+1}}
 		$$
 		
-		Con ayuda de esta regla se pueden calcular fácilmente los términos no triviales del gradiente, propagando el error hacia atrás por la red hasta llegar al parámetro deseado mediante las sensibilidades $\left(\delta_i^{(s)}\right)$\cite{nndesign}. De aquí se intuye el porqué del nombre del algoritmo. De manera informal, lo que hace el algoritmo es castigar a cada neurona de manera proporcional a su participación en el error final. 
+		Con ayuda de esta regla se pueden calcular fácilmente los términos no triviales del gradiente, propagando el error hacia atrás por la red hasta llegar al parámetro deseado mediante las sensibilidades $\left(\delta_i^{(s)}\right)$ \cite{nndesign}. De aquí se intuye el porqué del nombre del algoritmo. De manera informal, lo que hace el algoritmo es castigar a cada neurona de manera proporcional a su participación en el error final. 
 		
 		$$
 		\begin{gathered}
@@ -537,20 +490,20 @@
 					$
 					\begin{gathered}
 						\delta^{(M)}(k) \gets -2 \frac{\partial \textbf{f}^{(M)}}{\partial \textbf{n}^{(M)}}(\textbf{t}(k) - \textbf{a}^{(M)}(k))\\
-						\delta^{(m)}(k) \gets \frac{\partial \textbf{f}^{(M)}}{\partial \textbf{n}^{(M)}} W^{(m+1)^t}(k)\delta^{(m+1)}(k)
+						\delta^{(m)}(k) \gets \frac{\partial \textbf{f}^{(M)}}{\partial \textbf{n}^{(M)}} W^{(m+1)^T}(k)\delta^{(m+1)}(k)
 					\end{gathered}
 					$\\
-					$W^{(m)}(k+1) \gets W^{(m)}(k) - \alpha \delta^{(m)}(k)(\textbf{a}^{(m-1)}(k))^t$\\
+					$W^{(m)}(k+1) \gets W^{(m)}(k) - \alpha \delta^{(m)}(k)(\textbf{a}^{(m-1)}(k))^T$\\
 					$\textbf{b}^{(m)}(k+1) \gets \textbf{b}^{(m)}(k) - \alpha \delta^{(m)}(k)$
 				}
 			}
 		\end{algorithm}
 		
-		En esta variante del algoritmo (denominada estocástica o \textbf{SGD}) se actualizan los parámetros por cada observación del \textit{dataset} y se ha decidido elegir como criterio de parada alcanzar un número de épocas, aunque también se suelen tomar otros criterios, como la magnitud del error. Además, esta variante es computacionalmente costosa, pues para cada observación se calcula el gradiente. Otra variante del algoritmo es el \textbf{batch}. Esta no actualiza por cada observación como SGD, halla el gradiente del error promedio de todas las observaciones del \textit{dataset}. No es recomendable, pues es muy costosa y si el \textit{dataset} ocupa mucho, puede no caber en memoria. Ambas aproximaciones se pueden combinar para dar lugar a una variante más eficiente que estas dos, denominada \textbf{mini-batch}, que realiza lo mismo que \textit{batch} pero dividiendo el \textit{dataset} en \textit{minibatches} y realizando una actualización de los parámetros por cada uno de ellos. De esta manera no se necesita tener todo el \textit{dataset} en memoria\cite{descenso}. 
+		En esta variante del algoritmo denominada \gls{sgd} se actualizan los parámetros por cada observación del \textit{dataset} y se ha decidido elegir como criterio de parada alcanzar un número de épocas, aunque también se suelen tomar otros criterios, como la magnitud del error. Además, esta variante es computacionalmente costosa, pues para cada observación se calcula el gradiente. Otra variante del algoritmo es el batch. Esta no actualiza por cada observación como \gls{sgd}, halla el gradiente del error promedio de todas las observaciones del \textit{dataset}. No es recomendable, pues es muy costosa y si el \textit{dataset} ocupa mucho, puede no caber en memoria. Ambas aproximaciones se pueden combinar para dar lugar a una variante más eficiente que estas dos, denominada mini-batch, que realiza lo mismo que \textit{batch} pero dividiendo el \textit{dataset} en \textit{minibatches} y realizando una actualización de los parámetros por cada uno de ellos. De esta manera no se necesita tener todo el \textit{dataset} en memoria \cite{descenso}. 
 		
 		\subsection{Funciones de activación}
 		
-			Durante el estudio del perceptrón, se muestra cómo se emplea la función de Heaviside como función de activación en la neurona. Esto se debe a que se busca una función que independientemente de los valores de entrada que reciba, produzca una salida binaria. En ciertos casos, no se deseará una salida binaria pues el problema no tendría porqué ser de clasificación, como se ha visto con las redes neuronales. Además, como se ha visto en el \Cref{algo:backprop}, será imprescindible poder calcular la derivada de estas funciones. Por estos motivos, se presentan las funciones de activación más conocidas e importantes\cite{funcionesActivacion,softmax}. 
+			Durante el estudio del perceptrón, se muestra cómo se emplea la función de Heaviside como función de activación en la neurona. Esto se debe a que se busca una función que independientemente de los valores de entrada que reciba, produzca una salida binaria. En ciertos casos, no se deseará una salida binaria pues el problema no tendría porqué ser de clasificación, como se ha visto con las redes neuronales. Además, como se ha visto en el \Cref{algo:backprop}, será imprescindible poder calcular la derivada de estas funciones. Por estos motivos, se presentan las funciones de activación más conocidas e importantes \cite{funcionesActivacion,softmax}. 
 			
 			\begin{itemize}
 				\item \textbf{Función lineal}
@@ -666,13 +619,13 @@
 					\label{fig:funcion_relu}
 				\end{figure}
 				
-				La función ReLU (Rectified Linear Unit) es una de las más populares al trabajar con redes neuronales, pues a pesar de que no es derivable en $x = 0$ (normalmente se soluciona tomando $f'(0) = 1$), soluciona un serio problema que causan las funciones logística y tangente hiperbólica durante el entrenamiento de una red neuronal. Este problema es conocido como \textit{vanishing gradient} y de forma resumida consiste en que cuando la derivada de una función de activación es muy próxima a cero, relentiza enormemente el proceso de aprendizaje, pues si se observa con detalle cómo se calculan las actualizaciones de los pesos y sesgos en el \Cref{algo:backprop}, si los términos $\delta^{(s)}$ tienden a cero, la diferencia entre los parámetros de una iteración a otra tiende a cero, necesitando una cantidad enorme de iteraciones. Como se observa a continuación, la función ReLU soluciona este problema. Además, la derivada es mucho más sencilla de calcular. 
+				La función \gls{relu} es una de las más populares al trabajar con redes neuronales, pues a pesar de que no es derivable en $x = 0$ (normalmente se soluciona tomando $f'(0) = 1$), soluciona un serio problema que causan las funciones logística y tangente hiperbólica durante el entrenamiento de una red neuronal. Este problema es conocido como \textit{vanishing gradient} y de forma resumida consiste en que cuando la derivada de una función de activación es muy próxima a cero, relentiza enormemente el proceso de aprendizaje, pues si se observa con detalle cómo se calculan las actualizaciones de los pesos y sesgos en el \Cref{algo:backprop}, si los términos $\delta^{(s)}$ tienden a cero, la diferencia entre los parámetros de una iteración a otra tiende a cero, necesitando una cantidad enorme de iteraciones. Como se observa a continuación, la función \gls{relu} soluciona este problema. Además, la derivada es mucho más sencilla de calcular. 
 				
 				\begin{align*}
 					\lim_{x\to\infty}\frac{d}{dx}\frac{1}{1+e^{-x}} = 0 && \lim_{x\to\infty}\frac{d}{dx}\tanh(x) = 0 && \lim_{x\to\infty}\frac{d}{dx}\text{ReLU}(x) = 1
 				\end{align*}
 				
-				Si bien soluciona este problema mencionado para valores de $x > 0$, genera el mismo problema para valores negativos. Para solucionar este problema se suelen tomar variantes de la función ReLU conocidas como LReLU, PReLU, o ELU; que modifican su expresión para valores de $x \leq 0$ como funciones lineales o exponenciales. 
+				Si bien soluciona este problema mencionado para valores de $x > 0$, genera el mismo problema para valores negativos. Para solucionar este problema se suelen tomar variantes de la función \gls{relu} conocidas como LReLU, PReLU, o ELU; que modifican su expresión para valores de $x \leq 0$ como funciones lineales o exponenciales. 
 				
 				\item \textbf{Función softmax}\\
 				
@@ -694,32 +647,144 @@
 		
 			Una vez explicado cómo funciona una red neuronal y cómo puede usarse para problemas de regresión y clasificación, es interesante poder aplicar estas tareas sobre imágenes en vez de sobre conjuntos de datos numéricos. Una imagen de $n \times m$ píxeles en escala de grises puede entenderse como una matriz de $n \times m$ elementos, sin embargo, suelen utilizarse imágenes a color y esto se puede conseguir utilizando tres canales, rojo, azul, y verde. De esta forma, una imagen se representa como tres matrices. Formalmente, una imagen se representa como un tensor, que puede entenderse como un vector de matrices, o una estructura que indexa elementos mediante una tupla $(i, j, k)$.\\
 			
-			De manera ingenua, una primera aproximación para clasificar imágenes en función de objetos que aparezcan en estas, podría ser linealizar este tensor y pasarlo como vector de entrada a un red neuronal multicapa, obteniendo un vector de salida que indique a qué clase pertenece la imagen. Esto, además de que no da resultados positivos pues si se mueve o varía de tamaño el objeto a reconocer, la red ya no lo entendería igual al haber aprendido los valores de cada píxel concreto en cada caso; computacionalmente es muy complicado de abarcar. Suponiendo que se tiene una imagen RGB cuadrada de $n \times n$ píxeles, y que la primera capa oculta tuviera $m$ neuronas, el número de parámetros de esta capa sería $m(3n^2 + 1)$. Suponiendo imágenes de baja calidad, por ejemplo $64 \times 64$ píxeles, y que el número de neuronas de la primera capa fuese 5, el número de parámetros es de 61445. Ajustar adecuadamente esa cantidad de parámetros muy costoso, y además daría resultados muy pobres en el caso de encontrar los parámetros adecuados. Se necesita simplificar la magnitud del problema y enseñar a la red a ver y entender, no solo aprender valores de píxeles. \\
+			De manera ingenua, una primera aproximación para clasificar imágenes en función de objetos que aparezcan en estas, podría ser linealizar este tensor y pasarlo como vector de entrada a un red neuronal multicapa, obteniendo un vector de salida que indique a qué clase pertenece la imagen. Esto, además de que no da resultados positivos pues si se mueve o varía de tamaño el objeto a reconocer, la red ya no lo entendería igual al haber aprendido los valores de cada píxel concreto en cada caso; computacionalmente es muy complicado de abarcar. Suponiendo que se tiene una imagen \gls{rgb} cuadrada de $n \times n$ píxeles, y que la primera capa oculta tuviera $m$ neuronas, el número de parámetros de esta capa sería $m(3n^2 + 1)$. Suponiendo imágenes de baja calidad, por ejemplo $64 \times 64$ píxeles, y que el número de neuronas de la primera capa fuese 5, el número de parámetros es de 61445. Ajustar adecuadamente esa cantidad de parámetros muy costoso, y además daría resultados muy pobres en el caso de encontrar los parámetros adecuados. Se necesita simplificar la magnitud del problema y enseñar a la red a ver y entender, no solo aprender valores de píxeles. \\
 			
-			La forma de trabajar con imágenes y redes neuronales consiste en ``resumir'' las diferentes regiones de la imagen pasando como entrada de la red neuronal aquellas características destacables, es decir, un vector o mapa de características propias de la imagen. Un ejemplo de estos se muestra en la \Cref{fig:features}. Esto se puede lograr mediante las operaciones de convolución y correlación cruzada explicadas en la \Cref{sec:conv_cc}. 
+			La forma de trabajar con imágenes y redes neuronales consiste en ``resumir'' las diferentes regiones de la imagen pasando como entrada de la red neuronal aquellas características destacables, es decir, un vector o mapa de características propias de la imagen. Un ejemplo de estos se muestra en la \Cref{fig:features}. Esto se puede lograr mediante las operaciones de convolución y correlación cruzada. 
 			
 			\begin{figure}[!h]
 				\centering
 				\includegraphics[scale = .2]{features}
-				\caption{Imágenes y sus mapas de características\cite{features}}
+				\caption{Imágenes y sus mapas de características \cite{features}}
 				\label{fig:features}
 			\end{figure}
 			
-			En general, para poder clasificar imágenes, se utilizan redes convolucionales por el motivo explicado, y para realizar dicha tarea se van concatenando diferentes tipos de capas, encontrándose entre estas las que se muestran a continuación\cite{introCNN}. Combinándolas se crea una red convolucional como por ejemplo, la que se muestra en la , que se trata de la red VGG-16. 
+			Una de las operaciones matemáticas más conocidas y que es más usada al trabajar con señales e imágenes es la llamada convolución, denotada por $\ast$, y dadas las funciones $f(t)$ y $g(t)$, su convolución se define de la siguiente manera. 
+			
+			$$
+			(f \ast g)(t) = \int_{-\infty}^\infty f(\tau)g(t - \tau)\,d\tau
+			$$
+			
+			En este caso se está asumiendo que el dominio de $f(\tau)g(t - \tau)$ es $\mathbb{R}$, lo que permite integrar sobre todo $\mathbb{R}$, de lo contrario, se modifica la definición para integrar solo sobre un intervalo $[a, b]$. En general, esta operación crea una nueva función a partir de otras dos, que indica cómo interactúan entre sí, y que permite aplicar filtros a señales e imágenes. Como se acaba de comentar para el caso de las imágenes, se puede tratar con señales que no dependan únicamente de una variable, pues estas se representan como una función de dos variables $f(u, v)$. En este caso, la convolución queda definida de la siguiente manera. 
+			
+			$$
+			(f \ast g)(u, v) = \int_{-\infty}^\infty\int_{-\infty}^\infty f(\xi, \eta)g(u - \xi, v - \eta)\,d\xi\,d\eta
+			$$
+			
+			Si bien en las definiciones previas se ha tomado la integral y tanto $\mathbb{R}$ como $\mathbb{R}^2$ como dominios continuos sobre los que calcular la convolución, no se debe olvidar que las imágenes no dejan de ser matrices o funciones de dos variables con un dominio discreto, por lo que se debe presentar una definición adecuada a este caso \cite{Goodfellow-et-al-2016}. 
+			
+			$$
+			(f \ast g)(u, v) = \sum_{i=-k}^{k}\sum_{j=-k}^{k} g(i, j)f(u - i, v - j)
+			$$
+			
+			En la expresión anterior, a la función $g(u, v)$ se le llama filtro o \textit{kernel} de convolución. A continuación se muestra un ejemplo de cómo calcular una convolución. 
+			
+			$$
+			\begin{gathered}
+				\begin{pmatrix}
+					\tikzmarknode{a1}{1}& 2& 3& 4& 5\\ 
+					5& 6& 7& 8& 9\\ 
+					9& 8& \tikzmarknode{a2}{7}& 6& 5\\ 
+					5& 4& 3& 2& 1\\
+					1& 2& 3& 4& 5
+				\end{pmatrix}
+				\ast
+				\begin{pmatrix}
+					\tikzmarknode{b1}{1} & 0 & 0\\
+					0 & 1 & 0\\
+					0 & 0 & \tikzmarknode{b2}{1}
+				\end{pmatrix}
+				=
+				\begin{pmatrix}
+					\tikzmarknode{c1}{14} & 15 & 16\\
+					16 & 15 & 14\\
+					16 & 15 & 14
+				\end{pmatrix}\\
+				1 \cdot 1 + 2 \cdot 0 + 3 \cdot 0 + 5 \cdot 0 + 6 \cdot 1 + 7 \cdot 0 + 9 \cdot 0 + 8 \cdot 0 + 7 \cdot 1 = 14\\
+				2 \cdot 1 + 3 \cdot 0 + 4 \cdot 0 + 6 \cdot 0 + 7 \cdot 1 + 8\cdot 0 + 8\cdot 0 + 7 \cdot 0 + 6 \cdot 1 = 15\\
+				\vdots\\
+				7 \cdot 1 + 6 \cdot 0 + 5 \cdot 0 + 3 \cdot 0 + 2 \cdot 1 + 1 \cdot 0 + 3 \cdot 0 + 4 \cdot 0 + 5 \cdot 1 = 14
+			\end{gathered}
+			\begin{tikzpicture}[remember picture, overlay]
+				\draw ([shift={(-.5mm, .5mm)}]a1.north west) rectangle ([shift={(.5mm, -.5mm)}]a2.south east);
+				\draw ([shift={(-.5mm, .5mm)}]b1.north west) rectangle ([shift={(.5mm, -.5mm)}]b2.south east);
+				\path[->] ([shift={(-.5mm, .5mm)}]a1.north) edge [bend left = 15] ([shift={(-.5mm, 1mm)}]c1.north);
+				\path[->] ([shift={(-.5mm, .5mm)}]b1.north) edge [bend left = 20] ([shift={(-.5mm, 1mm)}]c1.north);
+			\end{tikzpicture}
+			$$
+			
+			Aplicando diferentes kernels de convolución a una imagen se pueden extraer diferentes tipos de características de una imagen, como por ejemplo bordes. El filtro Sobel es capaz de hacer esto con los kernels que se muestran a continuación, pues se comportan como aproximaciones de las derivadas parciales de la imagen en un punto teniendo en cuenta los píxeles cercanos \cite{Gao2010}. 
+			
+			\begin{align*}
+				G_u &= \frac{\partial f(u, v)}{\partial u} \approx \begin{pmatrix}
+					-1 & 0 & 1\\
+					-2 & 0 & 2\\
+					-1 & 0 & 1
+				\end{pmatrix}&
+				G_v &= \frac{\partial f(u, v)}{\partial v} \approx \begin{pmatrix}
+					-1 & -2 & -1\\
+					0 & 0 & 0\\
+					1 & 2 & 1
+				\end{pmatrix}
+			\end{align*}
+			
+			\begin{figure}[!h]
+				\centering
+				\includegraphics[scale = .4]{ejemplo_sobel}
+				\caption{Detección de bordes aplicando los kernel Sobel}
+				\label{fig:sobel}
+			\end{figure}
+			
+			A continuación se va a calcular la convolución de la matriz del ejemplo anterior con $G_u$. Al realizar los cálculos como se ha mostrado en el ejemplo anterior, se obtiene como resultado la matriz $A$, mientras que al utilizar Python se obtiene la matriz $B$, los resultados no concuerdan. ¿Qué acaba de suceder? 
+			
+			\begin{align*} A &= 
+				\begin{pmatrix}
+					4 & 4 & 4\\
+					-4 & -4 & -4\\
+					-4 & -4 & -4
+				\end{pmatrix}&
+				B &= \begin{pmatrix}
+					-4 & -4 & -4\\
+					4 & 4 & 4\\
+					4 & 4 & 4
+				\end{pmatrix}
+			\end{align*}
+			
+			La respuesta a estas preguntas se podría resumir en que se ha realizado una ``pequeña trampa'' a la hora de explicar cómo calcular la convolución manualmente en el ejemplo, ya que no se ha aplicado correctamente la definición dada. ¿Qué sentido tiene hacer esto? En visión artificial y tratamiento de imágenes, muchos autores y librerías llaman convolución a la operación que se ha mostrado en el primer ejemplo, cuando en realidad no lo es y trae lugar a confusión. Dicha operación se llama correlación cruzada, denotada por $(\star)$, y que es muy similar a la convolución, pues su principal diferencia es que en la convolución ``real'', el kernel se rota 180 grados antes de calcular la convolución ``falsa'' o correlación cruzada, es decir, $X \ast Y = X \star (R_{180} \cdot Y)$, donde $R_{180}$ es la matriz de rotación de 180 grados. En el primer ejemplo se ha utilizado de manera intencionada la matriz $I_3$ para ver los casos que traen lugar a confusión, pues $I_3 \cdot R_{180} = I_3$. La correlación cruzada de dos imágenes (matrices) se define de la siguiente manera \cite{Goodfellow-et-al-2016}. 
+			
+			$$
+			(f \star g)(u, v) = \sum_{i=-k}^{k}\sum_{j=-k}^{k} g(i, j)f(u + i, v + j)
+			$$
+			
+			Esta operación sí es con la que realmente se aplican los filtros a las imágenes y con la que se trabaja en general en el campo de la visión artificial. Es importante ver que ahora, al contrario que con la convolución, $f \star g \neq g \star f$. Algunas librerías de visión artificial tratan a la correlación cruzada como convolución debido al frecuente uso que tiene una sobre la otra y la forma similar que tienen de calcularse. Un ejemplo es OpenCV para Python y C++ en la documentación de su función \texttt{filter2D}, donde se comenta que aplica una convolución cuando realmente aplica la correlación cruzada \cite{OpenCVFiltering}. \\
+			
+			Finalmenete, a la hora de realizar estas operaciones, se pueden definir una serie de parámetros según convenga para obtener un tamaño diferente de salida \cite{introCNNformula}. Estos son \textit{stride} y \textit{padding}. El primero de ellos hace referencia a cada cuántos elementos se desplaza el kernel y se calcula el producto escalar, mientras que el segundo a cómo rellenar los bordes de la matriz original para obtener mayor tamaño de salida, habitualmente se colocan ceros en los bordes y se conoce como \textit{zero-padding}. El tamaño de salida se puede calcular como 
+			$$
+			\frac{n-k+2p}{s}+1, 
+			$$
+			y algunos valores por defecto para el \textit{padding} son \textit{valid},  \textit{full}, y \textit{same}. Con \textit{valid} no se añade ningún \textit{padding} de manera que el kernel solo se desliza en las zonas donde la matriz de entrada y el kernel coinciden por completo, con \textit{full} se añaden las filas y columnas de ceros necesarias para poder deslizar el kernel por cualquier zona en la que coincidan la matriz y el kernel, y con \textit{same} también se añaden las necesarias como para producir un tamaño de salida igual al de entrada. A partir de ahora, cuando se utilice el parámetro \textit{full}, las operaciones se escribirán como $\circledast$ y $\ostar$, pues la definición original se entiende como \textit{valid}. En ambos casos se tomará un \textit{stride} de 1. \\
+			
+			En general, para poder clasificar imágenes, se utilizan redes convolucionales por el motivo explicado, y para realizar dicha tarea se van concatenando diferentes tipos de capas, encontrándose entre estas las que se muestran a continuación \cite{introCNN}. Combinándolas se crea una red convolucional como por ejemplo, la que se muestra en la \Cref{fig:vgg16}, que se trata de la red VGG-16. \\
+			
+			\begin{figure}[!h]
+				\centering
+				\includegraphics[width = \linewidth]{vgg16}
+				\caption{Red convolucional VGG-16}
+				\label{fig:vgg16}
+			\end{figure}
 			
 			\begin{itemize}
 				\item \textbf{Capa de entrada}\\
 				Esta capa recibe la entrada de la red, normalmente la imagen representada como un tensor, es decir, una matriz por cada canal de la imagen. 
 				
 				\item \textbf{Capa de convolución}\\
-				En este tipo de capas es donde reside principalmente el conocimiento de una red convolucional, pues dispone de unos parámetros llamados \textit{kernels} y \textit{bias}, o sesgos. Lo que hace esta capa es calcular la correlación cruzada entre la entrada y el kernel y sumar un sesgo, a pesar de que comúnmente se dice que calcula la convolución, como se discutió en la \Cref{sec:conv_cc}. El número de salidas de esta capa depende del número de kernels y sesgos que se definan, se puede establecer un símil con el número de neuronas de una capa de una red neuronal. La entrada de la capa, que es un tensor, puede entenderse como una serie de matrices $X_i^{(m)}$, los kernels que serían otros tensores, como otra serie de matrices $K_{ij}^{(m)}$, y los sesgos como las matrices $B_i^{(m)}$, teniendo la siguiente ecuación para la salida de una capa de convolución. 
+				En este tipo de capas es donde reside principalmente el conocimiento de una red convolucional, pues dispone de unos parámetros llamados \textit{kernels} y \textit{bias}, o sesgos. Lo que hace esta capa es calcular la correlación cruzada entre la entrada y el kernel y sumar un sesgo, a pesar de que comúnmente se dice que calcula la convolución, como se ha discutido previamente. El número de salidas de esta capa depende del número de kernels y sesgos que se definan, se puede establecer un símil con el número de neuronas de una capa de una red neuronal. La entrada de la capa, que es un tensor, puede entenderse como una serie de matrices $X_i^{(m)}$, los kernels que serían otros tensores, como otra serie de matrices $K_{ij}^{(m)}$, y los sesgos como las matrices $B_i^{(m)}$, teniendo la siguiente ecuación para la salida de una capa de convolución. 
 				
 				$$
 				N_i^{(m)} = B_i^{(m)} + \sum_{j = 1}^n X_j^{(m)} \star K_{ij}^{(m)}
 				$$
 				
 				\item \textbf{Capa de activación}\\
-				Al igual que en las redes neuronales clásicas se aplicaba una función de activación a la salida de cada neurona, en las redes convolucionales es habitual hacer esto mismo con las salidas de una capa de convolución y la función ReLU. Se aplica esta a cada elemento del tensor de salida, pudiendo verse como sustituir por ceros aquellos valores negativos producidos por la correlación cruzada. 
+				Al igual que en las redes neuronales clásicas se aplicaba una función de activación a la salida de cada neurona, en las redes convolucionales es habitual hacer esto mismo con las salidas de una capa de convolución y la función \gls{relu}. Se aplica esta a cada elemento del tensor de salida, pudiendo verse como sustituir por ceros aquellos valores negativos producidos por la correlación cruzada. 
 				
 				\item \textbf{Capa de \textit{pooling} o agrupación}\\
 				Como previamente se ha mencionado, la ventaja de trabajar con redes convolucionales en vez de con las clásicas, es que estas son capaces de extraer las características importantes de una imagen, ``resumiendo'' esta antes de comenzar el trabajo de clasificación. Parte de este ``resumen'' se realiza mediante las capas de \textit{pooling} o agrupación. Se suelen utilizar las funciones maxpooling o avgpooling con kernels de tamaño $2\times2$ sobre la entrada, reduciendo el tamaño de esta en un 25\%. 
@@ -753,17 +818,10 @@
 				Esta capa se trata de una de las capas de una red neuronal clásica. Recibe los vectores de características una vez han sido simplificados lo suficiente como para que una red clásica pueda trabajar con ellos y encontrar las relaciones entra las características de las imágenes de una misma clase. 
 				
 				\item \textbf{Capa softmax}\\
-				Esta capa aplica la función softmax en la salida de la red neuronal para poder ajustar la salida a un problema de clasificación usual, tal y como se explicó anteriormente. 
+				Esta capa aplica la función softmax en la salida de la red neuronal para poder ajustar la salida a un problema de clasificación usual, tal y como se ha explicado anteriormente. 
 			\end{itemize}
 			
-			\begin{figure}[!h]
-				\centering
-				\includegraphics[width = \linewidth]{vgg16}
-				\caption{Red convolucional VGG-16}
-				\label{fig:vgg16}
-			\end{figure}
-			
-			Habiendo mostrado ya la arquitectura de una red convolucional con sus correspondientes parámetros (kernels y sesgos) e hiperparámetros (\textit{padding} y \textit{stride}), la pregunta clásica es, ¿cómo obtener los parámetros adecuados? La respuesta de cómo obtenerlos es simple, siendo algo más complicada de responder esta vez la de cuáles son. Al no dejar de ser una red neuronal, para obtener los parámetros de la red se utiliza \textit{Backpropagation} (\Cref{algo:backprop}) también, añadiendo las siguiente ecuaciones\cite{backpropCNN} al cálculo del gradiente para las capas de convolución. En este caso también aparece la recursividad mediante las sensibilidades de convolución $\Lambda_i^{(m)}$ hasta llegar a las sensibilidades clásicas $\delta_i^{(m)}$. 
+			Habiendo mostrado ya la arquitectura de una red convolucional con sus correspondientes parámetros (kernels y sesgos) e hiperparámetros (\textit{padding} y \textit{stride}), la pregunta clásica es, ¿cómo obtener los parámetros adecuados? La respuesta de cómo obtenerlos es simple, siendo algo más complicada de responder esta vez la de cuáles son. Al no dejar de ser una red neuronal, para obtener los parámetros de la red se utiliza \textit{Backpropagation} (\Cref{algo:backprop}) también, añadiendo las siguiente ecuaciones \cite{backpropCNN} al cálculo del gradiente para las capas de convolución. En este caso también aparece la recursividad mediante las sensibilidades de convolución $\Lambda_i^{(m)}$ hasta llegar a las sensibilidades clásicas $\delta_i^{(m)}$. 
 			
 			$$
 			\begin{gathered}
@@ -778,20 +836,20 @@
 			
 		\section{Transformers}
 			
-			Si bien llegado este punto se podría afirmar que se ha conseguido una arquitectura que puede lograr el fin de este proyecto (clasificar imágenes), esta es mejorable en diversas situaciones. Supóngase que se dispone de un gran conjunto de imágenes de animales terrestres, acuáticos, y aéreos; y se necesita un modelo capaz de distinguir animales entre estas tres clases. Tras etiquetar estas imágenes manualmente, encontrar una arquitectura de CNN adecuada, y entrenarla, se obtiene un clasificador capaz de distinguir entre estas tres clases. Tiempo más tarde, surge la necesidad de poder clasificar dentro de estas tres clases, por ejemplo, dentro de los animales acuáticos poder distinguir entre peces de río, ballenas, tiburones, etc. Esto supondría reetiquetar el dataset manualmente, modificar la arquitectura de las capas densas, y volver a entrenar el modelo. Considerando un caso extremo, podría además ser el dataset muy grande y no conocerse el número de especies dentro de cada una de las clases iniciales y querer separar las imágenes por cada una de las especies. Esto no sería posible con una CNN, pues necesitaría tener definidas una serie de clases. \\
+			Si bien llegado este punto se podría afirmar que se ha conseguido una arquitectura que puede lograr el fin de este proyecto (clasificar imágenes), esta es mejorable en diversas situaciones. Supóngase que se dispone de un gran conjunto de imágenes de animales terrestres, acuáticos, y aéreos; y se necesita un modelo capaz de distinguir animales entre estas tres clases. Tras etiquetar estas imágenes manualmente, encontrar una arquitectura de \gls{cnn} adecuada, y entrenarla, se obtiene un clasificador capaz de distinguir entre estas tres clases. Tiempo más tarde, surge la necesidad de poder clasificar dentro de estas tres clases, por ejemplo, dentro de los animales acuáticos poder distinguir entre peces de río, ballenas, tiburones, etc. Esto supondría reetiquetar el dataset manualmente, modificar la arquitectura de las capas densas, y volver a entrenar el modelo. Considerando un caso extremo, podría además ser el dataset muy grande y no conocerse el número de especies dentro de cada una de las clases iniciales y querer separar las imágenes por cada una de las especies. Esto no sería posible con una \gls{cnn}, pues necesitaría tener definidas una serie de clases. \\
 			
-			Por otro lado, supóngase que dado un texto que describa una imagen, por ejemplo ``\textit{Un pastor alemán corriendo en un bosque}'', se quiere obtener la imagen del dataset que se adapta mejor a esa descripción, o se quiere obtener cómo de similares son dos imágenes del dataset, o se quiere extraer el texto que contiene una imagen, o se quiere comprobar cómo de bien se adapta una descripción de una imagen a esta. Todo este tipo de tareas y similares, serían imposibles de realizar mediante redes convolucionales, ya que no están enfocadas a trabajar con texto, y es aquí donde entran este tipo de modelos llamados transformers. Se presentaron en 2017 en un artículo escrito por investigadores de Google (con un nombre bastante acertado, \textit{Attention is all you need} \cite{attention}) como un modelo sustituto de las redes neuronales recurrentes debido al problema que tienen al intentar recordar información de instantes alejados. La idea original era utilizarlos para problemas de NLP, como por ejemplo la traducción de textos, pero se pueden aplicar a una diversidad de problemas. Basándose en dicho artículo, se presenta una breve explicación de cómo funciona la arquitectura de un transformer. \\
+			Por otro lado, supóngase que dado un texto que describa una imagen, por ejemplo ``\textit{Un pastor alemán corriendo en un bosque}'', se quiere obtener la imagen del dataset que se adapta mejor a esa descripción, o se quiere obtener cómo de similares son dos imágenes del dataset, o se quiere extraer el texto que contiene una imagen, o se quiere comprobar cómo de bien se adapta una descripción de una imagen a esta. Todo este tipo de tareas y similares, serían imposibles de realizar mediante redes convolucionales, ya que no están enfocadas a trabajar con texto, y es aquí donde entran este tipo de modelos llamados transformers. Se presentaron en 2017 en un artículo escrito por investigadores de Google (con un nombre bastante acertado, \textit{Attention is all you need} \cite{attention}) como un modelo sustituto de las redes neuronales recurrentes debido al problema que tienen al intentar recordar información de instantes alejados. La idea original era utilizarlos para problemas de \gls{nlp}, como por ejemplo la traducción de textos, pero se pueden aplicar a una diversidad de problemas. Basándose en dicho artículo, se presenta una breve explicación de cómo funciona la arquitectura de un transformer. \\
 			
 			\begin{figure}
 				\centering
 				\includegraphics[scale = .5]{transformer}
-				\caption{Arquitectura de un transformer codificador-decodificador}
+				\caption{Arquitectura de un transformer codificador-decodificador \cite{attention}}
 				\label{fig:arq_transf}
 			\end{figure}
 			
 			\subsection{Codificación}
 			
-				El flujo que sigue un elemento de entrada en un transformer, es bastante más elaborado que el que se sigue en una red neuronal, tal y como se observa en la \Cref{fig:arq_transf}. Inicialmente comienza con la etapa de codificación, el la que el elemento recibido (en este primer ejemplo, un texto) se divide en una serie de tokens o elementos básicos e indivisibles, se añaden los tokens \texttt{\$SOS\$} (start of sequence) y \texttt{\$EOS\$} (end of sequence) para marcar el inicio y el final del contenido, y se convierte cada uno de ellos en una serie de embeddings $\textbf{e} \in \mathbb{R}^{d_m}$ que codifican el token. Un ejemplo sería dividir una frase por palabras, y asignar un vector diferente a cada palabra del diccionario, aunque en los modelos reales de NLP no separan de esta manera. Continuando con el proceso, se necesita almacenar de alguna manera la posición de los tokens de entrada, pues el transformer procesa todos los tokens de manera simultánea y la frase ``\textit{Juan es mayor que María}'', es totalmente diferente a, por ejemplo ``\textit{María es mayor que Juan}'', a pesar de ser dos secuencias con los mismos tokens. Para lograr esto, a cada embedding \textbf{e} se le suma un vector posicional \textbf{p} donde cada una de sus componentes $p_i$ se obtienen de la siguiente manera, siendo $d_m$ la dimensión de los embeddings y $n$ la posición del token. 
+				El flujo que sigue un elemento de entrada en un transformer, es bastante más elaborado que el que se sigue en una red neuronal, tal y como se observa en la \Cref{fig:arq_transf}. Inicialmente comienza con la etapa de codificación, el la que el elemento recibido (en este primer ejemplo, un texto) se divide en una serie de tokens o elementos básicos e indivisibles, se añaden los tokens \texttt{\$SOS\$} (start of sequence) y \texttt{\$EOS\$} (end of sequence) para marcar el inicio y el final del contenido, y se convierte cada uno de ellos en una serie de embeddings $\textbf{e} \in \mathbb{R}^{d_m}$ que codifican el token. Un ejemplo sería dividir una frase por palabras, y asignar un vector diferente a cada palabra del diccionario, aunque en los modelos reales de \gls{nlp} no separan de esta manera. Continuando con el proceso, se necesita almacenar de alguna manera la posición de los tokens de entrada, pues el transformer procesa todos los tokens de manera simultánea y la frase ``\textit{Juan es mayor que María}'', es totalmente diferente a, por ejemplo ``\textit{María es mayor que Juan}'', a pesar de ser dos secuencias con los mismos tokens. Para lograr esto, a cada embedding \textbf{e} se le suma un vector posicional \textbf{p} donde cada una de sus componentes $p_i$ se obtienen de la siguiente manera, siendo $d_m$ la dimensión de los embeddings y $n$ la posición del token. 
 				
 				$$
 				p_i(n) = \begin{cases}
@@ -802,10 +860,10 @@
 				
 				Existen diferentes de maneras de codificar posiciones de tokens, pero en la arquitectura original se utilizó la presentada. El siguiente paso es el conocido como algoritmo de atención, siendo su misión la siguiente. Observando las frases ``\textit{Juan es un catador profesional de vino}'' y ``\textit{María vino ayer de Madrid}'', se ve que el token \texttt{vino} aparece en ambas, e inicialmente se le asignaría un embedding idéntico (excepto por la posición), ignorando el contexto en el que aparece el token y perdiendo su significado original. De la misma manera, en la frase ``\textit{Ellos son Juan y María, él es alto y ella es baja}'', necesitaría codificarse que los tokens \texttt{alto} y \texttt{baja} se refieren respectivamente a los tokens \texttt{él} y \texttt{ella}, y a su vez a los tokens \texttt{Juan} y \texttt{María}. La misión del algoritmo de atención es justo esta, transformar los embeddings de cada token para que su codificación se adapte al contexto. \\
 				
-				Esto se logra mediante tres matrices $Q$, $K$, y $V$ que se llaman query o consulta, key o clave, y value o valor, respectivamente. En este primer ejemplo, dichas matrices son copias de la matriz $E$ de embeddings. La idea es que cada embedding pregunte al resto cómo de relacionados están mediante $QK^t/\sqrt{d_m}$. Esto no es más que el producto escalar de cada par de embeddings normalizado, siendo una manera de medir la similitud entre dos vectores, que al aplicar la función softmax por filas, permite ver claramente para cada embedding cuál le ``presta más atención''. A veces, conviene aplicar una máscara $M$ con ciertos valores de $-\infty$ para forzar que algunos embeddings no presten atención a otros. El resultado obtenido se multiplica por la matriz de valores $V$. Esto representa que si un embedding está relacionado con otro, debe ``llevarse'' parte de él, para codificar tanto su información como la de aquellos embeddings con los que está relacionado. 
+				Esto se logra mediante tres matrices $Q$, $K$, y $V$ que se llaman query o consulta, key o clave, y value o valor, respectivamente. En este primer ejemplo, dichas matrices son copias de la matriz $E$ de embeddings. La idea es que cada embedding pregunte al resto cómo de relacionados están mediante $QK^T/\sqrt{d_m}$. Esto no es más que el producto escalar de cada par de embeddings normalizado, siendo una manera de medir la similitud entre dos vectores, que al aplicar la función softmax por filas, permite ver claramente para cada embedding cuál le ``presta más atención''. A veces, conviene aplicar una máscara $M$ con ciertos valores de $-\infty$ para forzar que algunos embeddings no presten atención a otros. El resultado obtenido se multiplica por la matriz de valores $V$. Esto representa que si un embedding está relacionado con otro, debe ``llevarse'' parte de él, para codificar tanto su información como la de aquellos embeddings con los que está relacionado. 
 				
 				$$
-				A = \text{softmax}\left(\frac{QK^t\odot M}{\sqrt{d_m}}\right)V
+				A = \text{softmax}\left(\frac{QK^T\odot M}{\sqrt{d_m}}\right)V
 				$$
 				
 				En este punto, se habría detectado la relación entre los tokens de \texttt{Juan} y \texttt{alto}, y los de \texttt{María} y \texttt{baja}, reflejando en la matriz $A$ el cambio que debe hacerse a cada embedding para que codifiquen la información del contexto recopilada. La matriz de embeddings, se actualizaría de manera que $E' = E + A$. Al realizar esta suma, el embedding del token \texttt{Juan} ya almacena información sobre que es alto. Este proceso se conoce como auto-atención ``de cabeza única'' o simple, pues normalmente se aplica el conocido como de ``cabeza múltiple''. \\
@@ -813,7 +871,7 @@
 				\begin{figure}[!h]
 					\centering
 					\includegraphics[scale = .7, angle = -90]{attention}
-					\caption{Visualización del algoritmo de atención}
+					\caption{Visualización del algoritmo de atención \cite{attention}}
 					\label{fig:attention}
 				\end{figure}
 				
@@ -826,7 +884,7 @@
 					\Datos{$E \in \mathbb{R}^{n \times d_m}, M \in \mathbb{R}^{n \times n}$}
 					\Resultado{$E' \in \mathbb{R}^{n \times d_m}$}
 					
-					$A \gets \text{softmax}\left(\frac{QK^t\odot M}{\sqrt{d_m}}\right)V$\\
+					$A \gets \text{softmax}\left(\frac{QK^T\odot M}{\sqrt{d_m}}\right)V$\\
 					$E' \gets E + A$
 				\end{algorithm}
 				
@@ -844,15 +902,15 @@
 					$d_k \gets \frac{d_m}{h}$\\
 					$d_v \gets d_k$\\
 					\Paralelo{
-						$Q^{(i)} \gets E \left(W^{(i)}_Q\right)^t$\\
-						$K^{(i)} \gets E \left(W^{(i)}_K\right)^t$\\
-						$V^{(i)} \gets E \left(W^{(i)}_V\right)^t$\\
+						$Q^{(i)} \gets E \left(W^{(i)}_Q\right)^T$\\
+						$K^{(i)} \gets E \left(W^{(i)}_K\right)^T$\\
+						$V^{(i)} \gets E \left(W^{(i)}_V\right)^T$\\
 						$A^{(i)} \gets \text{softmax}\left(\frac{Q^{(i)}\left(K^{(i)}\right)^{t}\odot M}{\sqrt{d_k}}\right)V^{(i)}$
 					}
 					$E' \gets E + \left(A^{(1)}\middle|A^{(2)}\middle|\cdots\middle|A^{(h)}\right)W_O$
 				\end{algorithm}
 				
-				El proceso de codificación continúa con una normalización de los embeddings. Para realizar dicha normalización\cite{normalization}, se supone que los elementos de cada embedding $\textbf{e}_i$ siguen una distribución $\mathcal{N}(\mu_i, \sigma_i)$, y se normalizan de acuerdo a la ecuación $E' = \Sigma\Gamma\odot(E - M) + B$, es decir, 
+				El proceso de codificación continúa con una normalización de los embeddings. Para realizar dicha normalización \cite{normalization}, se supone que los elementos de cada embedding $\textbf{e}_i$ siguen una distribución $\mathcal{N}(\mu_i, \sigma_i)$, y se normalizan de acuerdo a la ecuación $E' = \Sigma\Gamma\odot(E - M) + B$, es decir, 
 				\begin{align*}
 					E' &= \begin{pmatrix}
 						\sqrt{\sigma^2_1 + \varepsilon}^{-1} & 0 & \cdots & 0\\
@@ -898,9 +956,9 @@
 					$d_k \gets \frac{d_m}{h}$\\
 					$d_v \gets d_k$\\
 					\Paralelo{
-						$Q^{(i)} \gets E_2 \left(W^{(i)}_Q\right)^t$\\
-						$K^{(i)} \gets E_1 \left(W^{(i)}_K\right)^t$\\
-						$V^{(i)} \gets E_1 \left(W^{(i)}_V\right)^t$\\
+						$Q^{(i)} \gets E_2 \left(W^{(i)}_Q\right)^T$\\
+						$K^{(i)} \gets E_1 \left(W^{(i)}_K\right)^T$\\
+						$V^{(i)} \gets E_1 \left(W^{(i)}_V\right)^T$\\
 						$A^{(i)} \gets \text{softmax}\left(\frac{Q^{(i)}\left(K^{(i)}\right)^{t}\odot M}{\sqrt{d_k}}\right)V^{(i)}$
 					}
 					$E_2' \gets E_2 + \left(A^{(1)}\middle|A^{(2)}\middle|\cdots\middle|A^{(h)}\right)W_O$
@@ -920,7 +978,7 @@
 				Actualmente, los transformers pueden tener o no codificador y decodificador, clasificándose principalmente en función de esto. 
 				\begin{itemize}
 					\item Transformers con codificador y decodificador, normalmente orientados y originalmente diseñados para tareas de traducción. Un ejemplo es T5 de Google. 
-					\item Transformers con sólo codificador, normalmente orientados a tareas de clasificación. Un ejemplo son los ViT. 
+					\item Transformers con sólo codificador, normalmente orientados a tareas de clasificación. Un ejemplo son los \gls{vit}. 
 					\item Transformers con sólo decodificador, normalmente orientados a tareas de generación de contenido. Un ejemplo es GPT-4 de OpenAI. 
 				\end{itemize}
 				
@@ -930,12 +988,12 @@
 		
 			En la sección anterior se presentaban los transformers como un modelo capaz de mejorar el resultado que se puede obtener con redes convolucionales, además de añadir la capacidad de poder trabajar con texto. Hasta este momento se ha demostrado cómo mediante la arquitectura y algoritmos descritos son capaces de trabajar con textos, siendo ahora las principales preguntas, ¿cómo puede un transformer procesar una imagen? ¿Será necesario variar su arquitectura?\\
 			
-			En 2021, Google vuelve a publicar otro artículo \cite{vit} sobre transformers donde plantean la posibilidad de utilizar este tipo de modelo en tareas relacionadas con imágenes al haber obtenido resultados tan positivos con textos. Al igual que en el artículo donde se presentaban los transformers por primera vez, este también cuenta con un título que resume la solución al problema para presentar los transformers de visión o ViT: ``\textit{Una imagen son $16 \times 16$ palabras}''. \\
+			En 2021, Google vuelve a publicar otro artículo \cite{vit} sobre transformers donde plantean la posibilidad de utilizar este tipo de modelo en tareas relacionadas con imágenes al haber obtenido resultados tan positivos con textos. Al igual que en el artículo donde se presentaban los transformers por primera vez, este también cuenta con un título que resume la solución al problema para presentar los transformers de visión o \gls{vit}: ``\textit{Una imagen son $16 \times 16$ palabras}''. \\
 			
 			\begin{figure}[!h]
 				\centering
 				\includegraphics[scale = .5]{vit}
-				\caption{Arquitectura de un transformer de visión}
+				\caption{Arquitectura de un transformer de visión \cite{vit}}
 				\label{fig:vit_arq}
 			\end{figure}
 			
@@ -943,11 +1001,11 @@
 			
 			Al igual que en el transformer clásico, se necesita guardar información sobre la ubicación de cada subimagen. Aquí aparece la siguiente diferencia, pues cada elemento se ubica mediante una fila y columna, surgiendo el debate sobre si es necesario codificar las filas y columnas, o si basta con almacenar la posición de forma linealizada. Tras varios ensayos, se demuestra que a penas existen diferencias en los resultados obtenidos. \\
 			
-			La siguiente de las diferencias reside en el número de embeddings con los que trabaja un ViT. En el transformer clásico si se contaba con $n$ tokens, entonces la matriz de embeddings tenía dimensiones $n \times d_m$, mientras que con un ViT, es de $(n + 1) \times d_m$. Los transformers de visión trabajan con un token adicional comúnmente llamado CLS, que codifica información del resto de embeddings, es decir, codifica información de la imagen. Este vector permite la clasificación de las imágenes, pues con un ViT debidamente entrenado si recibe dos imágenes con cierta relación, entonces sus CLS deberían ser similares. En general, la salida de este modelo es este vector, para después, utilizarlo como la entrada de una red neuronal para poder clasificarlo. Aquí se observa que los ViT solo constan de la parte del codificador. 
+			La siguiente de las diferencias reside en el número de embeddings con los que trabaja un \gls{vit}. En el transformer clásico si se contaba con $n$ tokens, entonces la matriz de embeddings tenía dimensiones $n \times d_m$, mientras que con un \gls{vit}, es de $(n + 1) \times d_m$. Los transformers de visión trabajan con un token adicional comúnmente llamado \gls{cls}, que codifica información del resto de embeddings, es decir, codifica información de la imagen. Este vector permite la clasificación de las imágenes, pues con un \gls{vit} debidamente entrenado si recibe dos imágenes con cierta relación, entonces sus \gls{cls} deberían ser similares. En general, la salida de este modelo es este vector, para después, utilizarlo como la entrada de una red neuronal para poder clasificarlo. Aquí se observa que los \gls{vit} solo constan de la parte del codificador. 
 			
 		\section{Transformers multimodales}
 		
-			En las secciones anteriores se ha demostrado cómo es posible la codificación y clasificación de texto e imágenes (en el caso de texto también generación), hasta el momento sin aparente mejora frente a los tipos de redes neuronales presentadas, pues no se ha respondido la cuestión de cómo trabajar con imágenes y textos simultáneamente, cómo modificar la clasificación de las imágenes o textos sin modificar la arquitectura (una red neuronal clásica clasifica en función del CLS), cómo realizar la clasificación sin conocer el número de clases, cómo realizar la clasificación sin contar con un dataset etiquetado, y una larga lista de tareas aparentemente complicadas y sin relación entre sí pero que tienen una solución común, los transformers multimodales. \\
+			En las secciones anteriores se ha demostrado cómo es posible la codificación y clasificación de texto e imágenes (en el caso de texto también generación), hasta el momento sin aparente mejora frente a los tipos de redes neuronales presentadas, pues no se ha respondido la cuestión de cómo trabajar con imágenes y textos simultáneamente, cómo modificar la clasificación de las imágenes o textos sin modificar la arquitectura (una red neuronal clásica clasifica en función del \gls{cls}), cómo realizar la clasificación sin conocer el número de clases, cómo realizar la clasificación sin contar con un dataset etiquetado, y una larga lista de tareas aparentemente complicadas y sin relación entre sí pero que tienen una solución común, los transformers multimodales. \\
 			
 			Los modelos multimodales son un tipo de modelos que permiten la entrada de información de diferentes fuentes en diferentes modalidades como por ejemplo, texto, audio, imágenes, vídeo, etc; y que son capaces de establecer relaciones entre estas \cite{multimodal_dl}. Desde el artículo que presentaba el modelo del transformer, cada vez son más las variantes de su arquitectura que aparecen para poder trabajar con diferentes tipos de datos, llegando en la actualidad hasta los transformers multimodales. Los más populares y que ayudan a responder las preguntas que se planteaban a lo largo de este trabajo, son aquellos capaces de trabajar con imágenes y textos. \\
 			
@@ -970,7 +1028,7 @@
 					\Large\texttt{Gato}
 					\caption{Texto con la palabra gato}
 				\end{subfigure}
-				\caption{Información multimodal}
+				\caption{Información multimodal \cite{vertex}}
 				\label{fig:info_multi}
 			\end{figure} 
 			
@@ -980,12 +1038,12 @@
 			\cos(\theta) = \frac{\textbf{a} \cdot \textbf{b}}{\|\textbf{a}\|\cdot\|\textbf{b}\|}
 			$$
 			
-			Gracias a esta idea de tener conceptos en diferentes modalidades representados en un mismo espacio, se pueden realizar tareas muy útiles como la búsqueda de una imagen dada una descripción textual, la búsqueda de la imagen más similar a otra, la búsqueda del texto más similar a otro, etc. Todos estos problemas son en realidad el mismo, pues todos los elementos quedan representados como un vector y basta con comparar los productos escalares entre cada par de embeddings, aplicar una función softmax, y elegir el mayor de todos, eligiendo así el embedding que tiene una dirección más similar a la dada. En la \Cref{fig:textos_imagenes} \cite{clip} se visualiza cómo mediante esta idea es posible asignar a cada una de las $n$ imágenes, un conjunto de $k$ descripciones, donde $n \geq k$. 
+			Gracias a esta idea de tener conceptos en diferentes modalidades representados en un mismo espacio, se pueden realizar tareas muy útiles como la búsqueda de una imagen dada una descripción textual, la búsqueda de la imagen más similar a otra, la búsqueda del texto más similar a otro, etc. Todos estos problemas son en realidad el mismo, pues todos los elementos quedan representados como un vector y basta con comparar los productos escalares entre cada par de embeddings, aplicar una función softmax, y elegir el mayor de todos, eligiendo así el embedding que tiene una dirección más similar a la dada. En la \Cref{fig:textos_imagenes} se visualiza cómo mediante esta idea es posible asignar a cada una de las $n$ imágenes, un conjunto de $k$ descripciones, donde $n \geq k$. 
 			
 			\begin{figure}[!h]
 				\centering
 				\includegraphics[scale = .7]{imagen-texto}
-				\caption{Asignación de textos a imágenes}
+				\caption{Asignación de textos a imágenes \cite{clip}}
 				\label{fig:textos_imagenes}
 			\end{figure}
 			
@@ -994,19 +1052,19 @@
 			\begin{figure}[!h]
 				\centering
 				\includegraphics[width = \textwidth]{variantes_crossed}
-				\caption{Variantes del algoritmo de atención múltiple-cruzada}
+				\caption{Variantes del algoritmo de atención múltiple-cruzada \cite{multimodal_transformers}}
 				\label{fig:variantes_crossed}
 			\end{figure}
 			
 			\subsection{Clasificación no supervisada}
 			
-				En este punto queda una pregunta por responder. ¿Cómo se realiza la clasificación de textos, imágenes, vídeos, u otras modalidades de información sin conocer el número de clases adecuado y sin tener que modificar la arquitectura del modelo? En general, los transformers con codificador orientados a tareas de clasificación, cuentan con el CLS, que en el caso de los ViT originales entregan a una red neuronal clásica, pues no deja de ser un vector $d_m-$dimensional. Al no conocer las clases ni cuántas hay, un posible enfoque es sustituir la red neuronal por un algoritmo de clasificación no supervisada. \\
+				En este punto queda una pregunta por responder. ¿Cómo se realiza la clasificación de textos, imágenes, vídeos, u otras modalidades de información sin conocer el número de clases adecuado y sin tener que modificar la arquitectura del modelo? En general, los transformers con codificador orientados a tareas de clasificación, cuentan con el \gls{cls}, que en el caso de los \gls{vit} originales entregan a una red neuronal clásica, pues no deja de ser un vector $d_m-$dimensional. Al no conocer las clases ni cuántas hay, un posible enfoque es sustituir la red neuronal por un algoritmo de clasificación no supervisada. \\
 				
 				Uno de los más conocidos es el algoritmo $k-$medias \cite{kmeans} o $k-$means en inglés. Dado un número $k$ de clusters o clases, dicho algoritmo es capaz de clasificar una serie de $n$ elementos $\textbf{x}_i \in \mathbb{R}^d$ en $k$ clases sin conocimiento previo. Para ello, fija de manera aleatoria $k$ puntos $\boldsymbol{\mu}_i \in \mathbb{R}^d$ llamados centroides, que representan el centro de cada cluster. Durante cada iteración, se valora si algún elemento debe cambiar de cluster en función de su distancia a los centroides, y se recalcula la posición de cada uno de ellos. De manera formal, se realiza una partición del dataset $S$ en $k$ conjuntos de manera que 
 				$$
 				\bigcup_{i = 1}^k S_i = S, \, \bigcap_{i = 1}^k S_i = \varnothing, \text{ y } S_i \neq \varnothing
 				$$
-				con el fin de minimizar el WCSS, es decir, 
+				con el fin de minimizar el \gls{wcss}, es decir, 
 				$$
 				\argmin_{S_1, \ldots, S_k}\sum_{i = 1}^k\sum_{\textbf{x}\in S_i}\|\textbf{x}-\boldsymbol{\mu}_i\|^2. 
 				$$ 
@@ -1059,7 +1117,7 @@
 					\textbf{eliminar} $\forall i \, S_i = \varnothing$
 				\end{algorithm}
 				
-				Una característica que tienen en común estos dos algoritmos es que, si bien no necesitan de conocimiento previo para realizar la clasificación, sí necesitan conocer el número de clases. En el caso que no se tiene conocimiento suficiente sobre el dataset para poder determinar el valor óptimo de clases, se puede utilizar el conocido como método del codo o rodilla. Este método propone utilizar $k-$means para determinar el $k$ óptimo, tomando aquel que genere un punto que sería el codo en una gráfica que represente cada WCSS para cada $k$, que tendría forma de brazo \cite{elbow}, tal y como describe el \Cref{algo:codo}. \\
+				Una característica que tienen en común estos dos algoritmos es que, si bien no necesitan de conocimiento previo para realizar la clasificación, sí necesitan conocer el número de clases. En el caso que no se tiene conocimiento suficiente sobre el dataset para poder determinar el valor óptimo de clases, se puede utilizar el conocido como método del codo o rodilla. Este método propone utilizar $k-$means para determinar el $k$ óptimo, tomando aquel que genere un punto que sería el codo en una gráfica que represente cada \gls{wcss} para cada $k$, que tendría forma de brazo \cite{elbow}, tal y como describe el \Cref{algo:codo}. \\
 				
 				\begin{figure}[!h]
 					\centering
@@ -1087,7 +1145,7 @@
 				\end{algorithm}
 				
 				
-				La cuestión que queda por resolver es cómo ``calcular el codo''. Este punto se suele definir como el de mayor curvatura, por lo que si dada una serie de valores $\textbf{s}$ de WCSS, mediante una función $\mathcal{K}(k, y)$ se pudiese calcular la curvatura en ese punto, bastaría con tomar el $k$ que maximice $\mathcal{K}(k, y)$. Para realizar esta tarea se suele utilizar el llamado algoritmo \textit{kneedle}. Dicho nombre proviene del juego de palabras knee (rodilla) y needle (aguja), que en el título de la publicación original \cite{kneedle}, se compara con buscar una aguja en un pajar. Tal y como muestra el \Cref{algo:kneedle}, la idea es normalizar los valores, y tomar como punto de curvatura máxima aquel $x$ que maximiza $f(x) - x$. Se puede fijar un umbral para evitar máximos locales. 
+				La cuestión que queda por resolver es cómo ``calcular el codo''. Este punto se suele definir como el de mayor curvatura, por lo que si dada una serie de valores $\textbf{s}$ de \gls{wcss}, mediante una función $\mathcal{K}(k, y)$ se pudiese calcular la curvatura en ese punto, bastaría con tomar el $k$ que maximice $\mathcal{K}(k, y)$. Para realizar esta tarea se suele utilizar el llamado algoritmo \textit{kneedle}. Dicho nombre proviene del juego de palabras knee (rodilla) y needle (aguja), que en el título de la publicación original \cite{kneedle}, se compara con buscar una aguja en un pajar. Tal y como muestra el \Cref{algo:kneedle}, la idea es normalizar los valores, y tomar como punto de curvatura máxima aquel $x$ que maximiza $f(x) - x$. Se puede fijar un umbral para evitar máximos locales. 
 				
 				\begin{figure}[!h]
 					\centering
