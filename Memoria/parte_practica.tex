@@ -720,6 +720,8 @@
 					\label{tab:df_ejemplo}
 				\end{table}
 				
+				Para reescalar las imágenes se ha codificado la función \texttt{reescalar\_img}; para generar los archivos \gls{json} con las imágenes en Base64, la función \texttt{img\_json}; y para realizar las peticiones al modelo, la función \texttt{get\_embedding}. 
+				
 			\subsection{Clasificación no supervisada de embeddings}
 				
 				Con motivo de ilustrar la salida del transformer, lo ideal es mostrar los embeddings en el espacio, pues si ha sido capaz de detectar diferencias y similitudes entre las imágenes, estas deberán verse reflejadas también en los embeddings. Visualizar vectores de 1408 componentes en el plano o espacio no es posible ``directamente'', pero gracias a algoritmos como \gls{pca} o \gls{tsne}, esto se hace posible. De manera intuitiva, estos algoritmos se comportan como una aplicación $\mathbb{R}^{1408} \longrightarrow \mathbb{R}^2$, intentando perder la mínima cantidad de información al realizar este cambio de dimensiones. No se entrará en detalle del funcionamiento de los algoritmos, pues no influyen en el resultado, simplemente permiten visualizar la situación. En la \Cref{fig:embeddingsR2} se observa el resultado obtenido por ambos algoritmos, distinguiendo claras nubes de puntos. 
@@ -781,7 +783,7 @@
 				
 				\subsubsection{Índice rand ajustado}
 				
-					En el caso en el que se conocen las clases reales, una de las métricas más populares es el \gls{ari} \cite{ari}. Se supone que se dispone de dos particiones del dataset original, $\mathcal{C} = \{C_1, C_2, \ldots, C_r\}$ y $\mathcal{D} = \{D_1, D_2, \ldots, D_s\}$, donde una de ellas es la generada por el algoritmo, y la otra es la original. Con ayuda de cada uno de estos conjuntos se construye la llamada matriz de contingencia, donde la entrada $n_{ij}$ representa el valor de $|C_i \cap D_j|$. En la \Cref{fig:matrices_contingencia} se observan las matrices de contingencia para los clusters generados por los dos algoritmos elegidos. 
+					En el caso en el que se conocen las clases reales, una de las métricas más populares es el \gls{ari} \cite{ari}. Se supone que se dispone de dos particiones del dataset original, $\mathcal{C} = \{C_1, C_2, \ldots, C_r\}$ y $\mathcal{D} = \{D_1, D_2, \ldots, D_s\}$, donde una de ellas es la generada por el algoritmo, y la otra es la original. Con ayuda de cada uno de estos conjuntos se construye la llamada matriz de contingencia, donde la entrada $n_{ij}$ representa el valor de $|C_i \cap D_j|$. En la \Cref{fig:matrices_contingencia} se observan las matrices de contingencia para los clusters generados por los dos algoritmos elegidos. \\
 					
 					\begin{figure}[!h]
 						\centering
@@ -799,7 +801,7 @@
 						\item  $(u \in C_p \,\land\, v \not\in C_p) \,\land\, (u \in D_q \,\land\, v \not\in D_q)$
 					\end{itemize}
 					
-					A partir de estos casos obtenidos de las matrices de contingencia, se construyen las matrices de confusión que se observan en la \Cref{fig:matrices_confusion_transf}, y que representan la misma idea que en la \Cref{subsub:matriz_confusion}. Se desea que el valor en los elementos de la diagonal principal sea máximo, pues representa el número $A$ de acuerdos; y que sean mínimos el resto, pues representan el valor de desacuerdos $D$. 
+					A partir de estos casos obtenidos de las matrices de contingencia, se construyen las matrices de confusión que se observan en la \Cref{fig:matrices_confusion_transf}, y que representan la misma idea que en la \Cref{subsub:matriz_confusion}. Se desea que el valor en los elementos de la diagonal principal sea máximo, pues representa el número $A$ de acuerdos; y que sean mínimos el resto, pues representan el valor de desacuerdos $D$. \\
 					
 					\begin{figure}[!h]
 						\centering
@@ -871,12 +873,26 @@
 					 \end{gathered}
 					 $$
 					 
-					 El cómo de compactos son los clusters lo miden los $a_i$, mientras que la separación entre clusters lo miden los $b_i$. El valor de $\mathcal{S}$ varía entre $-1$ y 1, indicando los valores cercanos a 1 un clustering perfecto (puntos parecidos entre sí en un mismo cluster, y clusters separados), valores cercanos a $-1$ un mal clustering (parecería más razonable asignar algunos puntos a otros clusters), y valores cercanos a cero indican que no estaría claro a qué cluster deberían asignarse algunos puntos al no estar bien separados los clusters \cite{interpretacion_silhouette}. En la \Cref{fig:silhouette_kmeans} se muestra el cálculo del coeficiente de la silueta para el clustering realizado con $k-$means. Se obtiene un valor próximo a cero, indicando que el clustering no es bueno en cuanto a separación de los clusters. \\
+					 El cómo de compactos son los clusters lo miden los $a_i$, mientras que la separación entre clusters lo miden los $b_i$. El valor de $\mathcal{S}$ varía entre $-1$ y 1, indicando los valores cercanos a 1 un clustering perfecto (puntos parecidos entre sí en un mismo cluster, y clusters separados), valores cercanos a $-1$ un mal clustering (parecería más razonable asignar algunos puntos a otros clusters), y valores cercanos a cero indican que no estaría claro a qué cluster deberían asignarse algunos puntos al no estar bien separados los clusters \cite{interpretacion_silhouette}. \\
 					 
 					 \begin{figure}[!h]
 					 	\centering
-					 	\includegraphics[scale = .7]{silhouette_kmeans}
-					 	\caption{Coeficiente de la silueta para $k-$means}
-					 	\label{fig:silhouette_kmeans}
-					 \end{figure} 
+					 	\begin{subfigure}{.45\textwidth}
+					 		\centering
+					 		\includegraphics[width = \textwidth]{silhouette_kmeans}
+					 		\caption{Coeficiente de la silueta para $k-$means}
+					 		\label{fig:silhouette_kmeans}
+					 	\end{subfigure} 
+					 	\begin{subfigure}{.45\textwidth}
+					 		\centering
+					 		\includegraphics[width = \textwidth]{elbow_sil_kmeans}
+					 		\caption{Método del codo con el coeficiente de la silueta}
+					 		\label{fig:silhouette_elbow}
+					 	\end{subfigure} 
+					 	\caption{Coeficiente de la silueta}
+					 	\label{fig:silhouette}
+					 \end{figure}
+					 
+					 En la \Cref{fig:silhouette_kmeans} se muestra el cálculo del coeficiente de la silueta para el clustering realizado con $k-$means. Se obtiene un valor próximo a cero ($0.11$), indicando que el clustering no es bueno en cuanto a separación de los clusters. De aquí no se deduce que el clustering sea malo, simplemente se deduce que los clusters no están lo suficientemente separados para que esta métrica lo considere un buen clustering. Al aplicar el método del codo con el coeficiente de silueta como métrica, tal y como muestra la \Cref{fig:silhouette_elbow} sugiere reducir el número de clusters a dos para evitar esta penalización por clusters muy juntos, pero se sigue obteniendo una puntuación baja al no tener ahora elementos tan similares dentro de cada cluster. \\
+					 
 				
