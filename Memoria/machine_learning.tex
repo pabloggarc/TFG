@@ -1,23 +1,5 @@
 \chapter{Aprendizaje automático y profundo}
 
-	\section{Breve historia de la Inteligencia Artificial}
-	
-		Ya desde hace varias décadas, se planteaba la posibilidad de que las máquinas fuesen capaces de realizar tareas diferentes a meros cálculos. La persona que realizó dicha afirmación fue la matemática Ada Lovelace, que en 1842 programó el considerado primer algoritmo. No fue hasta bastantes años más tarde en 1956 cuando se celebra la Conferencia de Darmouth por los hoy considerados padres de la \gls{ia}, en la que se propone estudiar la Inteligencia Artificial como una ciencia más. En dicha época existían dos corrientes, la simbólica y la conexionista. \\
-		
-		La primera de ellas se ocupaba de resolver problemas de toma de decisiones y de obtención de conclusiones. Fueron populares los algoritmos de búsqueda y los sistemas expertos. Por otro lado, la corriente conexionista trataba de simular el comportamiento de las neuronas humanas de manera artificial, haciendo que estas neuronas artificiales pudiesen aprender. De aquí surgía el perceptrón que también fue presentado en esta conferencia. Más tarde, entre 1970 y 1980, con el libro de Minsky sobre los perceptrones y sus limitaciones, investigaciones en falso, y bajos recursos, decae el interés y la investigación de la \gls{ia}. Sin embargo, esta etapa vacía finaliza con la llegada del algoritmo de retropropagación que permitía entrenar redes neuronales multicapa, trayendo consigo infinidad de nuevos proyectos. \\
-		
-		Años después, avanzados los 2000, se empieza a ver lo poderosos que pueden llegar a ser ciertos modelos de \gls{ia} al vencer a campeones del mundo en juegos, como a Kasparov en el ajedrez o a Jie en Go. Con la llegada de más y mejores recursos y financiación, hacia 2010 se populariza el uso de redes neuronales para trabajar con imágenes, resolver problemas de clasificación, etc \cite{historiaIA}. \\
-		
-		Hace diez años surge uno de los modelos de \gls{ia} con el que se inicia el paradigma que más popularidad está tomando en la actualidad. Este es el de la \gls{ia} generativa. En 2014 Ian Goodfellow presenta las redes \gls{gan} con las que crear nuevos datos, por ejemplo rostros humanos que no existen en realidad, tal y como se muestra en \url{https://thispersondoesnotexist.com/}. Gracias a la \gls{ia} generativa combinada con modelos de lenguajes, han ido surgiendo en los últimos años herramientas muy poderosas como ChatGPT con la que entablar cualquier tipo de conversación, solicitar información o ayuda para resolver cualquier problema; DALL-E o MidJourney a las que solicitar crear una imagen mediante una descripción por texto, o incluso un vídeo con Sora. 
-	
-	\section{Tipos de aprendizaje y problemas}
-	
-		Al intentar resolver un problema relacionado con el aprendizaje automático, normalmente el primer paso es elegir un modelo que se adapte correctamente al dominio y tipo del problema. De manera ingenua, se puede entender como una especie de caja negra a la que dada una serie de entradas devuelve una serie de salidas que dependen de dichas entradas, y una serie de operaciones con respecto a un conjunto de parámetros $\Theta$. Por tanto, para obtener las salidas deseadas para una serie de entradas, el trabajo es encontrar los parámetros óptimos $\Theta^*$ que produzcan dichas salidas. Esto se logra mediante un algoritmo de aprendizaje o entrenamiento, siendo el segundo paso elegir uno acorde al modelo. Normalmente se dispone de dos tipos de aprendizaje, aprendizaje supervisado y aprendizaje no supervisado. Como tercer paso, se debe de medir de alguna manera cómo de bien o mal se está comportando el modelo y el algoritmo, tal y como se estudiará más adelante \cite{Szeliski}. \\
-		
-		En los problemas de aprendizaje supervisados, se dispone de un conjunto de datos o \textit{dataset}, que contiene los valores de salida deseados para diferentes valores de entrada, normalmente recogiendo situaciones del pasado para poder extrapolar este conocimiento a situaciones del futuro. Los principales problemas que de aprendizaje supervisado son los problemas de clasificación y de regresión. En los problemas de clasificación, se dispone de una serie de clases $C_1, C_2, \hdots, C_n$, y para una serie de valores de entrada $x_1, x_2, \hdots, x_m$, debe decidirse a qué clase pertenece dicha entrada. Un ejemplo sería decidir si un paciente va a sufrir un cierto tipo de cáncer dada su edad, peso, y otras constantes vitales. Algunos de los modelos más populares para llevar a cabo este tipo de tareas son árboles de decisión, máquinas de soporte vectorial, Naïve Bayes, $k-$vecinos, y redes neuronales; siendo estas últimas objeto de estudio en este trabajo. Otro tipo de problema popular a la hora de disponer de datos etiquetados, son los problemas de regresión, que se diferencian principalmente de la clasificación en que en este caso, los valores no son clases (valores discretos) sino valores continuos. Para resolver este tipo de problemas se suelen utilizar regresiones lineales y no lineales (exponencial, polinómica, etc), o también se pueden adaptar modelos utilizados en problemas de clasificación, como las redes neuronales. Un ejemplo de un problema de regresión sería predecir las horas que dormirá una persona dada su edad, horas trabajadas en el día, etc. \\
-		
-		Por otro lado, en los problemas de aprendizaje no supervisado no se dispone de los valores de salida esperados para una cierta observación (justo al contrario que en el caso supervisado), pues será trabajo del algoritmo encontrar relaciones y patrones entre los datos proporcionados. En este tipo de aprendizaje también se trata el problema de clasificación, sin embargo, es más común llamarlo clustering o segmentación, pues a priori no se conoce el número de clases y cuáles son, es el algoritmo el que deberá encontrar relaciones entre los datos para determinar esto. Algoritmos populares para realizar esta tarea son $k-$medias, \gls{cja}, \gls{gmm}, y \gls{dbscan}. Un ejemplo sencillo de este problema es detectar las diferentes regiones y objetos representados en una imagen, pues inicialmente no se conoce el número de regiones u objetos, y deben detectarse todas, asignando cada píxel de la imagen a cada una de ellas. 
-
 	\section{Perceptrón}
 	
 		Ya en el año 1958, el psicólogo Frank Rosenblatt propuso un modelo llamado perceptrón el cual estaba basado en el comportamiento y funcionamiento de las neuronas de un humano, y que podía aprender ponderando cada coeficiente de entrada a la neurona \cite{historiaIA}. Hoy en día, tal y como se mostrará en esta sección, el perceptrón es la unidad fundamental de muchos modelos de \textit{machine learing} y \textit{deep learning}. \\
@@ -791,7 +773,11 @@
 				
 				$$
 				\begin{gathered}
-					\text{maxpooling}\{x_1, x_2, \hdots, x_n\} = \max\{x_1, x_2, \hdots, x_n\}\\
+					f(x_1, x_2, \hdots, x_n) = \text{maxpooling}\{x_1, x_2, \hdots, x_n\} = \max\{x_1, x_2, \hdots, x_n\}\\
+					\frac{\partial f}{\partial x_i} = \begin{cases}
+						1 & \text{si } x_i = f(x_1, x_2, \hdots, x_n)\\
+						0 & \text{si } x_i \neq f(x_1, x_2, \hdots, x_n)
+					\end{cases}\\
 					\text{maxpooling}\left(\begin{array}{cc|cc}
 						1 & 2 & 3 & 4\\
 						5 & \boxed{6} & 7 & \boxed{8}\\\hline
@@ -801,7 +787,8 @@
 						6 & 8\\
 						14 & 16
 					\end{pmatrix}\\\\
-					\text{avgpooling}\{x_1, x_2, \hdots, x_n\} = \frac{x_1 + x_2 + \hdots + x_n}{n}\\
+					g(x_1, x_2, \hdots, x_n) = \text{avgpooling}\{x_1, x_2, \hdots, x_n\} = \frac{x_1 + x_2 + \hdots + x_n}{n}\\
+					\frac{\partial g}{\partial x_i} = \frac{1}{n}\\
 					\text{avgpooling}\left(\begin{array}{cc|cc}
 						1 & 2 & 3 & 4\\
 						5 & 6 & 7 & 8\\\hline
@@ -840,7 +827,7 @@
 			
 			Por otro lado, supóngase que dado un texto que describa una imagen, por ejemplo ``\textit{Un pastor alemán corriendo en un bosque}'', se quiere obtener la imagen del dataset que se adapta mejor a esa descripción, o se quiere obtener cómo de similares son dos imágenes del dataset, o se quiere extraer el texto que contiene una imagen, o se quiere comprobar cómo de bien se adapta una descripción de una imagen a esta. Todo este tipo de tareas y similares, serían imposibles de realizar mediante redes convolucionales, ya que no están enfocadas a trabajar con texto, y es aquí donde entran este tipo de modelos llamados transformers. Se presentaron en 2017 en un artículo escrito por investigadores de Google (con un nombre bastante acertado, \textit{Attention is all you need} \cite{attention}) como un modelo sustituto de las redes neuronales recurrentes debido al problema que tienen al intentar recordar información de instantes alejados. La idea original era utilizarlos para problemas de \gls{nlp}, como por ejemplo la traducción de textos, pero se pueden aplicar a una diversidad de problemas. Basándose en dicho artículo, se presenta una breve explicación de cómo funciona la arquitectura de un transformer. \\
 			
-			\begin{figure}
+			\begin{figure}[!h]
 				\centering
 				\includegraphics[scale = .5]{transformer}
 				\caption{Arquitectura de un transformer codificador-decodificador \cite{attention}}
@@ -988,7 +975,7 @@
 		
 			En la sección anterior se presentaban los transformers como un modelo capaz de mejorar el resultado que se puede obtener con redes convolucionales, además de añadir la capacidad de poder trabajar con texto. Hasta este momento se ha demostrado cómo mediante la arquitectura y algoritmos descritos son capaces de trabajar con textos, siendo ahora las principales preguntas, ¿cómo puede un transformer procesar una imagen? ¿Será necesario variar su arquitectura?\\
 			
-			En 2021, Google vuelve a publicar otro artículo \cite{vit} sobre transformers donde plantean la posibilidad de utilizar este tipo de modelo en tareas relacionadas con imágenes al haber obtenido resultados tan positivos con textos. Al igual que en el artículo donde se presentaban los transformers por primera vez, este también cuenta con un título que resume la solución al problema para presentar los transformers de visión o \gls{vit}: ``\textit{Una imagen son $16 \times 16$ palabras}''. \\
+			En 2021, Google vuelve a publicar otro artículo \cite{vit} sobre transformers, donde plantean la posibilidad de utilizar este tipo de modelo en tareas relacionadas con imágenes al haber obtenido resultados tan positivos con textos. Al igual que en el artículo donde se presentaban los transformers por primera vez, este también cuenta con un título que resume la solución al problema para presentar los transformers de visión o \gls{vit}: ``\textit{Una imagen son $16 \times 16$ palabras}''. \\
 			
 			\begin{figure}[!h]
 				\centering
@@ -1003,7 +990,7 @@
 			
 			La siguiente de las diferencias reside en el número de embeddings con los que trabaja un \gls{vit}. En el transformer clásico si se contaba con $n$ tokens, entonces la matriz de embeddings tenía dimensiones $n \times d_m$, mientras que con un \gls{vit}, es de $(n + 1) \times d_m$. Los transformers de visión trabajan con un token adicional comúnmente llamado \gls{cls}, que codifica información del resto de embeddings, es decir, codifica información de la imagen. Este vector permite la clasificación de las imágenes, pues con un \gls{vit} debidamente entrenado si recibe dos imágenes con cierta relación, entonces sus \gls{cls} deberían ser similares. En general, la salida de este modelo es este vector, para después, utilizarlo como la entrada de una red neuronal para poder clasificarlo. Aquí se observa que los \gls{vit} solo constan de la parte del codificador. 
 			
-		\section{Transformers multimodales}
+		\section{Transformers multimodales}\label{sec:transformers_multimodales}
 		
 			En las secciones anteriores se ha demostrado cómo es posible la codificación y clasificación de texto e imágenes (en el caso de texto también generación), hasta el momento sin aparente mejora frente a los tipos de redes neuronales presentadas, pues no se ha respondido la cuestión de cómo trabajar con imágenes y textos simultáneamente, cómo modificar la clasificación de las imágenes o textos sin modificar la arquitectura (una red neuronal clásica clasifica en función del \gls{cls}), cómo realizar la clasificación sin conocer el número de clases, cómo realizar la clasificación sin contar con un dataset etiquetado, y una larga lista de tareas aparentemente complicadas y sin relación entre sí pero que tienen una solución común, los transformers multimodales. \\
 			
@@ -1040,7 +1027,7 @@
 			\cos(\theta) = \frac{\textbf{a} \cdot \textbf{b}}{\|\textbf{a}\|\cdot\|\textbf{b}\|}
 			$$
 			
-			Gracias a esta idea de tener conceptos en diferentes modalidades representados en un mismo espacio, se pueden realizar tareas muy útiles como la búsqueda de una imagen dada una descripción textual, la búsqueda de la imagen más similar a otra, la búsqueda del texto más similar a otro, etc. Todos estos problemas son en realidad el mismo, pues todos los elementos quedan representados como un vector y basta con comparar los productos escalares entre cada par de embeddings, aplicar una función softmax, y elegir el mayor de todos, eligiendo así el embedding que tiene una dirección más similar a la dada. En la \Cref{fig:textos_imagenes} se visualiza cómo mediante esta idea es posible asignar a cada una de las $n$ imágenes, un conjunto de $k$ descripciones, donde $n \geq k$. 
+			Gracias a esta idea de tener conceptos en diferentes modalidades representados en un mismo espacio, se pueden realizar tareas muy útiles como la búsqueda de una imagen dada una descripción textual, la búsqueda de la imagen más similar a otra, la búsqueda del texto más similar a otro, etc. Todos estos problemas son en realidad el mismo, pues todos los elementos quedan representados como un vector y basta con comparar los cosenos entre cada par de embeddings, y elegir el mayor de todos, eligiendo así el embedding que tiene una dirección más similar a la dada. En la \Cref{fig:textos_imagenes} se visualiza cómo mediante esta idea es posible asignar a cada una de las $n$ imágenes, un conjunto de $k$ descripciones, donde $n \geq k$. 
 			
 			\begin{figure}[!h]
 				\centering
@@ -1073,7 +1060,7 @@
 				
 				Este proceso se describe en el \Cref{algo:kmeans}. El criterio de parada no es único, también se puede elegir un umbral $\varepsilon$. Dicho umbral podría ser un número máximo de iteraciones, una distancia de cambio de los centroides, etc. 
 				
-				\begin{algorithm}
+				\begin{algorithm}[!h]
 					\SetProgSty{texttt}\DontPrintSemicolon
 					
 					\caption{$k-$means}
@@ -1114,16 +1101,15 @@
 						$\forall(p,q)\,D_{pq} \gets \text{dist}(S_p, S_q)$\\
 						$l, m = \displaystyle\argmin_{a, b}D_{ab}$\\
 						$S_l \gets S_l \cup S_m$\\
-						$S_m \gets \varnothing$
+						\textbf{eliminar} $S_m$
 					}
-					\textbf{eliminar} $\forall i \, S_i = \varnothing$
 				\end{algorithm}
 				
 				Una característica que tienen en común estos dos algoritmos es que, si bien no necesitan de conocimiento previo para realizar la clasificación, sí necesitan conocer el número de clases. En el caso que no se tiene conocimiento suficiente sobre el dataset para poder determinar el valor óptimo de clases, se puede utilizar el conocido como método del codo o rodilla. Este método propone utilizar $k-$means para determinar el $k$ óptimo, tomando aquel que genere un punto que sería el codo en una gráfica que represente cada \gls{wcss} para cada $k$, que tendría forma de brazo \cite{elbow}, tal y como describe el \Cref{algo:codo}. \\
 				
 				\begin{figure}[!h]
 					\centering
-					\includegraphics[scale = .4]{elbow_ejemplo}
+					\includegraphics[scale = .35]{elbow_ejemplo}
 					\caption{$k$ óptimo mediante el método del codo}
 					\label{fig:ejemplo_codo}
 				\end{figure}

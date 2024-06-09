@@ -1,10 +1,8 @@
 \chapter{Optimización del proceso de valoración de puntos de interés}
 
-	Después de analizar diversos modelos de aprendizaje automático, junto con sus características y los algoritmos asociados, se ofrece un ejemplo práctico que ilustra la aplicación de estos modelos para abordar un problema de la vida real y buscar una solución adecuada. Para ello se presenta la compañía Niantic, fundada en 2010 como parte de una startup de Google, que se especializa en el desarrollo de juegos para dispositivos móviles que utilizan \gls{ar}. Algunas de sus creaciones más destacadas han sido los juegos Ingress y Pokémon GO. \\
+	Después de analizar diversos modelos de aprendizaje automático, sus características y algoritmos, se ofrece un ejemplo práctico que ilustra la aplicación de estos modelos para abordar un problema de la vida real y buscar una solución adecuada. Para ello se propone tratar de optimizar el proceso de valoración de puntos de interés de Wayfarer, tal y como se comentaba en la introducción. \\
 	
-	Una de las herramientas creadas por esta empresa es Niantic Lightship, que permite a desarrolladores Unity integrar realidad aumentada y mapas con puntos de interés basados en la ubicación real del jugador. Dado que para Niantic resultaba inviable marcar dichos puntos de interés alrededor de todo el mundo, creó Niantic Wayfarer. En esta herramienta, usuarios experimentados de sus juegos pueden hacer propuestas de puntos de interés (llamados Wayspots) para que de manera colaborativa, otros usuarios las valoren. Sin embargo, tras varios años desde su lanzamiento, debido al gran número de propuestas y al reducido número de valoradores, la comunidad notifica largos tiempos de espera en el proceso de valoración de las propuestas. Por este motivo, se propone en este proyecto realizar una primera aproximación a la automatización de este proceso mediante las técnicas de visión e inteligencia artificial presentadas en el marco teórico. \\
-	
-	La valoración de un Wayspot en Wayfarer consta de diferentes etapas. En primer lugar se muestra un título y descripción del Wayspot junto con la imagen que aparecería en los juegos. Además aparece una imagen secundaria con una visión desde otra perspectiva, junto con otro texto que ayudarían al valorador a ubicar la propuesta, tal y como se muestra en la \Cref{fig:info_propuesta}. También aparece un breve cuestionario con una serie de preguntas genéricas que ayudan a determinar si aquello que se solicita cumple una serie de criterios (\Cref{fig:preguntas}). Además, se muestra un mapa que contiene los Wayspots cercanos para verificar que no exista ya, y comprobar con Street View la ubicación sugerida (\Cref{fig:mapa}). Finalmente, se pide clasificar la propuesta en una o varias categorías. 
+	La valoración de un Wayspot (punto de interés) en Wayfarer consta de diferentes etapas. En primer lugar se muestra un título y descripción del Wayspot junto con la imagen que aparecería en los juegos. Además, aparece una imagen secundaria con una visión desde otra perspectiva, junto con otro texto que ayudarían al valorador a ubicar la propuesta, tal y como se muestra en la \Cref{fig:info_propuesta}. También aparece un breve cuestionario con una serie de preguntas genéricas que ayudan a determinar si aquello que se solicita cumple una serie de criterios (\Cref{fig:preguntas}). También se muestra un mapa que contiene los Wayspots cercanos para verificar que no exista ya, y comprobar con Street View la ubicación sugerida (\Cref{fig:mapa}). Finalmente, se pide clasificar la propuesta en una o varias categorías. 
 	
 	\begin{figure}[!h]
 		\centering
@@ -90,9 +88,11 @@
 			La mayoría de algoritmos de aprendizaje automático de TensorFlow tienen implementada su versión paralela, de manera que si se cuenta con una \gls{gpu} compatible con \gls{cuda}, TensorFlow la utilizará para ahorrar el mayor tiempo posible durante los entrenamientos de los modelos. En este caso se dispone de un equipo que cuenta con un procesador Intel Core i7-8700, una \gls{gpu} NVIDIA GeForce GTX 1060 6GB, y 32 GB de RAM; lo que hace posible la ejecución concurrente de dichos algoritmos. Esta tarjeta gráfica cuenta con 1280 \gls{sp} o núcleos \gls{cuda} repartidos en 10 \gls{sm}. \\
 			
 			Si bien el trabajo de indicar a TensorFlow que haga uso de \gls{cuda} es sencillo, no es tan trivial la configuración de drivers de NVIDIA, instalación de \gls{cuda}, versión de Python, versión de TensorFlow, versión de sistema operativo, etc. Con el frecuente cambio de versiones de cada componente, se presentan nuevas incompatibilidades entre ellos, haciendo que guías oficiales fallen y que el proceso de configuración inicial sea complicado en sistemas operativos como Windows 11. La manera más sencilla actualmente de realizar una instalación de \gls{cuda} y TensorFlow es sobre el sistema operativo Ubuntu en su versión 22.04 LTS. Para instalar y configurar el resto de componentes se ha hecho uso de LambdaStack (\url{https://lambdalabs.com/lambda-stack-deep-learning-software}). Mediante el uso del comando de terminal
-			\begin{verbatim}
-				wget -nv -O- https://lambdalabs.com/install-lambda-stack.sh | sh -
-			\end{verbatim}
+			\begin{center}
+				\begin{BVerbatim}[tabsize = 0]
+					wget -nv -O- https://lambdalabs.com/install-lambda-stack.sh | sh -
+				\end{BVerbatim}
+			\end{center}
 			automáticamente lanza LambdaStack que se encarga de instalar las versiones de Python y sus librerías (TensorFlow y PyTorch entre otras) adecuadas, los drivers de NVIDIA correctos, componentes de \gls{cuda}, realiza las configuraciones de variables de entorno, etc. En general, deja el entorno de Ubuntu configurado para poder trabajar en cualquier proyecto de inteligencia artificial en el que se quiera hacer uso de una \gls{gpu} de NVIDIA. También cuentan con una imagen de Docker que ofrece una experiencia similar. El uso de este servicio es completamente gratuito, y es el que utiliza la compañía que lo gestiona en sus servicios de cloud computing (que sí son de pago). \\
 			
 			Para probar la eficacia del uso de \gls{cuda} para proyectos de esta índole, se ha seleccionado un modelo de los que se presentan en la \Cref{subsec:crear_cnn} (entrenamiento de una red convolucional desde cero), y se ha lanzado midiendo el tiempo, el mismo entrenamiento pero con diferente número de épocas sobre \gls{cpu} y \gls{gpu}. La \Cref{fig:comparativa_cuda} evidencia cómo el entrenamiento en la \gls{gpu} llega a ser hasta cinco veces más rápido que en la \gls{cpu}. Todos los entrenamientos de la \Cref{subsec:crear_cnn} han sido realizados sobre la \gls{gpu}. 
@@ -657,7 +657,7 @@
 			\begin{figure}[!h]
 				\centering
 				\includegraphics{diagrama_embeddings}
-				\caption{Embeddings de un transformer multimodal}
+				\caption{Concepto de embeddings de un transformer multimodal}
 				\label{fig:diagrama_embeddings}
 			\end{figure}
 			
@@ -710,7 +710,7 @@
 				\left\lfloor\frac{120\text{ llamadas}}{60\text{ segundos}}\right\rfloor = 2 \text{ llamadas/segundo}
 				$$
 				
-				El tiempo que transcurre desde que se realiza una llamada hasta que se obtiene la respuesta oscila entre $0.5$ y 1 segundos, por lo que el pausando el proceso $0.5$ segundos tras cada llamada se evita superar el límite fijado. Al superar el límite, se recibe el código \texttt{HTTP 429}. Finalmente, se almacenan todos los ficheros \gls{json} de las respuestas en disco, evitando así consumir  créditos y ahorrar tiempo en futuras ejecuciones con el mismo dataset. Una vez se han calculado el embedding correspondiente a cada imagen del dataset, es de utilidad crear un dataframe de Pandas que ayude a estructurar toda la información relativa a cada imagen obtenida hasta el momento para trabajar de manera más cómoda. En la \Cref{tab:df_ejemplo} se muestra un extracto de este dataframe. 
+				El tiempo que transcurre desde que se realiza una llamada hasta que se obtiene la respuesta oscila entre $0.5$ y 1 segundos, por lo que el pausando el proceso $0.5$ segundos tras cada llamada se evita superar el límite fijado. Al superar el límite, se recibe el código \texttt{HTTP 429}. Finalmente, se almacenan todos los ficheros \gls{json} de las respuestas en disco, evitando así consumir  créditos y ahorrar tiempo en futuras ejecuciones con el mismo dataset. Una vez se han calculado el embedding correspondiente a cada imagen del dataset, es de utilidad crear un dataframe de Pandas que ayude a estructurar toda la información relativa a cada imagen obtenida hasta el momento para trabajar de manera más cómoda. En la \Cref{tab:df_ejemplo} se muestra un extracto de este dataframe. Durante la finalización del proyecto, se descubrió que por error humano se introdujeron algunas imágenes duplicadas en el dataset utilizado para trabajar con el transformer. Para eliminarlas del dataframe y evitar ``ensuciar'' los resultados, se introduce una columna que es el cálculo del hash SHA$-256$, y se eliminan las filas que tengan duplicada dicha columna. Una vez eliminados los elementos duplicados, se elimina la columna pues no será de más utilidad. 
 				
 				\begin{table}[!h]
 					\scriptsize
@@ -733,11 +733,11 @@
 					\label{fig:embeddingsR2}
 				\end{figure}
 				
-				Es en este momento cuando se puede lanzar un algoritmo de clasificación no supervisada como $k-$medias o el de clustering jerárquico aglomerativo para clasificar los embeddings en $k$ clases sin necesidad de tener otro dataset de entrenamiento. En este caso mediante el conocimiento del dataset se sabe que $k$ debe ser igual a 5. Por el contrario, si se dispone de millones de imágenes, no es viable revisar una a una para determinar el valor de $k$. Para resolver este problema, se puede utilizar el método del codo, explicado en el marco teórico. Tal y como se observa en la \Cref{fig:elbow}, se obtiene $k = 5$, de manera idéntica a lo que se conocía mediante la experiencia en el dataset. \\
+				Es en este momento cuando se puede lanzar un algoritmo de clasificación no supervisada como $k-$medias o el de clustering jerárquico aglomerativo para clasificar los embeddings en $k$ clases sin necesidad de tener otro dataset de entrenamiento. En este caso, mediante el conocimiento del dataset se sabe que $k$ debe ser igual a 5. Por el contrario, si se dispone de millones de imágenes, no es viable revisar una a una para determinar el valor de $k$. Para resolver este problema, se puede utilizar el método del codo, explicado en el marco teórico. Tal y como se observa en la \Cref{fig:elbow}, se obtiene $k = 5$, de manera idéntica a lo que se conocía mediante la experiencia en el dataset. \\
 				
 				\begin{figure}[!h]
 					\centering
-					\includegraphics[scale = .45]{elbow_kmeans}
+					\includegraphics[scale = .5]{elbow_kmeans}
 					\caption{Cálculo del $k$ óptimo mediante el método del codo}
 					\label{fig:elbow}
 				\end{figure} 
@@ -822,7 +822,7 @@
 					\mathcal{R}_{A_I} = \frac{\mathcal{R}_{I} - E[\mathcal{R}_I]}{\max\{\mathcal{R}_I\} - E[\mathcal{R}_I]} = \frac{\displaystyle\sum_{i = 1}^r\sum_{j = 1}^s\binom{n_{ij}}{2} - \binom{n}{2}^{-1}\sum_{i = 1}^r\binom{n_{i\cdot}}{2}\sum_{j = 1}^s\binom{n_{\cdot j}}{2}}{\displaystyle\frac{1}{2}\left(\sum_{i = 1}^r \binom{n_{i\cdot}}{2} + \sum_{j = 1}^s \binom{n_{\cdot j}}{2}\right) - \binom{n}{2}^{-1}\sum_{i = 1}^r\binom{n_{i\cdot}}{2}\sum_{j = 1}^s\binom{n_{\cdot j}}{2}}
 					$$
 					
-					Valores próximos a 1 indican un buen clustering, cercanos a 0 similar a hacerlo de manera aleatoria, y cercanos a $-1$ (en general menor que cero) peor que de manera aleatoria. Para la clasificación realizada con $k-$means se obtiene un \gls{ari} de $0.943$, y con \gls{cja} $0.952$. Ambos resultados son muy adecuados. 
+					Valores próximos a 1 indican un buen clustering, cercanos a 0 similar a hacerlo de manera aleatoria, y cercanos a $-1$ (en general menor que cero) peor que de manera aleatoria. Para la clasificación realizada con $k-$means se obtiene un \gls{ari} de $0.944$, y con \gls{cja} $0.953$. Ambos resultados son muy adecuados. 
 					
 				\subsubsection{Homogeneidad, completitud, y $V-$measure}
 				
@@ -853,13 +853,13 @@
 					\end{aligned}
 					$$
 					
-					Para los algoritmos de clustering presentados, se obtienen unos valores $(h, c, V)$ adecuados. En el caso de $k-$means se obtiene $(0.923, 0.924, 0.924)$, y para \gls{cja} $(0.938, 0.937, 0.937)$. La $V-$measure se calcula de la siguiente manera. 
+					Para los algoritmos de clustering presentados, se obtienen unos valores $(h, c, V)$ adecuados. En el caso de $k-$means se obtiene $(0.929, 0.934, 0.932)$, y para \gls{cja} $(0.937, 0.938, 0.938)$. La $V-$measure se calcula de la siguiente manera. 
 					
 					$$
 					V = \frac{2hc}{h + c}
 					$$
 					
-					No es recomendable utilizar esta métrica de manera exclusiva en casos con pocas observaciones (menos de 1000) o un número elevado de clusters (más de 10). En dichos casos es recomendable respaldarla con otras como el \gls{ari}. En este caso, se ve como ambas indican un buen clustering.
+					No es recomendable utilizar esta métrica de manera exclusiva en casos con pocas observaciones (menos de 1000) o un número elevado de clusters (más de 10). En dichos casos es recomendable respaldarla con otras como el \gls{ari}. En este caso, se ve cómo ambas indican un buen clustering.
 					
 				\subsubsection{Coeficiente de la silueta}
 				
@@ -893,6 +893,73 @@
 					 	\label{fig:silhouette}
 					 \end{figure}
 					 
-					 En la \Cref{fig:silhouette_kmeans} se muestra el cálculo del coeficiente de la silueta para el clustering realizado con $k-$means. Se obtiene un valor próximo a cero ($0.11$), indicando que el clustering no es bueno en cuanto a separación de los clusters. De aquí no se deduce que el clustering sea malo, simplemente se deduce que los clusters no están lo suficientemente separados para que esta métrica lo considere un buen clustering. Al aplicar el método del codo con el coeficiente de silueta como métrica, tal y como muestra la \Cref{fig:silhouette_elbow} sugiere reducir el número de clusters a dos para evitar esta penalización por clusters muy juntos, pero se sigue obteniendo una puntuación baja al no tener ahora elementos tan similares dentro de cada cluster. \\
+					 En la \Cref{fig:silhouette_kmeans} se muestra el cálculo del coeficiente de la silueta para el clustering realizado con $k-$means. Se obtiene un valor próximo a $0.1$, indicando que el clustering no es bueno en cuanto a separación de los clusters. De aquí no se deduce que el clustering sea malo, simplemente se deduce que los clusters no están lo suficientemente separados para que esta métrica lo considere un buen clustering. Al aplicar el método del codo con el coeficiente de silueta como métrica, tal y como muestra la \Cref{fig:silhouette_elbow} sugiere reducir el número de clusters a cuatro para evitar esta penalización por clusters muy juntos, pero se sigue obteniendo una puntuación baja al no tener ahora elementos tan similares dentro de cada cluster. \\
+					 
+ 	\section{Búsqueda semántica de imágenes}
+	 	
+ 		Una búsqueda semántica de imágenes consiste en encontrar imágenes dentro de un conjunto, en base a una descripción textual de estas. Aunque este no es uno de los aspectos a resolver para directamente optimizar el proceso de valoración de puntos de interés, esta funcionalidad podría ser útil para administradores y desarrolladores de la plataforma, o podría ofrecerse a los usuarios para poder buscar y navegar otros puntos de interés que visitar. Disponiendo de un transformer multimodal, es de interés demostrar que esta es otra de las aplicaciones que tiene. Como ejemplo, se van a tratar de encontrar las nueve imágenes que mejor se adecuen a cada uno de los siguientes textos. 
+ 		
+ 		\begin{itemize}
+ 			\item Parque infantil
+ 			\item Marcador de ruta
+ 			\item Cartel informativo
+ 			\item Fuentes, piscina, y elementos de agua
+ 			\item Murales, grafitis, dibujos, y arte
+ 		\end{itemize}
+ 		
+ 		Para poder comparar imágenes con textos, se necesita representar ambas informaciones en un espacio común donde tenga sentido hacer comparaciones entre estos. Para ello, se van a calcular los $\textbf{t}_i$ que serán los embeddings de cada uno de los textos en inglés, y se compararán con los $\textbf{p}_j$, que son los embeddings de cada una de las imágenes (calculados en las secciones previas). Una vez calculados todos los embeddings, se comparan tal y como se explicó en la \Cref{sec:transformers_multimodales}, calculando el coseno del ángulo que forman ambos embeddings. Cuanto más cercano a uno sea, más similares son los embeddings. Para realizar esto, al dataframe se añade una columna por cada uno de los textos, que contienen el valor de $\cos(\theta_k)$, donde $\theta_k = \widehat{\textbf{t}_i\textbf{p}_j}$. Ordenando el dataframe por cada una de estas columnas de manera descendente, se obtienen los siguientes grupos de imágenes. \\
+ 		
+ 		\begin{figure}[!h]
+ 			\centering
+ 			\includegraphics[width = .3\textwidth]{busqueda_parque}\hfill
+ 			\includegraphics[width = .3\textwidth]{busqueda_marcadores}\hfill
+ 			\includegraphics[width = .3\textwidth]{busqueda_carteles}\vspace{.7cm}
+ 			\includegraphics[width = .3\textwidth]{busqueda_agua}\hspace{.7cm}
+ 			\includegraphics[width = .3\textwidth]{busqueda_arte}
+ 			\caption{Búsqueda semántica de imágenes mediante texto}
+ 			\label{fig:busqueda_semantica}
+ 		\end{figure} 
+ 		
+ 		Se observa que el resultado es adecuado. En el caso de parques infantiles, carteles, y murales, se han obtenido imágenes que corresponden con lo que los textos indicaban. En la caso de los marcadores de ruta, se han obtenido los hitos del Camino de Santiago, cosa que no es incorrecta, pues se pueden considerar un subconjunto de estos. Lo que más llama la atención es el cartel que aparece para el caso de las fuentes. A primera vista podría parecer erróneo, pero al observar la imagen con mayor detalle (\Cref{fig:texto_embedding}), el título del cartel dice: ``\textit{Ruta de las fuentes de Montemayor y Fernán Núñez}''. El transformer ha sido capaz de interpretar el texto, y al aparecer en el título es posible que lo haya considerado importante, contribuyendo de manera significativa en el embedding de la imagen. \\
+ 		
+ 		\begin{figure}[!h]
+ 			\centering
+ 			\includegraphics[scale = .5]{cartel_busqueda}
+ 			\caption{Contribución del texto en una imagen a su embedding}
+ 			\label{fig:texto_embedding}
+ 		\end{figure} 
+ 		
+ 		El motivo de traducir los textos a inglés, es que en la documentación del modelo que se viene usando en este proyecto, indica que está preparado para recibir textos únicamente en inglés. Esto no sería un problema a la hora de llevar el proyecto a algo real, pues existen otros transformers especializados en traducciones. Por otro lado, tras realizar alguna prueba con los mismos textos en castellano, y observando el caso de la \Cref{fig:texto_embedding}, es probable que el corpus que utilizó Google para entrenar el transformer, contuviera información en castellano pero en menor medida, siendo su efectividad menor que en inglés. 
+ 		
+	\section{Selección de una descripción para una imagen}
+	
+		Durante el proceso de revisión en Wayfarer, además de valorar propuestas, pueden aparecer ediciones de títulos o descripciones con el fin de corregir un error o encontrar un texto más preciso. La valoración de este cambio consiste en simplemente elegir el texto que mejor se adapta a la imagen mediante el criterio del valorador, tal y como se muestra en la \Cref{fig:edit_wayfarer}. \\
+		
+		\begin{figure}[!h]
+			\centering
+			\includegraphics[width = .4\textwidth, valign = c]{edit1}\hfill
+			\includegraphics[width = .4\textwidth, valign = c]{edit2}
+			\caption{Propuesta de edición en Wayfarer}
+			\label{fig:edit_wayfarer}
+		\end{figure}
+		
+		Esto puede entenderse como el mismo problema de la búsqueda semántica de imágenes, pero intercambiando los textos por imágenes y viceversa. Para resolverlo, se propone calcular los embeddings de todos los textos y la imagen, calcular el coseno que forma cada posible pareja de imagen y texto, y seleccionar el texto de la pareja que maximice el valor del coseno. Para demostrar la eficacia del método, se ha seleccionado la imagen mostrada en la \Cref{fig:edit_descripcion} del dataset original, y se simula la situación en la que se tienen tres descripciones entre las que se encuentra la correcta. 
+		
+		\begin{itemize}
+			\item Pista de baloncesto donde niños practican deporte. 
+			\item Grafiti en el que aparecen dos personas con trajes regionales, y se lee el texto ``\textit{Los alcarreñitos}''. 
+			\item Piscina pública. 
+		\end{itemize}
+		
+		\begin{figure}[!h]
+			\centering
+			\includegraphics[scale = .4]{edit_descripcion}
+			\caption{Imagen para la simulación de edición de descripción}
+			\label{fig:edit_descripcion}
+		\end{figure}
+		
+		Al calcular los tres cosenos, se obtienen los valores $0.03$, $0.29$, y $0$. En el caso de la primera y la tercera descripción, indica que los embeddings de la imagen y el texto son perpendiculares, es decir, que no guardan relación alguna. Por otro lado, para la segunda descripción (la correcta), se obtiene un valor bastante más elevado en comparación con las otras dos. Esto indica que existe relación entre la información que el transformer ha obtenido de la imagen y la que ha obtenido del texto. Podría ser de esperar que si se está definiendo a la perfección la imagen, se obtuviera un coseno igual a 1, pero esto no es así, pues es posible que el transformer se esté fijando en otros detalles diferentes (o adicionales) a los que se ha fijado una persona al crear el texto y viceversa. Normalmente al trabajar con embeddings multimodales, las similitudes suelen ser más bajas que cuando estos provienen de una misma modalidad, afectando también la  alta dimensionalidad. 
+	
+		
 					 
 				
