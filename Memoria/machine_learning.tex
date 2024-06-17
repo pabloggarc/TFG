@@ -4,7 +4,7 @@
 	
 		Ya en el año 1958, el psicólogo Frank Rosenblatt propuso un modelo llamado perceptrón el cual estaba basado en el comportamiento y funcionamiento de las neuronas de un humano, y que podía aprender ponderando cada coeficiente de entrada a la neurona \cite{historiaIA}. Hoy en día, tal y como se mostrará en esta sección, el perceptrón es la unidad fundamental de muchos modelos de \textit{machine learing} y \textit{deep learning}. \\
 		
-		Como se verá durante esta sección, este modelo ayuda a solucionar problemas de clasificación supervisada. Se dispone de una serie de valores de entrada $x_1, x_2, \hdots, x_n$ y se tiene una serie de valores de salida $y_1, y_2, \hdots, y_m$ que representan a qué clase pertenece la entrada ($2^m$ clases posibles). Esto se consigue mediante la ayuda de sus parámetros, que son una serie de pesos $w_1, w_2, \hdots, w_n$ y un sesgo o \textit{bias} $b$; y sus hiperparámetros, entre los que se encuentra una función $f$ de activación. \\
+		Como se verá durante esta sección, este modelo ayuda a solucionar problemas de clasificación supervisada. Se dispone de una serie de valores de entrada $x_1, x_2, \hdots, x_n$ y se tiene una serie de valores de salida $y_1, y_2, \hdots, y_m$ que representan a qué clase pertenece la entrada ($2^m$ clases posibles). Esto se consigue mediante la ayuda de sus parámetros, que son una serie de pesos $w_1, w_2, \hdots, w_n$ y un sesgo o \textit{bias} $b$. \\
 		
 		\begin{figure}[!h]
 			\centering
@@ -36,27 +36,26 @@
 		n_1(k) = b_1(k) + \sum_{i=1}^n x_i(k)w_i(k)
 		$$
 		
-		Una vez se ha realizado este cálculo, el valor pasa por una función de activación en el nodo $a_1$, pues esta arquitectura es común utilizarla para clasificar una entrada y es muy útil obtener una salida binaria donde se active únicamente la salida que represente la clase a la que pertenece la entrada dada. Aunque existen diferentes funciones de activación para las neuronas, al trabajar con un perceptrón, la función de activación por excelencia es la función escalón de Heaviside, donde $\mathcal{U}: \mathbb{R} \longrightarrow \{0, 1\}$ y su expresión analítica es
+		Una vez se ha realizado este cálculo, el valor pasa por una función de activación en el nodo $a_1$, pues esta arquitectura es común utilizarla para clasificar una entrada y es muy útil obtener una salida binaria donde se active únicamente la salida que represente la clase a la que pertenece la entrada dada. Aunque existen diferentes funciones de activación para las neuronas, al trabajar con un perceptrón, es común utilizar la función signo, donde $\text{sgn}: \mathbb{R} \longrightarrow \{-1, 0, 1\}$ y su expresión analítica es
 		
 		$$
-		\mathcal{U}(x) = \left\{\begin{array}{ccc}
-			0 & \text{si} & x < 0\\
-			1 & \text{si} & x \geq 0
-		\end{array}
-		\right..
+		\text{sgn}(x) = \begin{cases}
+			-1 & \text{ si } x < 0\\
+			\hfil0 & \text{si } x = 0\\
+			\hfil1 & \text{si } x > 0\\
+		\end{cases}. 
 		$$
 		
-		Combinando ambas expresiones, se puede resumir en que la salida del perceptrón es equivalente a la siguiente ecuación: 
+		Combinando ambas expresiones, y tomando que $\text{sgn}(0) = -1$ en vez de $0$ para obtener una salida binaria, se puede resumir en que la salida del perceptrón es equivalente a la siguiente ecuación. 
 		
 		$$
-		y_1(k) = \left\{\begin{array}{ccc}
-			0 & \text{si} & b_1(k) + \displaystyle\sum_{i=1}^n x_i(k)w_i(k) < 0\\
-			1 & \text{si} & b_1(k) + \displaystyle\sum_{i=1}^n x_i(k)w_i(k) \geq 0
-		\end{array}
-		\right.
+		y_1(k) = \begin{cases}
+			-1 & \text{si } b_1(k) + \displaystyle\sum_{i=1}^n x_i(k)w_i(k) \leq 0\\
+			\hfil1 & \text{si } b_1(k) + \displaystyle\sum_{i=1}^n x_i(k)w_i(k) > 0
+		\end{cases}
 		$$
 		
-		Para dar un ejemplo claro de cómo funciona el perceptrón, se pueden tomar una serie de observaciones que tengan dos valores de entrada y uno de salida. Además, se supondrá que existen dos clases. Esto a fin de cuentas es asignar un valor de 0 o 1 a cada punto de $\mathbb{R}^2$ tal y como se describe en la \Cref{fig:labeled_data}. \\
+		Para dar un ejemplo de cómo funciona el perceptrón, se pueden tomar una serie de observaciones que tengan dos valores de entrada y uno de salida, suponiendo que existen dos clases. Esto a fin de cuentas es asignar un valor de $-1$ o 1 a cada punto de $\mathbb{R}^2$ tal y como se describe en la \Cref{fig:labeled_data}. \\
 		
 		\begin{figure}[!h]
 			\centering
@@ -70,7 +69,7 @@
 			\label{fig:labeled_data}
 		\end{figure}
 		
-		Una solución rápida sería trazar una recta $r: ax + by + c = 0$ que separe $\mathbb{R}^2$ en dos regiones, de forma que todo punto que pertenezca a una región pertenece entonces a una misma clase, tal y como se observa en la \Cref{fig:separated_label_data}. Esta recta suele llamarse \textit{decision boundary} o frontera de decisión. El problema entonces es hallar la recta $r$, pero se cumple que para este ejemplo es de la forma $w_1 x + w_2 y + b = 0$, siendo el problema encontrar los parámetros adecuados del modelo. La idea puede extrapolarse a diferente tamaño de entrada tomando un hiperplano de la forma $\textbf{w}^T \textbf{x} + b = 0$. \\
+		Una solución rápida sería trazar una recta $r: ax + by + c = 0$ que separe $\mathbb{R}^2$ en dos regiones, de forma que todo punto que pertenezca a una región pertenece entonces a una misma clase, tal y como se observa en la \Cref{fig:separated_label_data}. Esta recta suele llamarse \textit{decision boundary} o frontera de decisión. El problema entonces es hallar la recta $r$ de la forma $w_1 x + w_2 y + b = 0$, teniendo que encontrar los parámetros adecuados del modelo. La idea puede extrapolarse a diferente tamaño de entrada tomando un hiperplano de la forma $\textbf{w}^T \textbf{x} + b = 0$ \cite{nndesign}. \\
 		
 		Las preguntas a resolver ahora son, ¿existen siempre dichos parámetros? ¿Cómo pueden hallarse? El propio Minsky se hizo estas preguntas en \cite{perceptrons} y se dio cuenta de que dichos parámetros sí pueden hallarse en un número finito de pasos, siempre y cuando los puntos sean linealmente separables. Un ejemplo que no es linealmente separable es el de la función \gls{xor} tal y como se muestra en la \Cref{table:xor,fig:xor}, pues no existe una recta $r$ que separe $\mathbb{R}^2$ en dos regiones de tal forma que cada región contenga puntos de una única clase, sería necesaria una frontera de decisión no lineal. \\
 		
@@ -80,8 +79,8 @@
 				\begin{axis}[ymin = -2.5, ymax = 2.5, xmax = 2.5, xmin = -2.5, xticklabel = \empty, yticklabel = \empty, minor tick num = 1, axis lines = middle, xlabel = $x$, ylabel = $y$, axis on top]
 					\addplot[only marks, mark = *] coordinates {(1, 2)};
 					\addplot[only marks, mark = triangle*] coordinates {(-1, 2) (0, -1)};
-					\addplot[domain = -3:3, samples = 2, dashed] {-15*x};
-					\draw[fill = gray!30, draw = none] (axis cs:-2.5, -2.5) -- (axis cs:-2.5, 2.5) -- (axis cs: -1/6, 2.5) -- (axis cs:1/6, -2.5);
+					\addplot[domain = -3:3, samples = 2, dashed] {-2*x+1};
+					\draw[fill = gray!30, draw = none] (axis cs:-2.5, -2.5) -- (axis cs:-2.5, 2.5) -- (axis cs: -0.75, 2.5) -- (axis cs:1.75, -2.5);
 				\end{axis}
 			\end{tikzpicture}
 			\caption{Puntos separados en $\mathbb{R}^2$}
@@ -113,18 +112,23 @@
 			\label{fig:xor}
 		\end{figure}
 		
-		En cuanto a la pregunta de cómo hallar los parámetros, se consideran las siguientes ecuaciones \cite{nndesign}, donde $\textbf{w}$ es el vector de pesos, $t$ el valor esperado, y $a$ la salida del perceptrón y se aplica el \Cref{algo:perceptron} para obtener los parámetros óptimos. En dicho algoritmo se supondrá que existe una matriz $X$ de $n$ filas que contiene los diferentes $\textbf{x}$. 
+		En cuanto a la pregunta de cómo hallar los parámetros, se considera el \Cref{algo:perceptron} para obtener los parámetros óptimos, donde $\textbf{w}$ es el vector de pesos, $t$ el valor esperado, y $a$ la salida del perceptrón. En dicho algoritmo se supondrá que existe una matriz $X$ de $n$ filas que contiene los diferentes $\textbf{x}$. El algoritmo se basa en la \Cref{eq:perceptron}, que difiere de la propuesta en \cite{nndesign} (en el fondo son lo mismo), pero este cambio facilitará el trabajo más adelante. 
 		
 		\begin{equation}
-			\label{eq:perceptron}
 			\begin{gathered}
-				\textbf{w}(k+1) = \textbf{w}(k) + e(k)\textbf{x}(k)\\
-				b(k+1) = b(k) + e(k)\\
-				e(k) = t(k) - a(k)\\
-				a(k) = \mathcal{U}(\textbf{w}^T(k)\textbf{x}(k))
+				n(k) = \textbf{w}^T(k)\textbf{x}(k) + b(k)\\\\
+				a(k) = \text{sgn}(n(k))\\\\
+				\textbf{w}(k+1) = \begin{cases}
+					\textbf{w}(k) + t(k)\textbf{x}(k) & \text{si } t(k)a(k) < 0\\
+					\hfil \textbf{w}(k) & \text{si } t(k)a(k) > 0
+				\end{cases}\\\\
+				b(k+1) = \begin{cases}
+					b(k) + t(k) & \text{si } t(k)a(k) < 0\\
+					\hfil b(k) & \text{si } t(k)a(k) > 0
+				\end{cases}
 			\end{gathered}
+			\label{eq:perceptron}
 		\end{equation}
-		
 		
 		\begin{algorithm}[!h]
 			\SetProgSty{texttt}\DontPrintSemicolon
@@ -135,15 +139,20 @@
 			\Datos{$X, \textbf{t}$}
 			\Resultado{$\textbf{w}, b$}
 			$b \gets 0$\\
-			$\textbf{w} \gets$ \texttt{random}\\
 			$k \gets 0$\\
-			\Repetir{$\lnot$\texttt{acabar}}{
-				\texttt{acabar} $\gets$ \texttt{true}\\
+			$\textbf{w} \gets \begin{pmatrix}0\\0\\\vdots\\0\end{pmatrix}$\\
+			\Repetir{$e \neq 0$}{
+				$e \gets 0$\\
 				\Para{$i \gets k$ \KwTo $k + n - 1$}{
-					$e(i) \gets t(i) - a(i)$\\
-					$\textbf{w}(i+1) \gets \textbf{w}(i) + e(i)\textbf{x}(i \pmod n)$\\
-					$b(i+1) \gets b(i) + e(i)$\\
-					\texttt{acabar} $\gets$ \texttt{acabar} $\land \, e(i) == 0$ 
+					$a(i) \gets \text{sgn}(\textbf{w}^T(i)\textbf{x}(i\pmod{n}) + b(i))$\\
+					\eSSi{$t(i)a(i) \leq 0$}{
+						$\textbf{w}(i+1) \gets \textbf{w}(i) + t(i)\textbf{x}(i)$\\
+						$b(i+1) \gets b(i) + t(i)$\\
+						$e \gets e + 1$
+					}{
+						$\textbf{w}(i+1) \gets \textbf{w}(i)$\\
+						$b(i+1) \gets b(i)$\\
+					}
 				}
 				$k \gets k + n - 1$
 			}
@@ -151,9 +160,7 @@
 		
 		A cada una de las iteraciones que realiza el bucle exterior se les denomina épocas o \textit{epoch}, que consiste en realizar el proceso de entrenamiento sobre todo el conjunto de datos. En este caso se está suponiendo que no va a recibir casos que no sean linealmente separables, pero de lo contrario se puede añadir un contador \texttt{max\_epochs} y fijar un número máximo para no caer en un bucle infinito. No sería tarea fácil determinar dicho valor, pues aunque el algoritmo converge en los casos previamente explicados, no en todos lo hace de manera rápida. \\
 		
-		La ejecución del \Cref{algo:perceptron} para el caso de la \Cref{fig:labeled_data} finaliza tras dos épocas, donde en la primera de ellas va ajustando los pesos y el sesgo de manera adecuada, y en la segunda verifica que todas las observaciones han sido clasificadas de manera correcta. La frontera de decisión obtenida es la recta $r: 2x - 2 = 0$, que es una recta vertical. Una observación a realizar es que $\textbf{x}(1) \in r$, por tanto ¿a qué clase pertenece? Esto depende de la función de activación empleada, al utilizar $\mathcal{U}$ la clasificación es correcta, pero al cambiarla por otra, podría no serlo y necesitaría de más épocas para realizar correctamente la clasificación. \\
-		
-		La última cuestión que queda por tratar respecto al perceptrón es el porqué se verifica que en el caso de que los puntos dados sean linealmente separables, en un número finito de pasos, el \Cref{algo:perceptron} terminará su ejecución y con el $\textbf{w}$ óptimo, tal y como se enunciaba en el Teorema de Convergencia del Perceptrón. A continuación se presenta su demostración basándose en la que se encuentra en \cite{nndesign}, de forma más clara y simple. Para comenzar con la demostración será necesario definir una serie de elementos, comenzando por $\Omega(k)$ y $\textbf{z}(k)$.  
+		La última cuestión que queda por tratar respecto al perceptrón es el porqué se verifica que en el caso de que los puntos dados sean linealmente separables, en un número finito de pasos, el \Cref{algo:perceptron} terminará su ejecución y con el $\textbf{w}$ óptimo, tal y como enuncia el teorema de convergencia del perceptrón. A continuación se presenta su demostración basándose en la que se encuentra en \cite{perceptron_proof}, de forma más clara y simple que la mostrada en \cite{nndesign} al tratar de utilizar las clases $-1$ y 1, en vez de 0 y 1. Para comenzar con la demostración será necesario definir una serie de elementos, comenzando por $\Omega(k)$ y $\textbf{z}(k)$.  
 		
 		$$
 		\Omega(k) = \left(\begin{array}{c}
@@ -168,21 +175,21 @@
 		\end{pmatrix}
 		$$
 		
-		Con estos elementos y el cálculo de $a(k)$ en la \Cref{eq:perceptron} es fácil ver que $n(k) = \Omega^T(k)\textbf{z}(k)$. Recordando los posibles valores de $t(k)$, se deseaba que si dicho valor era 1, entonces $n(k) \geq 0$; y en caso de que valiese 0 entonces se deseaba tener $n(k) < 0$, en resumen, que $t(k) - a(k) = 0$. Otra forma de ver esto es afirmar que en el caso en que $t(k) \neq a(k)$, entonces $\Omega(k)$ debe actualizarse de acuerdo a la \Cref{eq:perceptron}. De esta forma $\Omega(k + 1) = \Omega(k) + e(k)\textbf{z}(k)$. Ahora se considerará un vector $\Omega^*$ de forma que 
+		Con estos elementos es fácil ver que $n(k) = \Omega^T(k)\textbf{z}(k)$. Recordando que en función del signo de $t(k)a(k)$ se deseaba actualizar o no los parámetros de acuerdo a la \Cref{eq:perceptron}, se tiene que $\Omega(k + 1) = \Omega(k) + t(k)\textbf{z}(k)$ en los casos a actualizar. Ahora se considerará un vector $\Omega^*$ de forma que 
 		$$
-		\forall k \exists \Omega^* \,\, \mathcal{U}\left(\Omega^{*^T}\textbf{z}(k)\right) = t(k),
+		\exists \Omega^* \forall k  \,\, \text{sgn}\left(\Omega^{*^T}\textbf{z}(k)\right) = t(k),
 		$$
 		es decir, $\Omega^*$ es el vector de pesos óptimo. Además, por comodidad se normalizarán todas las distancias del problema, de manera que $\|\Omega^{*}\| = 1$ y $\|\textbf{z}(k)\| \leq 1$. El último elemento a considerar será $\delta$, que será definido como
 		$$
-		\delta = \min\left\lbrace\Omega^{*^T}\textbf{z}(i)\right\rbrace, 
+		\delta = \min_k\left\lbrace\left|\Omega^{*^T}\textbf{z}(k)\right|\right\rbrace, 
 		$$
-		tomando además que $\delta > 0$ pues otra manera de definirlo es la distancia al punto más cercano a la frontera de decisión óptima. Con estos elementos se puede comenzar la demostración. Como la regla de actualización es $\Omega(k + 1) = \Omega(k) + e(k)\textbf{z}(k)$, al vector de pesos en un determinado instante (clasificación fallida) se le suma o resta $\textbf{z}(k)$ y a priori no se sabe cuántas veces se va a repetir esto, por lo que la idea de la demostración será ver si la norma del vector de pesos tiene una cota superior e inferior, es decir, se para de sumar o restar otros vectores $\textbf{z}(i)$, de manera que el algoritmo terminaría. Para obtener esto basta con comparar el comportamiento de $\Omega^T(k) \Omega^*$ frente a $\Omega^T(k)\Omega(k)$ (es decir, $\|\Omega\|^2$). \\
+		es decir, la distancia al punto más cercano a la frontera de decisión óptima. Con estos elementos se puede comenzar la demostración. La idea es observar cómo $\Omega$ se va pareciendo a $\Omega^*$ tras las iteraciones del algoritmo. Una forma de medir cómo de alineados están dos vectores es el producto escalar. Si $\Omega\cdot\Omega^*$ aumenta tras las iteraciones, es posible que ambos vectores se estén alineando, pero es posible que este valor aumente si $\Omega(k + 1) = \alpha\Omega(k)$, para algún $\alpha\in\mathbb{R}$. Este segundo caso se puede descartar estudiando cómo cambia el propio vector de pesos $\Omega$. Para realizar la demostración, se analizan las expresiones de $\Omega^T(k+1)\Omega^*$ y $\Omega^T(k+1)\Omega(k+1)$. \\
 		
 		Con el primero de los términos, al tratar de corregir un error se verifica que
 		$$
-		\Omega^T(k+1)\Omega^* = (\Omega(k) + e(k)\textbf{z}(k))^T \Omega^* = \Omega^T(k)\Omega^* + e(k)\Omega^{*^T}\textbf{z}(k). 
+		\Omega^T(k+1)\Omega^* = (\Omega(k) + t(k)\textbf{z}(k))^T \Omega^* = \Omega^T(k)\Omega^* + \underbrace{t(k)\Omega^{*^T}\textbf{z}(k)}_{\geq\delta}, 
 		$$
-		Además, por la manera en la que se ha definido $\delta$, el segundo sumando pertenece al intervalo $(-\infty, -\delta] \cup [\delta, \infty)$, pudiendo deducir la siguiente desigualdad, por lo que en una actualización el término sólo varía por lo menos en $\delta$ unidades.  
+		donde necesariamente $t(k)\Omega^{*^T}\textbf{z}(k) > 0$, por la definición de $\Omega^{*^T}$. Además, por la manera en la que se ha definido $\delta$, el segundo sumando tiene que pertenecer al intervalo $[\delta, \infty)$, por lo que en una actualización el término aumenta en por lo menos en $\delta$ unidades.  
 		
 		\begin{equation}
 			\label{eq:inf_delta}
@@ -191,44 +198,38 @@
 		
 		De la misma manera que se ha analizado el comportamiento de $\Omega^T(k) \Omega^*$ se procede con la actualización de $\Omega^T(k)\Omega(k)$. 
 		
-		\begin{align*}
-			\Omega^T(k+1)\Omega(k+1) &= (\Omega(k) + e(k)\textbf{z}(k))^T(\Omega(k) + e(k)\textbf{z}(k))\\
-			&= \Omega^2(k) + (e(k)\textbf{z}(k))^2 + 2e(k)\Omega^T(k)\textbf{z}(k)\\
-			&= \Omega^T(k)\Omega(k) + e^2(k)\textbf{z}^T(k)\textbf{z}(k) + 2e(k)\Omega^T(k)\textbf{z}(k)\\
-			&= \Omega^T(k)\Omega(k) + e^2(k)\textbf{z}^T(k)\textbf{z}(k) + 2e(k)n(k)
-		\end{align*}
+		$$
+		\begin{aligned}
+			\Omega^T(k+1)\Omega(k+1) &= (\Omega(k) + t(k)\textbf{z}(k))^T(\Omega(k) + t(k)\textbf{z}(k))\\
+			&= \Omega^2(k) + (t(k)\textbf{z}(k))^2 + 2t(k)\Omega^T(k)\textbf{z}(k)\\
+			&= \Omega^T(k)\Omega(k) + t^2(k)\underbrace{\textbf{z}^T(k)\textbf{z}(k)}_{\leq 1} + 2\underbrace{t(k)\Omega^T(k)\textbf{z}(k)}_{\leq 0}
+		\end{aligned}
+		$$
 		
-		En el segundo sumando se tiene que siempre será menor o igual que 1, pues por definición $0 \leq \textbf{z}^T(k)\textbf{z}(k) = \|\textbf{z}(k)\|^2 \leq 1$. Además, el tercer sumando siempre será cero o negativo, pues en todos los casos posibles en los que $e(k) \neq 0$ se cumple que $e(k)n(k) < 0$: 
-		
-		\begin{itemize}
-			\item Si $t(k) = 1 \land n(k) < 0$, entonces $a(k) = 0 \land e(k) > 0$
-			\item Si $t(k) = 0 \land n(k) \geq 0$, entonces $a(k) = 1 \land e(k) < 0$
-		\end{itemize}
-		
-		De esta situación se puede deducir la siguiente desigualdad, por lo que en una actualización el término sólo varía en como máximo una unidad.   
+		En el segundo sumando se tiene que siempre será menor o igual que 1, pues por definición $0 \leq \textbf{z}^T(k)\textbf{z}(k) = \|\textbf{z}(k)\|^2 \leq 1$. Además, el tercer sumando siempre será cero o negativo, pues se está en el caso en el que la clasificación era incorrecta. De esta situación se puede deducir la siguiente desigualdad, por lo que en una actualización el término sólo varía en como máximo una unidad.   
 		
 		\begin{equation}
 			\label{eq:sup_delta}
 			\Omega^T(k+1)\Omega(k+1) \leq \Omega^T(k)\Omega(k) + 1
 		\end{equation}
 		
-		Una vez se ha observado cómo varían estos términos al actualizarlos, se puede observar qué pasaría con ellos al hacer $m$ actualizaciones. Con el resultado obtenido en las \Cref{eq:inf_delta,eq:sup_delta} se pueden deducir las desigualdades $\delta m \leq \Omega^T(m)\Omega^*$ y $\Omega^T(m)\Omega(m) \leq m$. \\
+		Una vez se ha observado cómo varían estos términos al actualizarlos, se puede observar qué pasaría con ellos al hacer $m$ actualizaciones. Con el resultado obtenido en las \Cref{eq:inf_delta,eq:sup_delta} se pueden deducir las desigualdades $\delta m \leq \Omega^T(m)\Omega^*$ y $\Omega^T(m)\Omega(m) \leq m$, que combinándolas se consigue acotar la norma del vector de pesos. 
 		
-		Ahora al aplicar la desigualdad de Cauchy--Schwarz\footnote{Esta desigualdad afirma que $\|\textbf{u}\textbf{v}\| \leq \|\textbf{u}\|\|\textbf{v}\|$. }, el valor de $\|\Omega^*\|$, y la propiedad transitiva, se obtiene una cota superior y otra inferior (ambas recuadradas) para $\|\Omega^T(m)\|$, lo que demuestra que el número de actualizaciones es finito y que por tanto el algoritmo converge. 
-		
-		\begin{align*}
-			\boxed{\delta m} &\leq \Omega^T(m)\Omega^* = \|\Omega^T(m)\Omega^*\|\\
-			&\leq \|\Omega^T(m)\| \|\Omega^*\| = \|\Omega^T(m)\| = \sqrt{\Omega^T(m)\Omega(m)}\\
+		$$
+		\begin{aligned}
+			\boxed{\delta m} &\leq \Omega^T(m)\Omega^* = \Omega(m)\cdot\Omega^* = \|\Omega(m)\|\|\Omega^*\|\cos(\theta)\\
+			&\leq \|\Omega(m)\| = \sqrt{\Omega^T(m)\Omega(m)}\\
 			& \leq \boxed{\sqrt{m}} 
-		\end{align*}
+		\end{aligned}
+		$$
+		
+		Esta última desigualdad muestra cómo existe una relación entre el número de iteraciones del algoritmo y la distancia de los datos de entrenamiento a la frontera de decisión óptima (depende únicamente de esto). Cuanto más cerca estén, mayor será el número de iteraciones necesarias. 
 		
 		$$
 		\pushQED{\qed} 
 		\delta m \leq \|\Omega(m)\| \leq \sqrt{m} \,\,\, \Longrightarrow \,\,\, m \leq \frac{1}{\delta^2}\qedhere
 		\popQED
 		$$ 
-		
-		Esta última desigualdad muestra cómo existe una relación entre el número de iteraciones del algoritmo y la distancia de los datos de entrenamiento a la frontera de decisión óptima (depende únicamente de esto). Cuanto más cerca estén, mayor será el número de iteraciones necesarias. 
 		
 	\section{Redes neuronales artificiales}
 	
