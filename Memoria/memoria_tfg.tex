@@ -1,4 +1,4 @@
-\documentclass[twoside]{report}
+\documentclass[twoside, openright]{report}
 
 \usepackage{tfg}
 
@@ -12,44 +12,41 @@
 	\input{info_inicial}
 	\paginavacia
 	
-	\thispagestyle{empty}
+	\thispagestyle{plain}
+	\vspace*{\fill}
+	Quisiera agradecer desde aquí a todas las personas que me han apoyado durante este proceso, incluyendo a mi familia, amigos, y tutor. Quiero agradecer en especial a mis compañeros de clase, sin los que el camino para llegar hasta aquí hubiera sido más complicado; y a todo el equipo de Analyticae, por la oportunidad que me han dado y todo lo que me han enseñado durante estos últimos meses.\\
+	\vspace{3cm}
 	\begin{flushright}
-		\vspace*{\fill}
 		\emph{``Computer Science is no more about computers than astronomy is about telescopes.''}\\ Edsger W. Dijkstra
 	\end{flushright}
 	\vspace*{\fill}
 	
-	\paginavacia
 	\input{resumen}
-	\paginavacia
 	
 	% ÍNDICES
 	
 	\tableofcontents
-	\paginavacia
 	\listoffigures
-	\paginavacia
 	\listofalgorithms
-	\newpage\thispagestyle{empty}
+	\listoftables
 	\input{acronimos}
 	\glsaddall\printglossary[type = \acronymtype, title = {Acrónimos y siglas}]
-	\paginavacia
 	
 	% TFG
 	
 	\input{introduccion}
-	\paginavacia
+	\input{estado_arte}
 	\pagestyle{mypagestyle}
 	\input{machine_learning}
-	\paginavacia
 	\input{parte_practica}
-	\paginavacia\pagestyle{plain}
 	\input{conclusiones}
 	
-	\paginavacia
 	\addcontentsline{toc}{chapter}{Bibliografía}
 	\pagestyle{plain}
 	\printbibliography
+	
+	\appendix
+	\input{codigo}
 	
 	% CONTRAPORTADA
 	\input{contracubierta}

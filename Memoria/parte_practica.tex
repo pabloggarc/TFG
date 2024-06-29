@@ -1,4 +1,4 @@
-\chapter{Optimización del proceso de valoración de puntos de interés}
+\chapter{Optimización del proceso de valoración de puntos de interés}\label{chapter:practica}
 
 	Después de analizar diversos modelos de aprendizaje automático, sus características y algoritmos, se ofrece un ejemplo práctico que ilustra la aplicación de estos modelos para abordar un problema de la vida real y buscar una solución adecuada. Para ello se propone tratar de optimizar el proceso de valoración de puntos de interés de Wayfarer, tal y como se comentaba en la introducción. \\
 	
@@ -141,7 +141,7 @@
 				\item Si $I \in C_j, m \leq j < n$, continuar evaluando la propuesta
 			\end{itemize}
 			
-			Continuando con la extracción de los datos, y preparándolos para la carga, se ha creado una carpeta \texttt{tfg\_dataset} que representa el conjunto de las imágenes que se utilizan durante el proyecto. Dentro de esta, se ubicarán dos subcarpetas, \texttt{train} y \texttt{test}, que hacen referencia a las imágenes que se utilizarán para entrenar los modelos, y las que se utilizarán para evaluar su rendimiento. Para generar dichas carpetas partiendo de una que contiene las imágenes separadas por clases, se ha codificado la función \texttt{split\_tt} que permite hacer la división del conjunto en los de entrenamiento y test con el porcentaje especificado. Previamente a la ejecución de esta función, se recomienza ejecutar otra que se ha codificado llamada \texttt{renombrar\_imagenes}, que dada la ruta raíz donde se encuentran las carpetas de cada clase, renombra las imágenes de cada carpeta de manera que queden enumeradas. Esta es la manera de etiquetar el conjunto de datos y prepararlo para la carga. Se puede visualizar un breve esquema de esta estructura en la \Cref{fig:arbol_dataset}. \\
+			Continuando con la extracción de los datos, y preparándolos para la carga, se ha creado una carpeta \texttt{tfg\_dataset} que representa el conjunto de las imágenes que se utilizan durante el proyecto. Dentro de esta, se ubicarán dos subcarpetas, \texttt{train} y \texttt{test}, que hacen referencia a las imágenes que se utilizarán para entrenar los modelos, y las que se utilizarán para evaluar su rendimiento. Para generar dichas carpetas partiendo de una que contiene las imágenes separadas por clases, se ha codificado la función \texttt{split\_tt} que permite hacer la división del conjunto en los de entrenamiento y test con el porcentaje especificado a nivel de clases (evitando el posible desbalanceo). Previamente a la ejecución de esta función, se recomienza ejecutar otra que se ha codificado llamada \texttt{renombrar\_imagenes}, que dada la ruta raíz donde se encuentran las carpetas de cada clase, renombra las imágenes de cada carpeta de manera que queden enumeradas. Esta es la manera de etiquetar el conjunto de datos y prepararlo para la carga. Se puede visualizar un breve esquema de esta estructura en la \Cref{fig:arbol_dataset}. \\
 			
 			\begin{figure}[!h]
 				\centering
@@ -179,19 +179,12 @@
 			
 			\begin{figure}[!h]
 				\centering
-				\includegraphics[scale = .55]{arq_cnn}
+				\includegraphics[scale = .45]{arq_cnn}
 				\caption{Arquitectura de la red convolucional}
 				\label{fig:arq_cnn}
 			\end{figure}
 			
-			Mediante estas capas, se supone que la red debe extraer características de las imágenes, como por ejemplo
-			
-			\begin{itemize}
-				\item Aparece un objeto rectangular
-				\item Tiene dos patas 
-				\item No tiene formas curvas
-			\end{itemize}
-			y de ahí con ayuda de una red clásica, ser capaz de deducir que en la imagen aparece un cartel. En realidad, las capas de convolución no obtienen características tan claras, pero sí resultan con una matriz de detalles en la imagen que pueden conducir a la misma conclusión. Para ello se utiliza la capa \texttt{Flatten} que transforma dicha matriz en un vector que sirve de entrada a la siguiente y última capa de la red, una capa oculta con tantas neuronas como clases diferentes. Como función de activación se utiliza softmax para obtener una distribución de probabilidad en la que se observe cuál es claramente la clase a la que pertenece el objeto, y con qué confianza lo es. Finalmente, mediante la función \texttt{summary} se puede observar un resumen del modelo. 
+			Mediante estas capas, se supone que la red debe extraer características de las imágenes, que sean capaces de resumir su contenido y que marquen la diferencia entre las clases, tarea realizada con ayuda de una red clásica. En realidad, las capas de convolución no obtienen características tan claras, pero sí resultan con una matriz de detalles en la imagen que pueden conducir a la misma conclusión. Para ello se utiliza la capa \texttt{Flatten} que transforma dicha matriz en un vector que sirve de entrada a la siguiente y última capa de la red, una capa oculta con tantas neuronas como clases diferentes. Como función de activación se utiliza softmax para obtener una distribución de probabilidad en la que se observe cuál es claramente la clase a la que pertenece el objeto, y con qué confianza lo es. Finalmente, mediante la función \texttt{summary} se puede observar un resumen del modelo. 
 			
 			\begin{verbatim}
 				_________________________________________________________________
@@ -257,17 +250,17 @@
 				\label{fig:tb_cnn}
 			\end{figure}
 			
-			La situación que describen las gráficas, es negativa y sería la típica no deseada, pues se observa como con el paso de las iteraciones el error crece mientras que la precisión se estanca en valores no deseados. En concreto, en la \Cref{fig:tb_cnn_c} se observa cómo el error sobre el conjunto de validación crece, mientras que sobre el conjunto de entrenamiento tiende a cero. Esta es una situación denominada como sobreaprendizaje u \textit{overfitting} \cite{overfitting}. La red no tiene capacidad de aprender ni generalizar, y lo que está haciendo es memorizar los datos de ejemplo que se le presentan, cometiendo entonces errores cuando recibe datos que no ha visto nunca. 
+			La situación que describen las gráficas, es negativa y sería la típica no deseada, pues se observa como con el paso de las iteraciones, el error crece mientras que la precisión se estanca en valores no deseados. En concreto, en la \Cref{fig:tb_cnn_c} se observa cómo el error sobre el conjunto de validación crece, mientras que sobre el conjunto de entrenamiento tiende a cero. Esta es una situación denominada como sobreaprendizaje u \textit{overfitting} \cite{overfitting}. La red no tiene capacidad de aprender ni generalizar, y lo que está haciendo es memorizar los datos de ejemplo que se le presentan, cometiendo errores cuando recibe datos que no ha visto nunca. 
 			
 		\subsection{Transfer learning en TensorFlow}
 		
-			Como se ha podido observar durante la sección anterior, el resultado del entrenamiento no ha sido adecuado, pues la red tendía a memorizar los datos que se le presentaban sin mostrar una buena capacidad de generalización. Esto puede deberse a múltiples factores, como por ejemplo, que al tener un conjunto de datos de entrenamiento tan reducido no sea capaz de extraer correctamente las características que determinan a los objetos de cada clase. Es decir, en vez de hacerle llegar a las capas densas hechos como ``tiene un objeto rectangular'', ``tiene dos patas'', etc; podría estar haciéndole llegar, ``hay dos árboles en el fondo''. Observando la estructura del modelo, se está tratando de optimizar cerca un millón de parámetros con poco más de 500 observaciones, algo que es muy desproporcionado; la red no es capaz de encontrar relaciones con tan pocos datos. \\
+			Como se ha podido observar durante la sección anterior, el resultado del entrenamiento no ha sido adecuado, pues la red tendía a memorizar los datos que se le presentaban sin mostrar una buena capacidad de generalización. Esto puede deberse a múltiples factores, como por ejemplo, que al tener un conjunto de datos de entrenamiento tan reducido no sea capaz de extraer correctamente las características que determinan a los objetos de cada clase. Observando la estructura del modelo, se está tratando de optimizar cerca un millón de parámetros con poco más de 500 observaciones, algo que es muy desproporcionado; la red no es capaz de encontrar relaciones con tan pocos datos. \\
 			
-			En proyectos similares del mundo real, y en los que además se dispone de pocos datos (como es el caso), es muy poco frecuente crear y entrenar un modelo desde cero tal y como se ha realizado en la \Cref{subsec:crear_cnn}. En vez de realizar esto, es muy común utilizar una técnica conocida como transfer learning. Tal y como se menciona en \cite{transfer}, es una técnica muy aplicada en casos en los que se dispone de pocos datos y los modelos de deep learning no son capaces de encontrar relaciones, y también en casos en los que se dispone de equipos con pocos recursos. Consiste en aplicar el conocimiento obtenido de otro dataset, no necesariamente relacionado, para facilitar el proceso de obtener el conocimiento deseado del dataset actual. \\
+			En proyectos similares del mundo real, y en los que además se dispone de pocos datos (como es el caso), es muy poco frecuente crear y entrenar un modelo desde cero tal y como se ha realizado en la \Cref{subsec:crear_cnn}. En vez de realizar esto, es muy común utilizar una técnica conocida como transfer learning. Tal y como se menciona en \cite{transfer}, es una técnica muy aplicada en casos en los que se dispone de pocos datos y los modelos de deep learning no son capaces de encontrar relaciones, y también en casos en los que se dispone de equipos con pocos recursos. Consiste en aplicar la capacidad de extracción de conocimiento mediante otro dataset, no necesariamente relacionado, para facilitar el proceso sobre el dataset deseado. \\
 			
 			En el problema que se está tratando, se va a aplicar esta técnica de la siguiente manera. Como previamente se ha mencionado, las redes convolucionales, pueden verse como un conjunto de capas capaces de extraer características de las imágenes, junto con una red neuronal clásica que es capaz de clasificar en función de dichas características. Teniendo en cuenta que el principal problema del modelo anterior podría ser que no fuera capaz de obtener las características adecuadas que definen a cada clase, la idea es utilizar una serie de capas que sí sean capaces de obtener de manera correcta las características de una imagen, para después poder entrenar la red neuronal clásica con las características adecuadas. \\
 			
-			En TensorFlow se pueden importar modelos ya entrenados. En este caso para aplicar la técnica de transfer learning, se ha decidido utilizar la red MobileNet de Google que se observa en la \Cref{fig:mb}. El modelo se puede importar como si de una capa se tratase al crear un modelo secuencial de Keras. Para lograr la técnica, será clave declarar que los parámetros de dicha capa no se deberán entrenar (pues al importar el modelo ya vienen con unos valores adecuados). A continuación se coloca una capa densa, encargada de clasificar las características que la red de Google extraiga, y que deberá ser entrenada. Esta vez, el número de parámetros a optimizar sí es más adecuado al número de observaciones disponibles. 
+			En TensorFlow se pueden importar modelos ya entrenados. En este caso para aplicar la técnica de transfer learning, se ha decidido utilizar la red MobileNet de Google que se observa en la \Cref{fig:mb}. Se puede importar como si de una capa se tratase al crear un modelo secuencial de Keras. Para lograr la técnica, será clave declarar que los parámetros de dicha capa no se deberán entrenar (pues al importar el modelo ya vienen con unos valores adecuados). A continuación se colocan las capas densas que deberán ser entrenadas, encargadas de clasificar las características que la red de Google extraiga. Esta vez, el número de parámetros a optimizar sí es más adecuado al número de observaciones disponibles. 
 			
 			\begin{figure}[!h]
 				\centering
@@ -603,7 +596,7 @@
 					\label{fig:prob}
 				\end{figure}
 				
-				Una vez se dispone de $P(R)$, $P(\lnot R)$, y $P(C_i|\lnot R)$, basta aplicar el Teorema de la probabilidad total para calcular los $P(C_i)$, obteniendo que $P(C_i) = P(C_i | \lnot R) P(\lnot R)$. Para calcular entonces la matriz $Y_s$ necesaria, basta con tomar las matrices $Y_s^{(1)}$ y $Y_s^{(2)}$ (siendo cada una la obtenida por cada uno de los clasificadores), y corregir las probabilidades de la segunda matriz con la segunda columna de la primera matriz y concatenarla con la primera columna de la primera matriz, pudiéndose traducir esto a $Y_s = \left(\text{diag}\left(Y_{s_{i1}}^{(1)}\right)Y_s^{(2)}\middle|Y_{s_{i2}}^{(1)}\right)$, es decir, 
+				Una vez se dispone de $P(R)$, $P(\lnot R)$, y $P(C_i|\lnot R)$, basta aplicar el teorema de la probabilidad total para calcular los $P(C_i)$, obteniendo que $P(C_i) = P(C_i | \lnot R) P(\lnot R)$. Para calcular entonces la matriz $Y_s$ necesaria, basta con tomar las matrices $Y_s^{(1)}$ y $Y_s^{(2)}$ (siendo cada una la obtenida por cada uno de los clasificadores), y corregir las probabilidades de la segunda matriz con la segunda columna de la primera matriz y concatenarla con la primera columna de la primera matriz, pudiéndose traducir esto a $Y_s = \left(\text{diag}\left(Y_{s_{i1}}^{(1)}\right)Y_s^{(2)}\middle|Y_{s_{i2}}^{(1)}\right)$, es decir, 
 				$$
 				\begin{gathered}
 					Y_s^{(3)} = \begin{pmatrix}
@@ -710,7 +703,7 @@
 				\left\lfloor\frac{120\text{ llamadas}}{60\text{ segundos}}\right\rfloor = 2 \text{ llamadas/segundo}
 				$$
 				
-				El tiempo que transcurre desde que se realiza una llamada hasta que se obtiene la respuesta oscila entre $0.5$ y 1 segundos, por lo que el pausando el proceso $0.5$ segundos tras cada llamada se evita superar el límite fijado. Al superar el límite, se recibe el código \texttt{HTTP 429}. Finalmente, se almacenan todos los ficheros \gls{json} de las respuestas en disco, evitando así consumir  créditos y ahorrar tiempo en futuras ejecuciones con el mismo dataset. Una vez se han calculado el embedding correspondiente a cada imagen del dataset, es de utilidad crear un dataframe de Pandas que ayude a estructurar toda la información relativa a cada imagen obtenida hasta el momento para trabajar de manera más cómoda. En la \Cref{tab:df_ejemplo} se muestra un extracto de este dataframe. Durante la finalización del proyecto, se descubrió que por error humano se introdujeron algunas imágenes duplicadas en el dataset utilizado para trabajar con el transformer. Para eliminarlas del dataframe y evitar ``ensuciar'' los resultados, se introduce una columna que es el cálculo del hash SHA$-256$, y se eliminan las filas que tengan duplicada dicha columna. Una vez eliminados los elementos duplicados, se elimina la columna pues no será de más utilidad. 
+				El tiempo que transcurre desde que se realiza una llamada hasta que se obtiene la respuesta oscila entre $0.5$ y 1 segundos, por lo que el pausando el proceso $0.5$ segundos tras cada llamada se evita superar el límite fijado. Al superar el límite, se recibe el código \texttt{HTTP 429}. Finalmente, se almacenan todos los ficheros \gls{json} de las respuestas en disco, evitando así consumir  créditos y ahorrar tiempo en futuras ejecuciones con el mismo dataset. Una vez se ha calculado el embedding correspondiente a cada imagen del dataset, es de utilidad crear un dataframe de Pandas que ayude a estructurar toda la información relativa a cada imagen obtenida hasta el momento para trabajar de manera más cómoda. En la \Cref{tab:df_ejemplo} se muestra un extracto de este dataframe. Durante la finalización del proyecto, se descubrió que por error humano se introdujeron algunas imágenes duplicadas en el dataset utilizado para trabajar con el transformer. Para eliminarlas del dataframe y evitar ``ensuciar'' los resultados, se introduce una columna que es el cálculo del hash SHA$-256$, y se eliminan las filas que tengan duplicada dicha columna. Una vez eliminados los elementos duplicados, se elimina la columna pues no será de más utilidad. 
 				
 				\begin{table}[!h]
 					\scriptsize
@@ -771,7 +764,7 @@
 				
 			\subsection{Evaluación de la clasificación}
 			
-				Una vez calculadas las clases o clusters de cada imagen con los dos algoritmos propuestos, se añaden como columnas al dataframe con motivo de agilizar el trabajo de evaluar la calidad de las clasificaciones de embeddings. La \Cref{tab:df_clusters} muestra un extracto. A la hora de realizar la evaluación de la clasificación de los embeddings pueden darse dos situaciones, conocer o no las clases reales. En este caso aprovechando que se conocen las reales, se han abordado ambas situaciones.
+				Una vez calculadas las clases o clusters de cada imagen con los dos algoritmos propuestos, se añaden como columnas al dataframe las clasificaciones de los embeddings con motivo de agilizar el trabajo de evaluar la calidad de estas. La \Cref{tab:df_clusters} muestra un extracto. A la hora de realizar la evaluación de la clasificación de los embeddings pueden darse dos situaciones, conocer o no las clases reales. En este caso aprovechando que se conocen las reales, se han abordado ambas situaciones.
 			
 				\begin{table}[!h]
 					\tiny
@@ -959,7 +952,3 @@
 		\end{figure}
 		
 		Al calcular los tres cosenos, se obtienen los valores $0.03$, $0.29$, y $0$. En el caso de la primera y la tercera descripción, indica que los embeddings de la imagen y el texto son perpendiculares, es decir, que no guardan relación alguna. Por otro lado, para la segunda descripción (la correcta), se obtiene un valor bastante más elevado en comparación con las otras dos. Esto indica que existe relación entre la información que el transformer ha obtenido de la imagen y la que ha obtenido del texto. Podría ser de esperar que si se está definiendo a la perfección la imagen, se obtuviera un coseno igual a 1, pero esto no es así, pues es posible que el transformer se esté fijando en otros detalles diferentes (o adicionales) a los que se ha fijado una persona al crear el texto y viceversa. Normalmente al trabajar con embeddings multimodales, las similitudes suelen ser más bajas que cuando estos provienen de una misma modalidad, afectando también la  alta dimensionalidad. 
-	
-		
-					 
-				
