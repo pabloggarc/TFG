@@ -20,6 +20,9 @@
 *.glsdefs
 *.ist
 *.lot
+*.nav
+*.snm
+*.vrb
 svg-inkscape/
 PlotNeuralNet/
 Datasets/

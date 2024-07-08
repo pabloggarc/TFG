@@ -1,0 +1,56 @@
+\ProvidesPackage{slides_tfg}
+
+% Paquetes utilizados
+\usepackage[spanish]{babel}
+\usepackage[export]{adjustbox}
+\usepackage[inkscapeformat=png]{svg}
+\usepackage{amssymb, graphicx, hyperref, qtree, subcaption, tikz, tikz-cd, xcolor}
+\usetikzlibrary{babel}
+
+% Variables
+\input{../Memoria/variables}
+
+% Ubicación de las imágenes
+\graphicspath{{../Memoria/img}}
+
+% Configuración del fondo
+\usebackgroundtemplate{
+	\hspace{-3.9cm}
+	\includegraphics[scale = .4]{logo.pdf}
+}
+
+% Colores
+\definecolor{azul_uah}{rgb}{0,0.27,0.67}
+\definecolor{gris_uah}{rgb}{0.60392,0.60784,0.61176}
+
+% Comandos personalizados
+\newcommand{\coloruah}[1]{\textcolor{azul_uah}{#1}}
+\let\oldtextbf\textbf
+\renewcommand{\textbf}[1]{\oldtextbf{\textcolor{azul_uah}{#1}}}
+
+% Tema
+\usetheme{Warsaw}
+\setbeamercolor{structure}{fg = azul_uah}
+
+\setbeamercolor{section in head/foot}{bg = gris_uah}
+\setbeamertemplate{itemize items}[ball]
+\setbeamertemplate{page number in head/foot}[totalframenumber]
+\setbeamercovered{transparent}
+
+% Información del documento
+\title[Trabajo Fin de Grado]{\titulo}
+\subtitle{Trabajo Fin de Grado}
+\author{\autor}
+\institute{\grado\\\vspace{.4cm}\universidad\\\escuela}
+\date{16 de julio de 2024}
+
+% Metadatos del PDF
+\hypersetup{
+	pdftitle = {\titulo}, 
+	pdfauthor = {\autor}, 
+	pdfsubject = {Trabajo de Fin de Grado}, 
+	pdfcenterwindow, 
+	pdfnewwindow = true, 
+	pdfkeywords = {\palabrasclave}, 
+	bookmarksopen = true 
+}
