@@ -354,7 +354,7 @@
 		
 			Si bien gracias a las gráficas que TensorBoard proporciona es posible hacerse una idea de la calidad que tendrán las predicciones de un modelo, no son suficientes. Será entonces el momento de presentar al modelo una serie de imágenes que nunca haya visto para poder evaluar la calidad de sus predicciones mediante una serie de métricas y valores estadísticos. Este conjunto de imágenes que el modelo no ha recibido hasta el momento, es el denominado conjunto de test. \\
 			
-			Para calcular estas métricas en Python, se va a utilizar la librería Scikit-learn, ya que contiene un conjunto de métodos con los que calcular y visualizar la mayoría de métricas empleadas en machine learning. Además, las predicciones sobre los conjuntos de test quedará representadas mediante dos matrices, \texttt{Y\_matrix} y \texttt{Y\_score}. La primera de ellas es una matriz $n \times 3$ que contiene para cada observación su etiqueta real, la predicha, y con qué probabilidad se le asigna. La segunda, contiene las probabilidades de cada observación de pertenecer a cada clase, por tanto es de dimensiones $n \times c$. 
+			Para calcular estas métricas en Python, se va a utilizar la librería Scikit-learn, ya que contiene un conjunto de métodos con los que calcular y visualizar la mayoría de métricas empleadas en machine learning. Además, las predicciones sobre los conjuntos de test quedarán representadas mediante dos matrices, \texttt{Y\_matrix} y \texttt{Y\_score}. La primera de ellas es una matriz $n \times 3$ que contiene para cada observación su etiqueta real, la predicha, y con qué probabilidad se le asigna. La segunda, contiene las probabilidades de cada observación de pertenecer a cada clase, por tanto es de dimensiones $n \times c$. 
 			
 			\begin{align*}
 				Y_m &= \begin{pmatrix}
@@ -367,9 +367,9 @@
 				Y_s &= \begin{pmatrix}
 					0.75 & 0.07 & 0.01 & 0.17\\
 					0.15 & 0.01 & 0.7 & 0.14\\
-					0.02 & 0.97 & 0.01 & 0.01\\
+					0.01 & 0.97 & 0.01 & 0.01\\
 					\vdots & \vdots & \vdots & \vdots\\
-					0.05 & 0.87 & 0.01 & 0.08
+					0.05 & 0.87 & 0.01 & 0.07
 				\end{pmatrix}
 			\end{align*}
 			
@@ -415,13 +415,13 @@
 				
 			\subsubsection{Precisión, sensibilidad, y $F_1-$score}\label{subsub:f1}
 				
-				Si bien la matriz de confusión permite mostrar de manera visual la calidad de las clasificaciones, es conveniente calcular algunos valores \cite{metricas_matriz} a partir de esta matriz que permitan visualizar de manera numérica dichas calidades. La primera de ellas conocida como \textbf{precisión} $(\mathcal{P})$, y puede entenderse como la probabilidad de que un elemento que etiquetado como $C_i$, realmente pertenezca a dicha clase. 
+				Si bien la matriz de confusión permite mostrar de manera visual la calidad de las clasificaciones, es conveniente calcular algunos valores \cite{metricas_matriz} a partir de esta matriz que permitan visualizar de manera numérica dichas calidades. La primera de ellas conocida como precisión $(\mathcal{P})$, y puede entenderse como la probabilidad de que un elemento que etiquetado como $C_i$, realmente pertenezca a dicha clase. 
 				
 				$$
 				\mathcal{P} = P(C_i | \hat{C}_i) = \frac{P(C_i \cap \hat{C}_i)}{P(\hat{C}_i)}
 				$$
 				
-				La siguiente se denomina \textbf{sensibilidad} (o recuerdo, $\mathcal{R}$) e indica la probabilidad de que un elemento de la clase $C_i$, se clasifique como tal. 
+				La siguiente se denomina sensibilidad (o recuerdo, $\mathcal{R}$) e indica la probabilidad de que un elemento de la clase $C_i$, se clasifique como tal. 
 				
 				$$
 				\mathcal{R} = P(\hat{C}_i | C_i) = \frac{P(\hat{C}_i \cap C_i)}{P(C_i)}
@@ -576,6 +576,7 @@
 				La segunda consiste en utilizar un primer modelo que permita distinguir entre imágenes de las clases conocidas y las que no. Para ello se utiliza un clasificador binario con las clases \texttt{resto} y \texttt{no\_resto}, y un modelo que sea capaz de distinguir entre las clases originales. Para realizar esto, ambos modelos siguen la arquitectura del mejor modelo de los anteriores, adaptando el número de clases. Se puede visualizar un resumen de esta situación en la \Cref{fig:openset}. \\
 				
 				\begin{figure}[!h]
+					\hspace{-2.5cm}
 					\includegraphics[width = \textwidth]{diagrama_open} 
 					\caption{Arquitectura de clasificación con clases desconocidas}
 					\label{fig:openset}
