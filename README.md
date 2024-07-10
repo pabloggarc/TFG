@@ -19,7 +19,7 @@ En este trabajo fin de grado se ha investigado la posibilidad de automatizar el 
 
 ## Contenidos
 
-En este repositorio de GitHub se encuentran los dos notebooks de Python que contienen todo el código del proyecto. El primero de ellos `cnns.ipynb` recoge el contenido de redes neuronales convolucionales, y `transformers.ipynb` el relacionado con transformers multimodales. Además, se pueden encontrar todos los ficheros $\LaTeX{}$ con los que se han generado los documentos de la memoria y las diapositivas. También se incluyen los modelos creados con TensorFlow, de manera que se puedan hacer predicciones con solo cargar los ficheros. 
+En este repositorio de GitHub se encuentran los dos notebooks de Python que contienen todo el código del proyecto. El primero de ellos `cnns.ipynb` recoge el contenido de redes neuronales convolucionales, y `transformers.ipynb` el relacionado con transformers multimodales. Además, se pueden encontrar todos los ficheros $\LaTeX{}$ con los que se han generado los documentos de la memoria y las diapositivas. 
 
 
 ## Contacto

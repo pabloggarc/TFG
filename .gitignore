@@ -28,6 +28,7 @@ img/
 svg-inkscape/
 PlotNeuralNet/
 Datasets/
+Logs/
 Modelos/
 .ipynb_checkpoints/
 Scripts de ejemplo/
