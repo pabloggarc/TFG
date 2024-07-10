@@ -69,7 +69,7 @@
 			\label{fig:labeled_data}
 		\end{figure}
 		
-		Una solución rápida sería trazar una recta $r: ax + by + c = 0$ que separe $\mathbb{R}^2$ en dos regiones, de forma que todo punto que pertenezca a una región pertenece entonces a una misma clase, tal y como se observa en la \Cref{fig:separated_label_data}. Esta recta suele llamarse \textit{decision boundary} o frontera de decisión. El problema entonces es hallar la recta $r$ de la forma $w_1 x + w_2 y + b = 0$, teniendo que encontrar los parámetros adecuados del modelo. La idea puede extrapolarse a diferente tamaño de entrada tomando un hiperplano de la forma $\textbf{w}^T \textbf{x} + b = 0$ \cite{nndesign}. \\
+		Una solución rápida sería trazar una recta $r: ax + by + c = 0$ que separe $\mathbb{R}^2$ en dos regiones, de forma que todo punto que pertenezca a una región, pertenezca entonces a una misma clase, tal y como se observa en la \Cref{fig:separated_label_data}. Esta recta suele llamarse \textit{decision boundary} o frontera de decisión. El problema entonces es hallar la recta $r$ de la forma $w_1 x + w_2 y + b = 0$, teniendo que encontrar los parámetros adecuados del modelo. La idea puede extrapolarse a diferente tamaño de entrada tomando un hiperplano de la forma $\textbf{w}^T \textbf{x} + b = 0$ \cite{nndesign}. \\
 		
 		Las preguntas a resolver ahora son, ¿existen siempre dichos parámetros? ¿Cómo pueden hallarse? El propio Minsky se hizo estas preguntas en \cite{perceptrons} y se dio cuenta de que dichos parámetros sí pueden hallarse en un número finito de pasos, siempre y cuando los puntos sean linealmente separables. Un ejemplo que no es linealmente separable es el de la función \gls{xor} tal y como se muestra en la \Cref{table:xor,fig:xor}, pues no existe una recta $r$ que separe $\mathbb{R}^2$ en dos regiones de tal forma que cada región contenga puntos de una única clase, sería necesaria una frontera de decisión no lineal. \\
 		
@@ -620,9 +620,9 @@
 				\textbf{f}(\textbf{x}) = \frac{e^{\textbf{x}_i}}{\displaystyle\sum_{j = 1}^{k}e^{\textbf{x}_j}}
 				$$
 				
-				Esta función verifica que $\sum_{p=1}^q \textbf{f}_p(\textbf{x}) = 1$, es decir, en la capa de salida de la red se obtiene la probabilidad de que una muestra presentada a la red pertenezca a una determinada clase. A dicha muestra se le asigna la clase que mayor probabilidad tiene. En este caso, no debe hablarse de su derivada sino de su matriz Jacobiana donde aparecerán las derivadas que puedan necesitarse durante \textit{Backpropagation}, siendo de la forma
+				Esta función verifica que $\sum_{p=1}^q f_p(\textbf{x}) = 1$, es decir, en la capa de salida de la red se obtiene la probabilidad de que una muestra presentada a la red pertenezca a una determinada clase. A dicha muestra se le asigna la clase que mayor probabilidad tiene. En este caso, no debe hablarse de su derivada sino de su matriz Jacobiana donde aparecerán las derivadas que puedan necesitarse durante \textit{Backpropagation}, siendo de la forma
 				$$
-				\frac{\partial \textbf{f}_i(\textbf{x})}{\partial \textbf{x}_j} = \textbf{f}_i(\textbf{x})(\delta_{ij} - \textbf{f}_j(\textbf{x})), 
+				\frac{\partial f_i(\textbf{x})}{\partial x_j} = f_i(\textbf{x})(\delta_{ij} - f_j(\textbf{x})), 
 				$$
 				donde $\delta_{ij}$ es la función Delta de Kronecker. 
 				
@@ -714,12 +714,12 @@
 			
 			\begin{figure}[!h]
 				\centering
-				\includegraphics[scale = .4]{ejemplo_sobel}
+				\includegraphics[scale = .35]{ejemplo_sobel}
 				\caption{Detección de bordes aplicando los kernel Sobel}
 				\label{fig:sobel}
 			\end{figure}
 			
-			A continuación se va a calcular la convolución de la matriz del ejemplo anterior con $G_u$. Al realizar los cálculos como se ha mostrado en el ejemplo anterior, se obtiene como resultado la matriz $A$, mientras que al utilizar Python se obtiene la matriz $B$, los resultados no concuerdan. ¿Qué acaba de suceder? 
+			A continuación se va a calcular la convolución de la matriz del ejemplo anterior con $G_u$. Al realizar los cálculos como se ha mostrado en el ejemplo anterior, se obtiene como resultado la matriz $A$, mientras que al utilizar Python se obtiene la matriz $B$. Los resultados no concuerdan. ¿Qué acaba de suceder? 
 			
 			\begin{align*} A &= 
 				\begin{pmatrix}
@@ -734,7 +734,7 @@
 				\end{pmatrix}
 			\end{align*}
 			
-			La respuesta a estas preguntas se podría resumir en que se ha realizado una ``pequeña trampa'' a la hora de explicar cómo calcular la convolución manualmente en el ejemplo, ya que no se ha aplicado correctamente la definición dada. ¿Qué sentido tiene hacer esto? En visión artificial y tratamiento de imágenes, muchos autores y librerías llaman convolución a la operación que se ha mostrado en el primer ejemplo, cuando en realidad no lo es y trae lugar a confusión. Dicha operación se llama correlación cruzada, denotada por $(\star)$, y que es muy similar a la convolución, pues su principal diferencia es que en la convolución ``real'', el kernel se rota 180 grados antes de calcular la convolución ``falsa'' o correlación cruzada, es decir, $X \ast Y = X \star (R_{180} \cdot Y)$, donde $R_{180}$ es la matriz de rotación de 180 grados. En el primer ejemplo se ha utilizado de manera intencionada la matriz $I_3$ para ver los casos que traen lugar a confusión, pues $I_3 \cdot R_{180} = I_3$. La correlación cruzada de dos imágenes (matrices) se define de la siguiente manera \cite{Goodfellow-et-al-2016}. 
+			La respuesta a estas preguntas se podría resumir en que se ha realizado una ``pequeña trampa'' a la hora de explicar cómo calcular la convolución manualmente en el ejemplo, ya que no se ha aplicado correctamente la definición dada. ¿Qué sentido tiene hacer esto? En visión artificial y tratamiento de imágenes, muchos autores y librerías llaman convolución a la operación que se ha mostrado en el primer ejemplo, cuando en realidad no lo es y trae lugar a confusión. Dicha operación se llama correlación cruzada, denotada por $(\star)$, y que es muy similar a la convolución, pues su principal diferencia es que en la convolución ``real'', el kernel se rota 180 grados antes de calcular la convolución ``falsa'' o correlación cruzada, es decir, $X \ast Y = X \star (R_{180} \cdot Y)$, donde $R_{180}$ es la matriz de rotación de 180 grados. En el primer ejemplo se ha utilizado de manera intencionada la matriz $I_3$ para ver los casos que traen lugar a confusión, pues $R_{180} \cdot I_3 = I_3$. La correlación cruzada de dos imágenes (matrices) se define de la siguiente manera \cite{Goodfellow-et-al-2016}. 
 			
 			$$
 			(f \star g)(u, v) = \sum_{i=-k}^{k}\sum_{j=-k}^{k} g(i, j)f(u + i, v + j)
@@ -995,9 +995,9 @@
 				
 				Actualmente, los transformers pueden tener o no codificador y decodificador, clasificándose principalmente en función de esto. 
 				\begin{itemize}
-					\item Transformers con codificador y decodificador, normalmente orientados y originalmente diseñados para tareas de traducción. Un ejemplo es T5 de Google. 
-					\item Transformers con sólo codificador, normalmente orientados a tareas de clasificación. Un ejemplo son los \gls{vit}. 
-					\item Transformers con sólo decodificador, normalmente orientados a tareas de generación de contenido. Un ejemplo es GPT de OpenAI. 
+					\item Transformers con codificador y decodificador, normalmente orientados y originalmente diseñados para tareas de traducción. Un ejemplo es T5 de Google \cite{t5}. 
+					\item Transformers con sólo codificador, normalmente orientados a tareas de clasificación. Un ejemplo son los \gls{vit} \cite{vit}. 
+					\item Transformers con sólo decodificador, normalmente orientados a tareas de generación de contenido. Un ejemplo es GPT de OpenAI \cite{gpt}. 
 				\end{itemize}
 				
 				Respecto al entrenamiento, se utilizan las mismas técnicas que en las secciones anteriores, Backpropagation con las funciones de error y optimizadores adecuados, normalmente entropía cruzada y Adam, pues se quiere comparar el token esperado con el predicho. El motivo de utilizar Backpropagation es que un transformer no deja de ser una sucesión de redes neuronales. Por otro lado, añadir que para cada ejemplo de traducción se obtienen diferentes ejemplos con los que entrenar, pues para predecir el token $i$, se necesita predecir correctamente el token $i-1$, por lo que la predicción hasta cada token sirve como un ejemplo de entrenamiento diferente, lo que permite tener una gran cantidad de ejemplos. 
@@ -1098,7 +1098,7 @@
 			
 			Uno de los más conocidos es el algoritmo $k-$medias \cite{kmeans} o $k-$means en inglés. Dado un número $k$ de clusters o clases, dicho algoritmo es capaz de clasificar una serie de $n$ elementos $\textbf{x}_i \in \mathbb{R}^d$ en $k$ clases sin conocimiento previo. Para ello, fija de manera aleatoria $k$ puntos $\boldsymbol{\mu}_i \in \mathbb{R}^d$ llamados centroides, que representan el centro de cada cluster. Durante cada iteración, se valora si algún elemento debe cambiar de cluster en función de su distancia a los centroides, y se recalcula la posición de cada uno de ellos. De manera formal, se realiza una partición del dataset $S$ en $k$ conjuntos de manera que 
 			$$
-			\bigcup_{i = 1}^k S_i = S, \, \bigcap_{i = 1}^k S_i = \varnothing, \text{ y } S_i \neq \varnothing
+			\bigcup_{i = 1}^k S_i = S, \, \forall (i,j) \, i \neq j \,\land\, S_i \cap S_j = \varnothing, \text{ y } S_i \neq \varnothing
 			$$
 			con el fin de minimizar el \gls{wcss}, es decir, 
 			$$
